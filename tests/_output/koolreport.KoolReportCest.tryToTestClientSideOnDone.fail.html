@@ -1,0 +1,41 @@
+<html><head>
+        <title>Test</title>
+    <script type="text/javascript" src="/Reporting/koolreport/src/clients/jquery/jquery.min.js"></script><link rel="stylesheet" type="text/css" href="/Reporting/koolreport/src/widgets/koolphp/table/table.css"><script type="text/javascript" src="/Reporting/koolreport/src/widgets/koolphp/table/table.js"></script></head>
+    <body><script type="text/javascript" src="/Reporting/koolreport/src/clients/core/KoolReport.js"></script>
+        <h1>Test</h1>
+        <div id="test">run</div>
+        <div class="koolphp-table " id="mytable">
+	<table class="table">
+				<thead>
+						<tr>
+			<th>name</th><th>age</th>			</tr>
+		</thead>
+						<tbody>
+						<tr row-index="0">
+										<td row-value="Peter">
+							Peter						</td>
+											<td row-value="35">
+							35						</td>
+								</tr>
+						<tr row-index="1">
+										<td row-value="David">
+							David						</td>
+											<td row-value="36">
+							36						</td>
+								</tr>
+								</tbody>
+	</table>
+	</div>
+<script type="text/javascript">
+KoolReport.widget.init({"js":["\/Reporting\/koolreport\/src\/clients\/jquery\/jquery.min.js",["\/Reporting\/koolreport\/src\/widgets\/koolphp\/table\/table.js"]],"css":["\/Reporting\/koolreport\/src\/widgets\/koolphp\/table\/table.css"]},function(){
+	mytable = new KoolReport.koolphp.table('mytable',{"cKeys":["name","age"],"removeDuplicate":[],"paging":null});
+		});
+</script>
+
+        <script>
+        KoolReport.load.onDone(function(){
+            document.getElementById("test").innerText = "run";    
+        });
+        </script>
+    
+</body></html>

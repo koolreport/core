@@ -1,0 +1,35 @@
+.koolphp-card
+{
+    border:solid 1px #ddd;
+    padding-bottom:15px;
+}
+
+.koolphp-card .card-value
+{
+    font-size:28px;
+    text-align: center;
+    font-weight: 700;
+}
+
+.koolphp-card .card-title
+{
+    font-size:16px;
+    text-align: center;
+    color:#aaa;
+}
+
+.koolphp-card .card-indicator
+{
+    text-align: right;
+    font-size: 12px;
+}
+
+.koolphp-card .value-positive
+{
+    color:#3c763d;
+}
+
+.koolphp-card .value-negative
+{
+    color:#a94442;
+}

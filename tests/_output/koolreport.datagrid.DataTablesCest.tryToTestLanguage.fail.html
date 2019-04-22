@@ -1,0 +1,55 @@
+<html><head>
+        <title>Test Language in DataTables</title>
+    <script type="text/javascript" src="/Reporting/koolreport/src/clients/jquery/jquery.min.js"></script><link rel="stylesheet" type="text/css" href="/Reporting/koolreport/packages/datagrid/DataTables/datatables.min.css"><script type="text/javascript" src="/Reporting/koolreport/packages/datagrid/DataTables/datatables.min.js"></script></head>
+    <body><script type="text/javascript" src="/Reporting/koolreport/src/clients/core/KoolReport.js"></script>
+        <h1>Test Language in DataTables</h1>
+
+        
+<script>
+    function dtDataFilter(id, data) {
+        // console.log(data);
+        var markStart = "<!-- dt_" + id + "_start -->";
+        var markEnd = "<!-- dt_" + id + "_end -->";
+        var start = data.indexOf(markStart);
+        var end = data.indexOf(markEnd);
+        var s = data.substring(start + markStart.length, end);
+        // console.log(id);
+        // console.log(s);
+        return s;
+    }
+</script>
+
+<div id="datatables5bb1cb4ad5d6e1_wrapper" class="dataTables_wrapper no-footer"><div class="dataTables_length" id="datatables5bb1cb4ad5d6e1_length"><label><select name="datatables5bb1cb4ad5d6e1_length" aria-controls="datatables5bb1cb4ad5d6e1" class=""><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select> Einträge anzeigen</label></div><table id="datatables5bb1cb4ad5d6e1" class="table display dataTable no-footer" role="grid" aria-describedby="datatables5bb1cb4ad5d6e1_info">
+    <thead>
+        <tr role="row"><th class="sorting_asc" tabindex="0" aria-controls="datatables5bb1cb4ad5d6e1" rowspan="1" colspan="1" data-column-index="0" aria-sort="ascending" aria-label="
+                name            : aktivieren, um Spalte absteigend zu sortieren" style="width: 173px;">
+                name            </th><th class="sorting" tabindex="0" aria-controls="datatables5bb1cb4ad5d6e1" rowspan="1" colspan="1" data-column-index="1" aria-label="
+                age            : aktivieren, um Spalte aufsteigend zu sortieren" style="width: 139px;">
+                age            </th></tr>  
+    </thead>
+        <tbody>
+                    
+                    
+            <tr role="row" class="odd">
+                            <td class="sorting_1">
+                    David                </td>
+                            <td>
+                    36                </td>
+                
+            </tr><tr role="row" class="even">
+                            <td class="sorting_1">
+                    Peter                </td>
+                            <td>
+                    35                </td>
+                
+            </tr></tbody>
+        </table><div class="dataTables_info" id="datatables5bb1cb4ad5d6e1_info" role="status" aria-live="polite">1 bis 2 von 2 Einträgen</div><div class="dataTables_paginate paging_simple_numbers" id="datatables5bb1cb4ad5d6e1_paginate"><a class="paginate_button previous disabled" aria-controls="datatables5bb1cb4ad5d6e1" data-dt-idx="0" tabindex="0" id="datatables5bb1cb4ad5d6e1_previous">Zurück</a><span><a class="paginate_button current" aria-controls="datatables5bb1cb4ad5d6e1" data-dt-idx="1" tabindex="0">1</a></span><a class="paginate_button next disabled" aria-controls="datatables5bb1cb4ad5d6e1" data-dt-idx="2" tabindex="0" id="datatables5bb1cb4ad5d6e1_next">Nächste</a></div></div>
+<script type="text/javascript">
+    KoolReport.widget.init(
+        {"js":["\/Reporting\/koolreport\/src\/clients\/jquery\/jquery.min.js",["\/Reporting\/koolreport\/packages\/datagrid\/DataTables\/datatables.min.js"]],"css":["\/Reporting\/koolreport\/packages\/datagrid\/DataTables\/datatables.min.css"]},
+        function() {
+            datatables5bb1cb4ad5d6e1 = $('#datatables5bb1cb4ad5d6e1').DataTable({"searching":false,"paging":true,"language":{"sEmptyTable":"Keine Daten in der Tabelle vorhanden","sInfo":"_START_ bis _END_ von _TOTAL_ Eintr\u00e4gen","sInfoEmpty":"0 bis 0 von 0 Eintr\u00e4gen","sInfoFiltered":"(gefiltert von _MAX_ Eintr\u00e4gen)","sInfoPostFix":"","sInfoThousands":".","sLengthMenu":"_MENU_ Eintr\u00e4ge anzeigen","sLoadingRecords":"Wird geladen...","sProcessing":"Bitte warten...","sSearch":"Suchen","sZeroRecords":"Keine Eintr\u00e4ge vorhanden.","oPaginate":{"sFirst":"Erste","sPrevious":"Zur\u00fcck","sNext":"N\u00e4chste","sLast":"Letzte"},"oAria":{"sSortAscending":": aktivieren, um Spalte aufsteigend zu sortieren","sSortDescending":": aktivieren, um Spalte absteigend zu sortieren"},"select":{"rows":{"_":"%d Zeilen ausgew\u00e4hlt","0":"Zum Ausw\u00e4hlen auf eine Zeile klicken","1":"1 Zeile ausgew\u00e4hlt"}}},"colReorder":true});
+                    }
+    );
+</script>    
+</body></html>

@@ -1,0 +1,46 @@
+<?php
+use \koolreport\core\Utility;
+
+$cardCss = Utility::get($this->cssStyle, "card");
+$valueCss = Utility::get($this->cssStyle, "value");
+$indicatorCss = Utility::get($this->cssStyle, "indicator");
+$titleCss = Utility::get($this->cssStyle, "title");
+$negativeCss = Utility::get($this->cssStyle, "negative");
+$positiveCss = Utility::get($this->cssStyle, "positive");
+
+$cardClass = Utility::get($this->cssClass, "card");
+$valueClass = Utility::get($this->cssClass, "value");
+$indicatorClass = Utility::get($this->cssClass, "indicator");
+$titleClass = Utility::get($this->cssClass, "title");
+$upIconClass = Utility::get($this->cssClass, "upIcon", "fa fa-caret-up");
+$downIconClass = Utility::get($this->cssClass, "downIcon", "fa fa-caret-down");
+
+if ($this->baseValue!==null) {
+    $indicatorValue = $this->calculateIndicator($this->value, $this->baseValue, $this->indicator);
+    $indicatorCss .= (($indicatorCss)?";":"").
+                    (($indicatorValue<0)?$negativeCss:$positiveCss);
+    $indicatorTitle = str_replace("{baseValue}", $this->formatValue($this->baseValue, $this->valueFormat), $this->indicatorTitle);
+    $indicatorTitle = str_replace("{value}", $this->formatValue($this->value, $this->valueFormat), $indicatorTitle);
+}
+?>
+<div id="<?php echo $this->name; ?>" class="koolphp-card card panel<?php echo ($cardClass)?" $cardClass":""; ?>"<?php echo($cardCss)?" style='$cardCss'":""; ?>>
+    <div class="panel-body card-body">
+        <?php if ($this->baseValue!==null) :?>
+            <div class="card-indicator<?php echo ($indicatorClass)?" $indicatorClass":""; ?><?php echo ($indicatorValue<0)?" value-negative":" value-positive"; ?>"<?php echo($indicatorCss)?" style='$indicatorCss'":""; ?>>
+                <span title="<?php echo $indicatorTitle; ?>">
+                    <?php echo $this->formatValue($indicatorValue, $this->indicatorFormat); ?>
+                    <i class='<?php echo($indicatorValue<0)?$downIconClass:$upIconClass; ?>'></i>
+                </span>
+            </div>
+        <?php endif ?>
+        <div class="card-value<?php echo ($valueClass)?" $valueClass":""; ?>"<?php echo($valueCss)?" style='$valueCss'":""; ?>>
+            <?php echo $this->formatValue($this->value, $this->valueFormat); ?>
+        </div>
+        <div class="card-title<?php echo ($titleClass)?" $titleClass":""; ?>"<?php echo($titleCss)?" style='$titleCss'":""; ?>>
+            <?php echo $this->title; ?>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+KoolReport.widget.init(<?php echo json_encode($this->getResources()); ?>);
+</script>

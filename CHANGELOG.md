@@ -1,6 +1,6 @@
 # Change Log
 
-## Version
+## Version 4.0.0
 
 1. `Group`: Fix grouping issue
 2. `Group`: Adding `caseSensitive` property to set whether grouping column should be grouped with case sensitive. Default value is `true`.

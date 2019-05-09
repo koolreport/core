@@ -77,7 +77,7 @@ class ResourceManager
         // echo "fullLocalPath=$fullLocalPath<br>";
         $fullLocalPath = Utility::standardizePathSeparator($fullLocalPath);
         // echo "fullLocalPath=$fullLocalPath<br>";
-        $fullLocalPath = Utility::getSymbolicPath($fullLocalPath);
+        // $fullLocalPath = Utility::getSymbolicPath($fullLocalPath);
         // echo "fullLocalPath=$fullLocalPath<br>";
         $assets = Utility::get($this->report->getSettings(), "assets");
         
@@ -94,7 +94,8 @@ class ResourceManager
                  */
 
                 $script_folder = Utility::standardizePathSeparator(
-                    realpath(dirname($_SERVER["SCRIPT_FILENAME"]))
+                    // realpath(dirname($_SERVER["SCRIPT_FILENAME"]))
+                    dirname($_SERVER["SCRIPT_FILENAME"])
                 );
                 $asset_path = $script_folder."/koolreport_assets";            
                 $asset_url = Utility::str_replace_first(

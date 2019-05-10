@@ -35,6 +35,7 @@ class KoolReport
     protected $theme;
     protected $events;
     protected $reportSettings;
+    protected $widgetParams = [];
 
     /**
      * Get the version of KoolReport
@@ -225,6 +226,16 @@ class KoolReport
     public function getSettings()
     {
         return $this->reportSettings;
+    }
+
+    public function setWidgetParams($name, $params)
+    {
+        $this->widgetParams[$name] = $params;
+    }
+
+    public function getWidgetParams($name)
+    {
+        return Utility::get($this->widgetParams, $name, null);
     }
 
     /**

@@ -45,14 +45,13 @@ You can either clone our project or download directly from [KoolReport Download]
 If you use `composer`, you can run following command to install the latest version
 
 ```
-$ composer require koolphp/koolreport
+$ composer require koolreport/core
 ```
 
 ## What's included
 
 ```
-koolreport/
-├── packages/
+core/
 ├── src/
 │   ├── clients/
 │   ├── core/
@@ -67,7 +66,7 @@ koolreport/
 1. PHP 5.4 or higher
 
 # Installation
-Copy the folder `koolreport` into your project and it is ready to run. You can start creating report.
+Creat a folder called `koolreport` into your project and copy the folder `core` to it. You can now start creating report.
 
 
 # Create your first report
@@ -76,7 +75,7 @@ Make two files `SalesByCustomer.php` and `SalesByCustomer.view.php`
 
 ```
 /
-├── koolreport/
+├── koolreport/core
 ├── SalesByCustomer.php
 ├── SalesByCustomer.view.php
 └── index.php
@@ -97,7 +96,7 @@ $salesByCustomer->run()->render();
 
 ```php
 <?php
-require_once "../koolreport/autoload.php";
+require_once "../koolreport/core/autoload.php";
 
 //Specify some data processes that will be used to process
 use \koolreport\processes\Group;

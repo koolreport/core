@@ -96,7 +96,7 @@ $salesByCustomer->run()->render();
 
 ```php
 <?php
-require_once "../koolreport/core/autoload.php";
+require_once "koolreport/core/autoload.php";
 
 //Specify some data processes that will be used to process
 use \koolreport\processes\Group;

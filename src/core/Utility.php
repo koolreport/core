@@ -535,4 +535,31 @@ class Utility
     
         return $merged;
     }
+
+    static function map($funcOrArray, $args, $defaultValue = null)
+    {
+        // if ($defaultValue === "{{identical}}") $defaultValue = $args;
+        if (is_array($funcOrArray)) {
+            return self::get($funcOrArray, $args, $defaultValue);
+        }
+        else if (is_callable($funcOrArray)) {
+            if (! is_array($args)) $args = [$args];
+            return call_user_func_array($funcOrArray, $args);
+        }
+        return $defaultValue;
+    }
+
+    public static function formatValue($value, $meta, $row = null)
+    {
+        $formatValue = self::get($meta, "formatValue", null);
+
+        if (is_string($formatValue)) {
+            eval('$fv="' . str_replace('@value', '$value', $formatValue) . '";');
+            return $fv;
+        } else if (is_callable($formatValue)) {
+            return $formatValue($value, $row);
+        } else {
+            return self::format($value, $meta);
+        }
+    }
 }

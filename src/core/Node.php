@@ -89,6 +89,25 @@ class Node
     }
 
     /**
+     * Pipe with condition
+     * 
+     * @param bool     $condition     The condition to branch
+     * @param function $trueFunction  The function will be called if condition is true
+     * @param function $falseFunction The function will be alled if condition is false  
+     * 
+     * @return Node The new node
+     */
+    public function pipeIf($condition, $trueFunction, $falseFunction = null)
+    {
+        if ($condition) {
+            return $trueFunction($this);
+        } else if ($falseFunction) {
+            return $falseFunction($this);
+        }
+        return $this;
+    }
+
+    /**
      * Get the previous source that send data to this node
      * 
      * This method is very helpful if we want to go trace back to the root

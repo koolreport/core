@@ -13,6 +13,9 @@
 9. `SQLSRVDataSource`: Remove the auto-added parenthesis in IN operator
 10. `PostgreSQLDataSource`: Remove the auto-added parenthesis in IN operator
 11. `OracleDataSource`: Remove the auto-added parenthesis in IN operator
+12. `Node`: Adding `pipeIf()` method to set condition to pipe.
+13. `Node`: Adding `pipeTree()` method to pipe data from a node to series of nodes.
+
 
 ## Version 3.25.4
 

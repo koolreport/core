@@ -298,6 +298,20 @@ class KoolReport
     }
 
     /**
+     * Get the data store with a name, if not found, create a new one,
+     * This is alias/short name for dataStore() method
+     *
+     * @param string $name The name of data store
+     * 
+     * @return DataStore The datastore object
+     */
+    public function store($name)
+    {
+        return $this->dataStore($name);
+    }
+
+
+    /**
      * Run the report
      *
      * @return KoolReport Return this report object

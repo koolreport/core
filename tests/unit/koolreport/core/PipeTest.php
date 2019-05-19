@@ -51,4 +51,17 @@ class PipeTest extends \Codeception\Test\Unit
         $this->assertEquals(Utility::getClassName($node), "Limit");
 
     }
+
+    public function testPipeBranch()
+    {
+        $start = new Limit(array(0));
+        $start->pipeBranch(
+            function ($node) {
+                $node->pipe(new Group())->pipe(new DataStore);
+            },
+            function ($node) {
+                $node->pipe(new Sort())->pipe(new DataStore);
+            }
+        );
+    }
 }

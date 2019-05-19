@@ -95,7 +95,7 @@ class Node
      * @param function $trueFunction  The function will be called if condition is true
      * @param function $falseFunction The function will be alled if condition is false  
      * 
-     * @return Node The new node
+     * @return Node The new node in condition
      */
     public function pipeIf($condition, $trueFunction, $falseFunction = null)
     {
@@ -106,6 +106,29 @@ class Node
         }
         return $this;
     }
+
+    /**
+     * Pipe from a node to multiple branches
+     * ->pipeTree(
+     *      function ($node){
+     *          //Do thing
+     *      },
+     *      function ($node){
+     *          //Do thing
+     *      }
+     * );
+     * 
+     * @return Node This node
+     */
+    public function pipeTree()
+    {
+        $params = func_get_args();
+        foreach ($params as $func) {
+            $func($this);
+        }
+        return $this;
+    }
+
 
     /**
      * Get the previous source that send data to this node

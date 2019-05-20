@@ -11,7 +11,7 @@ class Report extends \koolreport\KoolReport
                 "data"=>array(
                     "class"=>'\koolreport\datasources\CSVDataSource',
                     'filePath'=>dirname(__FILE__)."/data.csv",
-                )
+                ),
             )
         );
     }

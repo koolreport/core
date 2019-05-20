@@ -15,6 +15,8 @@
 11. `OracleDataSource`: Remove the auto-added parenthesis in IN operator
 12. `Node`: Adding `pipeIf()` method to set condition to pipe.
 13. `Node`: Adding `pipeTree()` method to pipe data from a node to series of nodes.
+14. `KoolReport`: Adding `store()` that act like `dataSournce()`
+15. `KoolReport`: Capable of using template engine rather than default view of koolreport.
 
 
 ## Version 3.25.4

@@ -1,0 +1,16 @@
+<?php
+    use \koolreport\widgets\koolphp\Table;
+?>
+<html>
+<head>
+    <title>Welcome to platesphp!</title>
+</head>
+<body>
+    <h1>Welcome to platesphp!</h1>
+    <?php
+        Table::create(array(
+            "dataSource"=>$report->dataStore("all")
+        ));
+    ?>
+</body>
+</html>

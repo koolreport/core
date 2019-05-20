@@ -33,6 +33,7 @@ class KoolReport
     protected $dataStores;
     protected $resourceManager;
     protected $theme;
+    protected $templateEngine;
     protected $events;
     protected $reportSettings;
     protected $widgetParams = [];
@@ -390,63 +391,80 @@ class KoolReport
      */
     public function render($view = null, $return = false)
     {
-        if ($view === null) {
-            $view = Utility::getClassName($this);
-        } else {
-            if (gettype($view) == "boolean") {
-                $return = $view;
+
+        $currentDir = dirname(Utility::getClassPath($this));
+        if (!$this->templateEngine) {
+            if ($view === null) {
                 $view = Utility::getClassName($this);
+            } else {
+                if (gettype($view) == "boolean") {
+                    $return = $view;
+                    $view = Utility::getClassName($this);
+                }
+            }
+            if (!is_file($currentDir . "/" . $view . ".view.php")) {
+                $this->debug();
+                return;
             }
         }
-        $currentDir = dirname(Utility::getClassPath($this));
 
-        if (is_file($currentDir . "/" . $view . ".view.php")) {
-            $content = "";
-            if ($this->fireEvent("OnBeforeRender")) {
-                ob_start();
-                if (!isset($_POST["@subReport"])) {
-                    //If this is subreport request, we dont want to render 
-                    //KoolReport.widget.js again
-                    $this->registerEvent(
-                        "OnResourceInit",
-                        function () {
-                            $this->getResourceManager()->addScriptFileOnBegin(
-                                $this->getResourceManager()->publishAssetFolder(
-                                    realpath(dirname(__FILE__) . "/clients/core")
-                                ) . "/KoolReport.js"
-                            );
-                        },
-                        true
-                    ); //Register on top
-                }
-                $this->getResourceManager()->init();
-                $oldActiveReport = (isset($GLOBALS["__ACTIVE_KOOLREPORT__"])) 
-                    ? $GLOBALS["__ACTIVE_KOOLREPORT__"] : null;
-                $GLOBALS["__ACTIVE_KOOLREPORT__"] = $this;
-                include $currentDir . "/" . $view . ".view.php";
-                $content = ob_get_clean();
 
-                //This will help to solve issue of report inside report
-                if ($oldActiveReport === null) {
-                    unset($GLOBALS["__ACTIVE_KOOLREPORT__"]);
-                } else {
-                    $GLOBALS["__ACTIVE_KOOLREPORT__"] = $oldActiveReport;
-                }
-                //Adding resource to content
-                if ($this->fireEvent("OnBeforeResourceAttached")) {
-                    $this->getResourceManager()->process($content);
-                    $this->fireEvent("OnResourceAttached");
-                }
-
-                $this->fireEvent("OnRenderEnd", array('content' => &$content));
-                if ($return) {
-                    return $content;
-                } else {
-                    echo $content;
-                }
+        $content = "";
+        if ($this->fireEvent("OnBeforeRender")) {
+            
+            if (!isset($_POST["@subReport"])) {
+                //If this is subreport request, we dont want to render 
+                //KoolReport.widget.js again
+                $this->registerEvent(
+                    "OnResourceInit",
+                    function () {
+                        $this->getResourceManager()->addScriptFileOnBegin(
+                            $this->getResourceManager()->publishAssetFolder(
+                                realpath(dirname(__FILE__) . "/clients/core")
+                            ) . "/KoolReport.js"
+                        );
+                    },
+                    true
+                ); //Register on top
             }
-        } else {
-            $this->debug();
+            $this->getResourceManager()->init();
+            $oldActiveReport = (isset($GLOBALS["__ACTIVE_KOOLREPORT__"])) 
+                ? $GLOBALS["__ACTIVE_KOOLREPORT__"] : null;
+            $GLOBALS["__ACTIVE_KOOLREPORT__"] = $this;
+            
+            if ($this->templateEngine) {
+                $content = $this->templateEngine->render(
+                    $view,
+                    array(
+                        "report"=>$this
+                    )
+                );
+            } else {
+                ob_start();
+                $report = $this;
+                include $currentDir . "/" . $view . ".view.php";
+                $content = ob_get_clean();    
+            }
+
+
+            //This will help to solve issue of report inside report
+            if ($oldActiveReport === null) {
+                unset($GLOBALS["__ACTIVE_KOOLREPORT__"]);
+            } else {
+                $GLOBALS["__ACTIVE_KOOLREPORT__"] = $oldActiveReport;
+            }
+            //Adding resource to content
+            if ($this->fireEvent("OnBeforeResourceAttached")) {
+                $this->getResourceManager()->process($content);
+                $this->fireEvent("OnResourceAttached");
+            }
+
+            $this->fireEvent("OnRenderEnd", array('content' => &$content));
+            if ($return) {
+                return $content;
+            } else {
+                echo $content;
+            }
         }
     }
 }

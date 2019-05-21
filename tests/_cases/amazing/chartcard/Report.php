@@ -1,7 +1,9 @@
 <?php
 require_once "../../../../autoload.php";
 
-class Report extends \koolreport\KoolReport
+require_once "../../DbReport.php";
+
+class Report extends DbReport
 {
     use \koolreport\amazing\Theme;
 }

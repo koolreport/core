@@ -62,7 +62,7 @@ use \koolreport\amazing\ChartCard;
             <div class="col-md-3">
             <?php
                 ChartCard::create(array(
-                    "value"=>3000,
+                    "value"=>$this->src("automaker")->query("select sum(amount) from payments"),
                     "preset"=>"info",
                     "title"=>"Sale amount",
                     "chart"=>array(

@@ -83,6 +83,9 @@ class Card extends Widget
         $this->value = Utility::get($this->params, "value");
         $this->baseValue = Utility::get($this->params, "baseValue");
 
+        $this->value = $this->processScalar($this->value);
+        $this->baseValue = $this->processScalar($this->baseValue);
+
         $title = Utility::get($this->params, "title");
         if (is_callable($title) && gettype($title)!="string") {
             $this->title = $title($this->value);
@@ -110,6 +113,29 @@ class Card extends Widget
 
         $this->cssStyle = Utility::get($this->params, "cssStyle", array());
         $this->cssClass = Utility::get($this->params, "cssClass", array());
+    }
+
+    /**
+     * Return scalar value from object like query
+     * 
+     * @param mixed $value The value which may be type of float or datastore, datasource, process object.
+     * 
+     * @return float The value in float
+     */
+    protected function processScalar($value)
+    {
+        if (gettype($value)=="object") {
+            $store = $this->standardizeDataSource($value, array());
+            if ($store->count()>0) {
+                $row = $store->get(0);
+                $keys = array_keys($row);
+                if (count($keys)>0) {
+                    return $row[$keys[0]];
+                }
+                return 0;
+            }
+        }
+        return $value;
     }
 
     /**

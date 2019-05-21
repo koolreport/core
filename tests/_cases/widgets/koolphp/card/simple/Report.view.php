@@ -14,7 +14,7 @@
                 <?php
                 Card::create(array(
                     "value"=>1249,
-                    "previousValue"=>1500,
+                    "baseValue"=>1500,
                     "indicator"=>"different",
                     "format"=>array(
                         "value"=>array(
@@ -51,8 +51,8 @@
             <?php
             Card::create(array(
                 "title"=>"Sale Amount",
-                "value"=>1249,
-                "previousValue"=>1500,
+                "value"=>$this->src("automaker")->query("select sum(amount) from payments"),
+                "baseValue"=>$this->src("automaker")->query("select sum(amount) from payments"),
             ));
             ?>
             </div>

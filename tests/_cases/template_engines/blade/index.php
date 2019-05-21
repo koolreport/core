@@ -1,5 +1,5 @@
 <?php
-require_once "platesphp/Report.php";
+require_once "Report.php";
 
 $report = new Report;
 $report->run()->render("report");

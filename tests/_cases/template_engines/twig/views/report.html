@@ -1,0 +1,13 @@
+<html>
+<head>
+    <title>Welcome to Twig</title>
+</head>
+<body>
+    <h1>Welcome to Twig</h1>
+    {{ 
+        widget('koolreport.widgets.koolphp.Table',{
+            dataSource:report.dataStore("all"),
+        }) 
+    }}
+</body>
+</html>

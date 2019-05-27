@@ -674,6 +674,28 @@ class DataStore extends Node implements IteratorAggregate, ArrayAccess
     }
 
     /**
+     * Get all rows in table array
+     * 
+     * @return array All rows of data in table array
+     */
+    public function toTableArray()
+    {
+        if ($this->count()>0) {
+            $result = array(
+                array_keys($this->data[0])
+            );
+            
+            foreach ($this->data as $rows) {
+                array_push($result, array_values($row));
+            }
+            return $result;
+        }
+        return [
+            array_keys[$this->meta["columns"]]
+        ];
+    }
+
+    /**
      * Get whether datastore is empty
      * 
      * @return boolean True if the datastore is empty

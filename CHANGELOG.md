@@ -17,7 +17,8 @@
 13. `Node`: Adding `pipeTree()` method to pipe data from a node to series of nodes.
 14. `KoolReport`: Adding `store()` that act like `dataSournce()`
 15. `KoolReport`: Capable of using template engine rather than default view of koolreport.
-
+16. `DataStore` : Adding function `toTableArray()` to return data in table format
+17. `Table`: Fix the issue of html special char in table
 
 ## Version 3.25.4
 

@@ -9,6 +9,7 @@
         <h1>Test Rendering Data At Client</h1>
         <?php
         Table::create([
+            "name"=>"myTable",
             "dataSource"=>$this->src("automaker")->query("select * from customers")
         ]);
         ?>

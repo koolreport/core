@@ -1,5 +1,8 @@
-# Version 2.33.0
+# Version 2.33.1
     1. Adding `AccumulativeColumn` to generate accumulative column.
+    2. Fix Group process for not counting records correctly.
+    3. Enhance the `autoload` of KoolReport
+    4. A bundle of small fixes
 
 # Version 2.32.8
     1. Revert back to previous parambinding of PDODataSource

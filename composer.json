@@ -1,5 +1,5 @@
 {
-    "name": "KoolReport",
+    "name": "koolreport/core",
     "version":"1.34.9",
     "description": "An Open Source PHP Reporting Framework for easier and faster report delivery",
     "keywords": ["php reporting framework","php reporting tools","data reporting","charts and graphs"],
@@ -11,5 +11,10 @@
             "name": "KoolPHP Inc",
             "homepage": "https://www.koolphp.net"
         }
-    ]
+    ],
+	"autoload": {
+        "files": [
+            "autoload.php"
+        ]
+    },
 }

@@ -23,7 +23,7 @@ spl_autoload_register(
         if (strpos($classname, "koolreport\\")!==false) {
             $dir = str_replace("\\", "/", dirname(__FILE__));
             $classname = str_replace("\\", "/", $classname);
-            $filePath = $dir."/".str_replace("koolreport/", "src/", $classname).".php";
+            $filePath = $dir."/".str_replace("koolreport/", "", $classname).".php";
             //try to load in file
             if (is_file($filePath)) {
                 include_once $filePath; 

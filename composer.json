@@ -11,5 +11,10 @@
             "name": "KoolPHP Inc",
             "homepage": "https://www.koolphp.net"
         }
-    ]
+    ],
+	"autoload": {
+        "files": [
+            "autoload.php"
+        ]
+    }
 }

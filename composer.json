@@ -1,6 +1,6 @@
 {
     "name": "KoolReport",
-    "version":"2.78.0",
+    "version":"3.0.0",
     "description": "An Open Source PHP Reporting Framework for easier and faster report delivery",
     "keywords": ["php reporting framework","php reporting tools","data reporting","charts and graphs"],
     "homepage": "https://www.koolreport.com",
@@ -12,9 +12,15 @@
             "homepage": "https://www.koolphp.net"
         }
     ],
+	"require": {
+        "php":">=5.4"
+    },
 	"autoload": {
         "files": [
             "autoload.php"
         ]
+    },
+	"require-dev": {
+        "codeception/codeception": "^2.4"
     }
 }

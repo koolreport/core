@@ -96,7 +96,7 @@ class KoolReport extends Base
 	{
 		if(!$this->resourceManager)
 		{
-			$this->resourceManager = new ResourceManager;
+			$this->resourceManager = new ResourceManager($this);
 		}
 		return $this->resourceManager;
 	}
@@ -238,8 +238,8 @@ class KoolReport extends Base
 			{
 				$dataSource->start();
 			}
-			$this->fireEvent("OnRunEnd");
 		}
+		$this->fireEvent("OnRunEnd");
 		return $this;
 	}
 
@@ -290,25 +290,27 @@ class KoolReport extends Base
         }
 		$currentDir = dirname(Utility::getClassPath($this));
 
-		ob_start();
-		$this->getResourceManager()->init();
-		$GLOBALS["__ACTIVE_KOOLREPORT__"] = $this;
-		$this->fireEvent("OnBeforeRender");
-		include($currentDir."/".$view.".view.php");
-		$content = ob_get_clean();
-
-		//Adding resource to content
-		$this->getResourceManager()->process($content); 
+		$content = "";
+		if($this->fireEvent("OnBeforeRender"))
+		{
+			ob_start();
+			$this->getResourceManager()->init();
+			$GLOBALS["__ACTIVE_KOOLREPORT__"] = $this;
+			include($currentDir."/".$view.".view.php");
+			$content = ob_get_clean();	
+			//Adding resource to content
+			$this->getResourceManager()->process($content); 
+		}
 
 		if($return)
 		{
-			$this->fireEvent("OnRenderEnd");
+			$this->fireEvent("OnRenderEnd",array('content'=>$content));
 			return $content;
 		}
 		else
 		{
 			echo $content;
-			$this->fireEvent("OnRenderEnd");
+			$this->fireEvent("OnRenderEnd",array('content'=>$content));
 		}
 	}
 }

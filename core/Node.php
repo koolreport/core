@@ -44,6 +44,15 @@ class Node extends Base
 			return $node;			
 		}
 	}
+
+	public function previous($index=0)
+	{
+		if(count($this->sources)>0)
+		{
+			return $this->sources[$index];
+		}
+		return null;
+	}
 	
 	public function saveTo(&$self)
 	{

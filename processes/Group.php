@@ -55,7 +55,8 @@ class Group extends Process
 		$this->maxColumns = ($list)?explode(",",$list):array();
 		
 		$this->sort = Utility::get($this->params,"sort",true);
-		
+		$this->gData = array();
+		$this->cData = array();
 	}
 	
 	protected function onMetaReceived($metaData)
@@ -86,12 +87,6 @@ class Group extends Process
 			$metaData["columns"][$column]["method"] = "max";
 		}
 		return $metaData;
-	}
-	
-	protected function onInputStart()
-	{
-		$this->gData = array();
-		$this->cData = array();
 	}
 
 	protected function onInput($row)

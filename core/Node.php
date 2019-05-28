@@ -14,7 +14,7 @@ class Node extends Base
 {
 	protected $sources;	
 	protected $destinations;
-	protected $is_ended=true;
+	protected $is_ended=false;
 	protected $metaData;
 	protected $streamingSource;
 	
@@ -146,5 +146,12 @@ class Node extends Base
 		return $metaData;		
 	}
 	
-	
+	public function getReport()
+	{
+		if(isset($this->sources[0]))
+		{	
+			return $this->sources[0]->getReport();
+		}
+		return null;
+	}	
 }

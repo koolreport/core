@@ -190,7 +190,7 @@ class KoolReport extends Base
 		}
 		$dataSourceClass = Utility::get($dataSourceSetting,"class","\koolreport\datasources\PdoDataSource");
 		$dataSourceClass = str_replace("/","\\",$dataSourceClass);
-		$dataSource = new $dataSourceClass($dataSourceSetting);
+		$dataSource = new $dataSourceClass($dataSourceSetting,$this);
 		array_push($this->dataSources,$dataSource);
 		return $dataSource;
 	}
@@ -251,6 +251,28 @@ class KoolReport extends Base
 		echo $content;
 	}
 	
+	public function innerView($view,$params=null,$return=false)
+	{
+		$currentDir = dirname(Utility::getClassPath($this));
+		ob_start();
+		if($params)
+		{
+			foreach($params as $key=>$value)
+			{
+				$$key = $value;
+			}			
+		}		
+		include($currentDir."/".$view.".view.php");
+		$content = ob_get_clean();
+		if($return)
+		{
+			return $content;
+		}
+		else
+		{
+			echo $content;
+		}
+	}
 		
 	public function render($view=null,$return=false)
 	{

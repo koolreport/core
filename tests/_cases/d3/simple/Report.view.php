@@ -1,8 +1,8 @@
 <?php
-use \koolreport\c3\ColumnChart;
-use \koolreport\c3\BarChart;
-use \koolreport\c3\PieChart;
-use \koolreport\c3\DonutChart;
+use \koolreport\d3\ColumnChart;
+use \koolreport\d3\BarChart;
+use \koolreport\d3\PieChart;
+use \koolreport\d3\DonutChart;
 $category_amount = array(
     array("category"=>"Books","sale"=>32000,"cost"=>20000,"profit"=>12000),
     array("category"=>"Accessories","sale"=>43000,"cost"=>36000,"profit"=>7000),
@@ -13,13 +13,13 @@ $category_amount = array(
 ?>
 <html>
     <head>
-        <title>Test C3 Chart</title>
+        <title>Test D3 Chart</title>
     </head>
     <body>
-        <h1>Test C3 Chart</h1>
+        <h1>Test D3 Chart</h1>
         <div id="test"></div>
         <?php
-        BarChart::create(array(
+        ColumnChart::create(array(
             "dataStore"=>array(
                 array("name"=>"Tuan","age"=>35,"salary"=>45),
                 array("name"=>"Dong","age"=>20,"salary"=>50)
@@ -48,7 +48,7 @@ $category_amount = array(
         ?>
 
         <?php
-        DonutChart::create(array(
+        PieChart::create(array(
             "dataStore"=>$category_amount,
             "title"=>"Cost of Good Sold",
             "columns"=>array(

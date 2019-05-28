@@ -17,7 +17,7 @@ class KoolReport extends Base
 	
 	public function version()
 	{
-		return "3.0.0";
+		return "3.1.0";
 	}
 
 	static function js()

@@ -1,5 +1,9 @@
+# Version 2.33.0
+    1. Adding `AccumulativeColumn` to generate accumulative column.
+
 # Version 2.32.8
     1. Revert back to previous parambinding of PDODataSource
+
 
 # Version 2.31.7
     1. Fix the bug of incorrect active report when subReport is used.

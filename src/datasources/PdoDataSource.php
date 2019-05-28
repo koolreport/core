@@ -70,6 +70,8 @@ class PdoDataSource extends DataSource
      * @var array $sqlParams The params of query
      */
     protected $sqlParams;
+
+    protected $queryParams;
     
     /**
      * Whether the total should be counted.
@@ -124,7 +126,7 @@ class PdoDataSource extends DataSource
      */
     public function query($query,$sqlParams=null)
     {
-        $this->query =  (string)$query;
+        $this->originalQuery = $this->query =  (string)$query;
         if ($sqlParams!=null) {
             $this->sqlParams = $sqlParams;
         }
@@ -145,30 +147,33 @@ class PdoDataSource extends DataSource
      */    
     public function queryProcessing($queryParams) 
     {
+        $this->queryParams = $queryParams;
         $driver = strtolower($this->connection->getAttribute(PDO::ATTR_DRIVER_NAME));
         //drivers = Array ( [0] => mysql [1] => oci [2] => pgsql [3] => sqlite [4] => sqlsrv )
         switch ($driver) {
             case 'mysql':
                 list($this->query, $this->totalQuery, $this->filterQuery)
-                    = MySQLDataSource::processQuery($this->query, $queryParams);
+                    = MySQLDataSource::processQuery($this->originalQuery, $queryParams);
                 break;
             case 'oci':
                 list($this->query, $this->totalQuery, $this->filterQuery)
-                    = OracleDataSource::processQuery($this->query, $queryParams);
+                    = OracleDataSource::processQuery($this->originalQuery, $queryParams);
                 break;
             case 'pgsql':
                 list($this->query, $this->totalQuery, $this->filterQuery)
-                    = PostgreSQLDataSource::processQuery($this->query, $queryParams);
+                    = PostgreSQLDataSource::processQuery($this->originalQuery, $queryParams);
                 break;
             case 'sqlsrv':
                 list($this->query, $this->totalQuery, $this->filterQuery)
-                    = SQLSRVDataSource::processQuery($this->query, $queryParams);
+                    = SQLSRVDataSource::processQuery($this->originalQuery, $queryParams);
                 break;
             default:
                 break;
         }
+        
         $this->countTotal = Util::get($queryParams, 'countTotal', false);
         $this->countFilter = Util::get($queryParams, 'countFilter', false);
+
         return $this;
     }
 
@@ -230,18 +235,18 @@ class PdoDataSource extends DataSource
     protected function typeToPDOParamType($type)
     {
         switch ($type) {
-        case "boolean":
-            return PDO::PARAM_BOOL;
-        case "integer":
-            return PDO::PARAM_STR;
-        case "NULL":
-            return PDO::PARAM_NULL;
-        case "resource":
-            return PDO::PARAM_LOB;
-        case "double":
-        case "string":
-        default:
-            return PDO::PARAM_STR;
+            case "boolean":
+                return PDO::PARAM_BOOL;
+            case "integer":
+                return PDO::PARAM_STR;
+            case "NULL":
+                return PDO::PARAM_NULL;
+            case "resource":
+                return PDO::PARAM_LOB;
+            case "double":
+            case "string":
+            default:
+                return PDO::PARAM_STR;
         }
     }
 
@@ -272,11 +277,12 @@ class PdoDataSource extends DataSource
                     $paramType = $this->typeToPDOParamType(gettype($value));
                     $paramName = ":pdoParam$paramNum";
                     $paramNum++;
-                    // $stm->bindValue($paName . "_param$i", $value, $paramType);
                     $stm->bindValue($paramName, $value, $paramType);
                 }
             } else {
                 $paramType = $this->typeToPDOParamType($type);
+                // echo "paramType=$paramType <br>";
+                // echo "paValue=$paValue <br>";
                 $stm->bindValue($paName, $paValue, $paramType);
             }
         }
@@ -364,9 +370,12 @@ class PdoDataSource extends DataSource
     {
         $metaData = array("columns"=>array());
 
+        $searchParams = Util::get($this->queryParams, 'searchParams', []);
+
         if ($this->countTotal) {
             $totalQuery = $this->prepareParams($this->totalQuery, $this->sqlParams);
             $stm = $this->connection->prepare($totalQuery);
+            // echo "totalQuery=$totalQuery<br>";
             $this->bindParams($stm, $this->sqlParams);
             $stm->execute();
             $error = $stm->errorInfo();
@@ -381,8 +390,13 @@ class PdoDataSource extends DataSource
 
         if ($this->countFilter) {
             $filterQuery = $this->prepareParams($this->filterQuery, $this->sqlParams);
+            // $filterQuery = $this->prepareParams($this->filterQuery, $searchParams);
             $stm = $this->connection->prepare($filterQuery);
+            // echo "filterQuery=$filterQuery<br>";
             $this->bindParams($stm, $this->sqlParams);
+            $this->bindParams($stm, $searchParams);
+            // if (! empty($this->queryParams['searchParams']))
+            //     $this->bindParams($stm, $this->queryParams['searchParams']);
             $stm->execute();
             $error = $stm->errorInfo();
             if ($error[2]!=null) {
@@ -396,9 +410,13 @@ class PdoDataSource extends DataSource
         $row = null;
 
         $query = $this->prepareParams($this->query, $this->sqlParams);
+        // $query = $this->prepareParams($this->query, $searchParams);
         // echo "pdodatasource start query=$query <br>";
         $stm = $this->connection->prepare($query);
         $this->bindParams($stm, $this->sqlParams);
+        $this->bindParams($stm, $searchParams);
+        // if (! empty($this->queryParams['searchParams']))
+        //     $this->bindParams($stm, $this->queryParams['searchParams']);
         $stm->execute();
 
         $error = $stm->errorInfo();

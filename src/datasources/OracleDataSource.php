@@ -88,6 +88,8 @@ class OracleDataSource extends DataSource
      */
     protected $sqlParams;
 
+    protected $queryParams;
+
     /**
      * Whether the total should be counted.
      * 
@@ -138,7 +140,7 @@ class OracleDataSource extends DataSource
      */
     public function query($query, $sqlParams=null)
     {
-        $this->query =  (string)$query;
+        $this->originalQuery = $this->query =  (string)$query;
         if ($sqlParams!=null) {
             $this->sqlParams = $sqlParams;
         }
@@ -187,8 +189,9 @@ class OracleDataSource extends DataSource
      */    
     public function queryProcessing($queryParams) 
     {
+        $this->queryParams = $queryParams;
         list($this->query, $this->totalQuery, $this->filterQuery) 
-            = self::processQuery($this->query, $queryParams);
+            = self::processQuery($this->originalQuery, $queryParams);
 
         $this->countTotal = Util::get($queryParams, 'countTotal', false);
         $this->countFilter = Util::get($queryParams, 'countFilter', false);
@@ -316,6 +319,15 @@ class OracleDataSource extends DataSource
             return "unknown";
         }
     }
+
+    protected function prepareAndBind($query, $params)
+    {
+        $result = oci_parse($this->connection, $query);
+        foreach ($params as $k => $v) {
+            oci_bind_by_name($result, $k, $v);
+        }
+        return $result;
+    }
     
     /**
      * Start piping data
@@ -325,6 +337,8 @@ class OracleDataSource extends DataSource
     public function start()
     {
         $metaData = array("columns"=>array());
+
+        $searchParams = Util::get($this->queryParams, 'searchParams', []);
 
         if ($this->countTotal) {
             $totalQuery = $this->bindParams($this->totalQuery, $this->sqlParams);
@@ -341,7 +355,8 @@ class OracleDataSource extends DataSource
 
         if ($this->countFilter) {
             $filterQuery = $this->bindParams($this->filterQuery, $this->sqlParams);
-            $filterResult = oci_parse($this->connection, $filterQuery);
+            // $filterResult = oci_parse($this->connection, $filterQuery);
+            $filterResult = $this->prepareAndBind($filterQuery, $searchParams);
             if (! $filterResult) {
                 echo oci_error();
                 exit;
@@ -353,7 +368,10 @@ class OracleDataSource extends DataSource
         }
 
         $query = $this->bindParams($this->query, $this->sqlParams);
-        $stid = oci_parse($this->connection, $query);
+        // $stid = oci_parse($this->connection, $query);
+        // echo "oracle query=$query <br>";
+        // echo "searchParams="; print_r($searchParams);
+        $stid = $this->prepareAndBind($query, $searchParams);
         if (! $stid) {
             echo oci_error();
             exit;

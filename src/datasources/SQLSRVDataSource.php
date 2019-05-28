@@ -137,7 +137,7 @@ class SQLSRVDataSource extends DataSource
      */
     public function query($query, $sqlParams=null)
     {
-        $this->query =  (string)$query;
+        $this->originalQuery = $this->query =  (string)$query;
         if ($sqlParams!=null) {
             $this->sqlParams = $sqlParams;
         }
@@ -181,8 +181,9 @@ class SQLSRVDataSource extends DataSource
      */
     public function queryProcessing($queryParams) 
     {
+        $this->queryParams = $queryParams;
         list($this->query, $this->totalQuery, $this->filterQuery)
-            = self::processQuery($this->query, $queryParams);
+            = self::processQuery($this->originalQuery, $queryParams);
 
         $this->countTotal = Util::get($queryParams, 'countTotal', false);
         $this->countFilter = Util::get($queryParams, 'countFilter', false);
@@ -310,6 +311,22 @@ class SQLSRVDataSource extends DataSource
             return 'unknown';
         }
     }
+
+    protected function prepareAndBind($query, $params)
+    {
+        $paramNames = array_keys($params);
+        uksort(
+            $paramNames,
+            function ($k1, $k2) {
+                return strlen($k1) < strlen($k2);
+            }
+        );
+        foreach ($paramNames as $k) {
+            $query = str_replace($k, "?", $query);
+        }
+        $stmt = sqlsrv_query($this->connection, $query, array_values($params));
+        return $stmt;
+    }
     
     /**
      * Start piping data
@@ -318,8 +335,9 @@ class SQLSRVDataSource extends DataSource
      */
     public function start()
     {
-        // echo "query=" . $this->query . '<br>';
         $metaData = array("columns"=>array());
+
+        $searchParams = Util::get($this->queryParams, 'searchParams', []);
 
         if ($this->countTotal) {
             $query = $this->bindParams($this->totalQuery, $this->sqlParams);
@@ -334,7 +352,8 @@ class SQLSRVDataSource extends DataSource
 
         if ($this->countFilter) {
             $query = $this->bindParams($this->filterQuery, $this->sqlParams);
-            $stmt = sqlsrv_query($this->connection, $query);
+            // $stmt = sqlsrv_query($this->connection, $query);
+            $stmt = $this->prepareAndBind($query, $searchParams);
             if ($stmt === false) {
                 die(print_r(sqlsrv_errors(), true));
             } 
@@ -344,7 +363,8 @@ class SQLSRVDataSource extends DataSource
         }
 
         $query = $this->bindParams($this->query, $this->sqlParams);
-        $stmt = sqlsrv_query($this->connection, $query);
+        // $stmt = sqlsrv_query($this->connection, $query);
+        $stmt = $this->prepareAndBind($query, $searchParams);
         if ($stmt === false) {
             die(print_r(sqlsrv_errors(), true));
         } 

@@ -64,6 +64,8 @@ class PostgreSQLDataSource extends DataSource
      * @var array $sqlParams The params of query
      */    
     protected $sqlParams;
+
+    protected $queryParams;
     
     /**
      * Whether the total should be counted.
@@ -118,7 +120,7 @@ class PostgreSQLDataSource extends DataSource
      */
     public function query($query, $sqlParams=null)
     {
-        $this->query =  (string)$query;
+        $this->originalQuery = $this->query =  (string)$query;
         if ($sqlParams!=null) {
             $this->sqlParams = $sqlParams;
         }
@@ -161,8 +163,9 @@ class PostgreSQLDataSource extends DataSource
      */
     public function queryProcessing($queryParams) 
     {
+        $this->queryParams = $queryParams;
         list($this->query, $this->totalQuery, $this->filterQuery)
-            = self::processQuery($this->query, $queryParams);
+            = self::processQuery($this->originalQuery, $queryParams);
 
         $this->countTotal = Util::get($queryParams, 'countTotal', false);
         $this->countFilter = Util::get($queryParams, 'countFilter', false);
@@ -319,6 +322,22 @@ class PostgreSQLDataSource extends DataSource
         }
         return "unknown";
     }
+
+    protected function prepareAndBind($query, $params)
+    {
+        $paramNames = array_keys($params);
+        uksort(
+            $paramNames,
+            function ($k1, $k2) {
+                return strlen($k1) < strlen($k2);
+            }
+        );
+        foreach ($paramNames as $i => $k) {
+            $query = str_replace($k, "$" . ($i+1), $query);
+        }
+        $result = pg_query_params($this->connection, $query, array_values($params));
+        return $result;
+    }
     
     /**
      * Start piping data
@@ -328,6 +347,8 @@ class PostgreSQLDataSource extends DataSource
     public function start()
     {
         $metaData = array("columns"=>array());
+
+        $searchParams = Util::get($this->queryParams, 'searchParams', []);
 
         if ($this->countTotal) {
             $totalQuery = $this->bindParams($this->totalQuery, $this->sqlParams);
@@ -343,7 +364,8 @@ class PostgreSQLDataSource extends DataSource
 
         if ($this->countFilter) {
             $filterQuery = $this->bindParams($this->filterQuery, $this->sqlParams);
-            $filterResult = pg_query($this->connection, $filterQuery);
+            // $filterResult = pg_query($this->connection, $filterQuery);
+            $filterResult = $this->prepareAndBind($filterQuery, $searchParams);
             if (!$filterResult) {
                 echo pg_last_error($this->connection);
                 exit;
@@ -354,7 +376,8 @@ class PostgreSQLDataSource extends DataSource
         }
 
         $query = $this->bindParams($this->query, $this->sqlParams);
-        $result = pg_query($this->connection, $query);
+        // $result = pg_query($this->connection, $query);
+        $result = $this->prepareAndBind($query, $searchParams);
         if (! $result) {
             echo pg_last_error($this->connection);
             exit;

@@ -203,7 +203,7 @@ class Chart extends Widget
                 $value = $row[$cKey];
                 $cType = Utility::get($cSetting, "type", "unknown");
                 if ($cType === "number") {
-                    $value = floatval($value);
+                    $value = $value !== null ? floatval($value) : $value;
                 } else if ($cType === "string") {
                     $value = "$value";
                 }

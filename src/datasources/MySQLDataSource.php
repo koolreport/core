@@ -79,6 +79,8 @@ class MySQLDataSource extends DataSource
      */
     protected $countFilter = false;
 
+    protected $queryParams = [];
+
     /**
      * Init MySQLdataSource
      * 
@@ -128,7 +130,7 @@ class MySQLDataSource extends DataSource
      */
     public function query($query, $sqlParams=null)
     {
-        $this->query = (string)$query;
+        $this->originalQuery = $this->query = (string)$query;
         if ($sqlParams != null) {
             $this->sqlParams = $sqlParams;
         }
@@ -153,13 +155,14 @@ class MySQLDataSource extends DataSource
         $orderSql = ! empty($order) ? "ORDER BY $order" : "";
             
         $start = (int) Util::get($queryParams, 'start', 0);
-        $length = (int) Util::get($queryParams, 'length', -1);
+        $length = (int) Util::get($queryParams, 'length', 1);
         $limit =  $length > -1 ? "LIMIT $start, $length" : "";
 
         $filterQuery = "SELECT count(*) FROM ($query) tmp $searchSql";
         $totalQuery = "SELECT count(*) FROM ($query) tmp";
         $processedQuery = "select * from ($query) tmp $searchSql $orderSql $limit";
         // echo "processedQuery=" . $processedQuery . '<br>';
+
         return [$processedQuery, $totalQuery, $filterQuery];
     }
 
@@ -172,8 +175,10 @@ class MySQLDataSource extends DataSource
      */
     public function queryProcessing($queryParams) 
     {
+        $this->queryParams = $queryParams;
+        // echo "queryProcessing queryParams="; print_r($queryParams); echo "<br>";
         list($this->query, $this->totalQuery, $this->filterQuery)
-            = self::processQuery($this->query, $queryParams);
+            = self::processQuery($this->originalQuery, $queryParams);
 
         $this->countTotal = Util::get($queryParams, 'countTotal', false);
         $this->countFilter = Util::get($queryParams, 'countFilter', false);
@@ -257,7 +262,7 @@ class MySQLDataSource extends DataSource
      * 
      * @return string The escaped string
      */
-    public function escapeStr($str)
+    protected function escapeStr($str)
     {
         return $this->connection->real_escape_string($str);
     }
@@ -310,6 +315,32 @@ class MySQLDataSource extends DataSource
             return 'unknown';
         }
     }
+
+    protected function prepareAndBind($query, $params)
+    {
+        $paramNames = array_keys($params);
+        uksort(
+            $paramNames,
+            function ($k1, $k2) {
+                return strlen($k1) < strlen($k2);
+            }
+        );
+        foreach ($paramNames as $k) {
+            $query = str_replace($k, "?", $query);
+        }
+        $stmt = $this->connection->prepare($query);
+        $typeStr = "";
+        foreach ($params as $v) {
+            $typeStr .= is_double($v) ? "d" : 
+                (is_int($v) ? "i" : "s");
+        }
+        if (! empty($typeStr)) {
+            // call_user_func_array('mysqli_stmt_bind_param', 
+            //     array_merge(array($stmt, $typeStr), $paramValues)); 
+            call_user_func_array(array($stmt, 'bind_param'), [$typeStr] + $params);
+        }
+        return $stmt;
+    }
     
     /**
      * Start piping data
@@ -319,6 +350,8 @@ class MySQLDataSource extends DataSource
     public function start()
     {
         $metaData = array("columns"=>array());
+
+        $searchParams = Util::get($this->queryParams, 'searchParams', []);
 
         if ($this->countTotal) {
             $totalQuery = $this->bindParams($this->totalQuery, $this->sqlParams);
@@ -333,7 +366,10 @@ class MySQLDataSource extends DataSource
 
         if ($this->countFilter) {
             $filterQuery = $this->bindParams($this->filterQuery, $this->sqlParams);
-            $filterResult = $this->connection->query($filterQuery);
+            $stmt = $this->prepareAndBind($filterQuery, $searchParams);
+            $stmt->execute();
+            $filterResult = $stmt->get_result();
+            // $filterResult = $this->connection->query($filterQuery);
             if ($filterResult===false) {
                 throw new \Exception("Error on query >>> ".$this->connection->error);
             }
@@ -343,7 +379,10 @@ class MySQLDataSource extends DataSource
         }
 
         $query = $this->bindParams($this->query, $this->sqlParams);
-        $result = $this->connection->query($query);
+        // $result = $this->connection->query($query);
+        $stmt = $this->prepareAndBind($query, $searchParams);
+        $stmt->execute();
+        $result = $stmt->get_result();
         
         if ($result===false) {
             throw new \Exception("Error on query >>> ".$this->connection->error);

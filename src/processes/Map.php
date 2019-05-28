@@ -181,7 +181,7 @@ class Map extends Process
      */
     public function endInput($source)
     {
-        if (!$this->metaSent) {
+        if (! $this->metaSent) {
             $this->sendMeta($this->newMeta);
         }
         $func = Util::get($this->params, '{end}', null);
@@ -193,5 +193,10 @@ class Map extends Process
             }
         }
         parent::endInput($source);
+    }
+
+    public function setEnded($bool)
+    {
+        $this->metaSent = $this->is_ended = $bool;
     }
 }

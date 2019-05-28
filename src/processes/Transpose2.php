@@ -16,6 +16,7 @@
 
 namespace koolreport\processes;
 
+use \koolreport\core\Utility as Util;
 use \koolreport\core\Process;
 
 /**
@@ -76,13 +77,12 @@ class Transpose2 extends Process
     protected function onInputEnd()
     {
         //Send meta
-        $countRow = count($this->data);
-        $oldCKeys = array_keys($this->metaData['columns']);
+        $oldCKeys = array_keys(Util::get($this->data, 0, []));
         $cMetas = [
             'c0' => array("type" => "string"),
         ];
-        foreach ($this->data as $row) {
-            $cMetas[$row[$oldCKeys[0]]] = ['type' => 'unknown'];
+        foreach ($this->data as $ri => $row) {
+            $cMetas[Util::get($row, $oldCKeys[0], "r$ri")] = ['type' => 'unknown'];
         }
         // Utility::prettyPrint($cMetas); echo '<br>';
         $newMeta = array(
@@ -96,8 +96,8 @@ class Transpose2 extends Process
             }
 
             $newRow = ['c0' => $oldCKey];
-            foreach ($this->data as $row) {
-                $newRow[$row[$oldCKeys[0]]] = $row[$oldCKey];
+            foreach ($this->data as $ri => $row) {
+                $newRow[Util::get($row, $oldCKeys[0], "r$ri")] = Util::get($row, $oldCKey);
             }
 
             $this->next($newRow);

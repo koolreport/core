@@ -194,7 +194,14 @@ class Map extends Process
         }
         parent::endInput($source);
     }
-
+    
+    /**
+     * Set whether this node is ended sending and receiving data
+     * 
+     * @param bool $bool Whether true or false value to indicate whether data sending is ended
+     * 
+     * @return null
+     */
     public function setEnded($bool)
     {
         $this->metaSent = $this->is_ended = $bool;

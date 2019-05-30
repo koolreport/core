@@ -28,11 +28,18 @@ spl_autoload_register(
             if (is_file($filePath)) {
                 include_once $filePath; 
             } else {
-                //try to load in packages
+                //try to load in packages in the same level with core
                 $dir = str_replace("\\", "/", dirname(dirname(__FILE__)));
                 $filePath = $dir."/".str_replace("koolreport/", "", $classname).".php";
                 if (is_file($filePath)) {
                     include_once $filePath;
+                } else {
+                    //Try to load pakages in packages folder inside core
+                    $dir = str_replace("\\", "/", dirname(__FILE__));
+                    $filePath = $dir."/".str_replace("koolreport/", "packages/", $classname).".php";
+                    if (is_file($filePath)) {
+                        include_once $filePath;
+                    }    
                 }
             }
         }

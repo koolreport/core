@@ -211,7 +211,7 @@ The KoolReport is licensed under MIT License.
 
 # Extended packages:
 
-### Free
+### Many Free Packages
 
 * [PlatesPhp](https://www.koolreport.com/packages/platesphp): Use PlatesPHP template engine [__Free__]
 * [Blade](https://www.koolreport.com/packages/blade): Use Blade template engine [__Free__]
@@ -228,7 +228,7 @@ The KoolReport is licensed under MIT License.
 * [Bootstrap4](https://www.koolreport.com/packages/bootstrap3): Create modern report with Bootstrap 4 [__Free__]
 * [CloudExport](https://www.koolreport.com/packages/cloudexport): Export your report to PDF, JPG, PNG and other formats using cloud services [__Free__]
 
-### With a little price
+### Some with a little price
 
 * [Excel](https://www.koolreport.com/packages/excel): Import and export data to Excel [__$29__]
 * [Cube](https://www.koolreport.com/packages/cube): Turn your data into two dimensions cross-tab table [__$19__]

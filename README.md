@@ -14,6 +14,7 @@
 
 # Changelog 
 
+* [Version 4.0.0 (coming soon)](https://www.koolreport.com/docs/koolreport/change_log/#version-4.0.0)
 * [Version 3.25.4 (Feb 15th, 2019)](https://www.koolreport.com/docs/koolreport/change_log/#version-3.25.4)
 * [Version 3.25.3 (Feb 14th, 2019)](https://www.koolreport.com/docs/koolreport/change_log/#version-3.25.3)
 * [Version 3.25.1 (Feb 13rd, 2019)](https://www.koolreport.com/docs/koolreport/change_log/#version-3.25.1)
@@ -40,7 +41,12 @@
 
 # Get started
 
-You can either clone our project or download directly from [KoolReport Download](https://www.koolreport.com/getting-started#download).
+## System Requirement
+1. PHP 5.4 or higher
+
+## Installation
+
+### By composer
 
 If you use `composer`, you can run following command to install the latest version
 
@@ -48,25 +54,20 @@ If you use `composer`, you can run following command to install the latest versi
 $ composer require koolreport/core
 ```
 
+### Manually Download
+
+Please go to our [Get Started](https://www.koolreport.com/getting-started#download) page and following our guide to install.
+
+
 ## What's included
 
 ```
-core/
-├── src/
-│   ├── clients/
-│   ├── core/
-│   ├── datasources/
-│   ├── processes/
-│   └── widgets/
-├── tests/
-└── autoload.php
+koolreport/
+├── core/
+│   ├── src/
+│   ├── tests/
+│   └── autoload.php
 ```
-
-## System Requirement
-1. PHP 5.4 or higher
-
-# Installation
-Creat a folder called `koolreport` into your project and copy the folder `core` to it. You can now start creating report.
 
 
 # Create your first report
@@ -75,10 +76,11 @@ Make two files `SalesByCustomer.php` and `SalesByCustomer.view.php`
 
 ```
 /
-├── koolreport/core
-├── SalesByCustomer.php
-├── SalesByCustomer.view.php
-└── index.php
+├── koolreport/
+├── myreport/
+│   ├── SalesByCustomer.php
+│   ├── SalesByCustomer.view.php
+│   └── index.php
 ```
 
 #### index.php
@@ -96,7 +98,7 @@ $salesByCustomer->run()->render();
 
 ```php
 <?php
-require_once "koolreport/core/autoload.php";
+require_once "../koolreport/core/autoload.php";
 
 //Specify some data processes that will be used to process
 use \koolreport\processes\Group;
@@ -209,6 +211,10 @@ The KoolReport is licensed under MIT License.
 
 # Extended packages:
 
+
+* [PlatesPhp](https://www.koolreport.com/packages/platesphp): Use PlatesPHP template engine [__Free__]
+* [Blade](https://www.koolreport.com/packages/blade): Use Blade template engine [__Free__]
+* [Twig](https://www.koolreport.com/packages/twig): Use Twig template engine [__Free__]
 * [Laravel](https://www.koolreport.com/packages/laravel): Make KoolReport work seamlessly in Laravel PHP Framework [__Free__]
 * [CodeIgniter](https://www.koolreport.com/packages/codeigniter): Make KoolReport work seamlessly in CodeIgniter Framework [__Free__]
 * [MongoDB](https://www.koolreport.com/packages/mongodb): Build report from MongoDB [__Free__]
@@ -231,6 +237,7 @@ The KoolReport is licensed under MIT License.
 * [DataGrid](https://www.koolreport.com/packages/datagrid): Display data in table format, search, sort, group data and more.. [__$19__]
 * [DrillDown](https://www.koolreport.com/packages/drilldown): Build awesome drill-down, drill-through report easily [__$29__]
 * [ChartJS](https://www.koolreport.com/packages/chartjs): One of the most beautiful and powerful chart libraries for your report [__$29__]
+* [Amazing](https://www.koolreport.com/packages/amazing): Style your report with modern and beautiful theme [__$29__]
 
 
 # KoolReport Pro

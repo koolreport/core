@@ -95,7 +95,7 @@ class ResourceManager
                     dirname($_SERVER["SCRIPT_FILENAME"])
                 );
                 $asset_path = $script_folder."/koolreport_assets";            
-                $asset_url = Utility::str_replace_first(
+                $asset_url = Utility::strReplaceFirst(
                     $document_root,
                     "",
                     $script_folder
@@ -157,7 +157,7 @@ class ResourceManager
 
             $objectTargetPath = $targetAssetPath."/".$objectHashFolderName;
             if (!is_dir($objectTargetPath)) {
-                Utility::recurse_copy($fullLocalPath, $objectTargetPath);
+                Utility::recurseCopy($fullLocalPath, $objectTargetPath);
             } else {
                 //Do the check if file in widgetSourceAssetPath is changed,
                 //If there is then copy again.

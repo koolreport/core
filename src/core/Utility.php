@@ -79,14 +79,14 @@ class Utility
      * 
      * @return null
      */
-    static function recurse_copy($src,$dst)
+    static function recurseCopy($src,$dst)
     { 
         $dir = opendir($src); 
         @mkdir($dst); 
         while (false !== ( $file = readdir($dir)) ) { 
             if (( $file != '.' ) && ( $file != '..' )) { 
                 if (is_dir($src . '/' . $file)) { 
-                    Utility::recurse_copy($src . '/' . $file, $dst . '/' . $file); 
+                    Utility::recurseCopy($src . '/' . $file, $dst . '/' . $file); 
                 } else { 
                     copy($src . '/' . $file, $dst . '/' . $file); 
                 } 
@@ -197,14 +197,14 @@ class Utility
      * 
      * @return array The new marks
      */
-    static function mark_js_function(&$obj,&$marks=array())
+    static function markJsFunction(&$obj,&$marks=array())
     {
         foreach ($obj as $k=>&$v) {
             switch(gettype($v))
             {
             case "object":
             case "array":
-                Utility::mark_js_function($v, $marks);
+                Utility::markJsFunction($v, $marks);
                 break;
             case "string":
                 $tsv = trim(strtolower($v));
@@ -231,7 +231,7 @@ class Utility
      */
     static function jsonEncode($object,$option=0)
     {
-        $marks = Utility::mark_js_function($object);
+        $marks = Utility::markJsFunction($object);
         $text = json_encode($object, $option);
         foreach ($marks as $i=>$js) {
             $text = str_replace("\"--js($i)\"", $js, $text);
@@ -291,7 +291,7 @@ class Utility
      * Init an key value inside an array
      * 
      * @param array  $arr     The array
-     * @param string $key     The key
+     * @param string $keys    The key
      * @param mixed  $default The default value to fill if key is not found
      * 
      * @return array The array
@@ -419,7 +419,7 @@ class Utility
      * 
      * @return string String with replaced first occurerence only
      */
-    static function str_replace_first($from, $to, $content)
+    static function strReplaceFirst($from, $to, $content)
     {
         $from = '/'.preg_quote($from, '/').'/';
         return preg_replace($from, $to, $content, 1);
@@ -515,6 +515,9 @@ class Utility
     /**
      * Merge array recursively
      * 
+     * @param array $array1 Array 1
+     * @param array $array2 Array 2
+     * 
      * @return array The merged array
      */
     static function arrayMergeRecursive($array1,$array2)
@@ -525,9 +528,9 @@ class Utility
             if (is_array($value) && isset($merged[$key]) && is_array($merged[$key])) {
                 $merged[$key] = self::arrayMergeRecursive($merged[$key], $value);
             } else if (is_numeric($key)) {
-                 if (!in_array($value, $merged)) {
+                if (!in_array($value, $merged)) {
                     $merged[] = $value;
-                 }
+                }
             } else {
                 $merged[$key] = $value;
             }
@@ -536,19 +539,38 @@ class Utility
         return $merged;
     }
 
+    /**
+     * Map value
+     * 
+     * @param mixed $funcOrArray  A function or array
+     * @param array $args         Arguments
+     * @param mixed $defaultValue Optional default value 
+     * 
+     * @return array New mapped value
+     */
     static function map($funcOrArray, $args, $defaultValue = null)
     {
         // if ($defaultValue === "{{identical}}") $defaultValue = $args;
         if (is_array($funcOrArray)) {
             return self::get($funcOrArray, $args, $defaultValue);
-        }
-        else if (is_callable($funcOrArray)) {
-            if (! is_array($args)) $args = [$args];
+        } else if (is_callable($funcOrArray)) {
+            if (! is_array($args)) {
+                $args = [$args];
+            }
             return call_user_func_array($funcOrArray, $args);
         }
         return $defaultValue;
     }
 
+    /**
+     * Format value
+     * 
+     * @param mixed $value The value
+     * @param array $meta  Column meta
+     * @param mixed $row   The optional data row
+     * 
+     * @return array Formatted value
+     */
     public static function formatValue($value, $meta, $row = null)
     {
         $formatValue = self::get($meta, "formatValue", null);

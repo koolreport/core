@@ -2,6 +2,7 @@
 vendor
 
 # Other files and folders
+tests/_output
 
 # Executables
 *.exe

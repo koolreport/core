@@ -13,7 +13,7 @@ class UtilityTest extends \Codeception\Test\Unit
     public function testStrReplaceFirst()
     {
         $str = "hello hello world!";
-        $this->assertEquals(Utility::str_replace_first("hello","hi",$str),"hi hello world!");
+        $this->assertEquals(Utility::strReplaceFirst("hello","hi",$str),"hi hello world!");
     }
 
     public function testFormat()

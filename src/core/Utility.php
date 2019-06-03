@@ -302,7 +302,7 @@ class Utility
             if (count($keys) === 0) return $default;
             $fKey = $keys[0];
             if (count($keys) === 1) return self::init($arr, $fKey, $default);
-            if (! is_array($arr[$fKey])) $arr[$fKey] = [];
+            if (! isset($arr[$fKey]) || ! is_array($arr[$fKey])) $arr[$fKey] = [];
             $restKeys = array_slice($keys, 1);
             return self::init($arr[$fKey], $restKeys, $default);
         } else {

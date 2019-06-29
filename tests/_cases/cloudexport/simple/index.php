@@ -5,7 +5,7 @@ require_once "Report.php";
 $report = new Report;
 //$report->run()->render();
 $report->run()->cloudExport()
-->chromeHeadlessio("b272431244d5c8d0061f6f30da451c3f99337348b92bbab2cd6f34423d0dd43a")
+->chromeHeadlessio("f4d94ae93b306412b7ac8c4e5809bb8a526772bdcdf72f7afefd812f19c8826a")
 ->pdf(array(
     "displayHeaderFooter"=>true,
     "headerTemplate"=>"<div style='font-size:14px !important'>Sale Report</div>",

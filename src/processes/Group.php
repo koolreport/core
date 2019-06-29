@@ -41,6 +41,7 @@ class Group extends Process
     protected $avgColumns;
     protected $minColumns;
     protected $maxColumns;
+    protected $custom;
     protected $sort;
     protected $caseSensitive;
 
@@ -87,6 +88,7 @@ class Group extends Process
         $this->avgColumns = $this->parseGroups(Utility::get($this->params, "avg"));
         $this->minColumns = $this->parseGroups(Utility::get($this->params, "min"));
         $this->maxColumns = $this->parseGroups(Utility::get($this->params, "max"));
+        $this->custom = Utility::get($this->params, "custom");
 
         $this->sort = Utility::get($this->params, "sort", true);
         $this->caseSensitive = Utility::get($this->params, "caseSensitive", true);
@@ -137,6 +139,7 @@ class Group extends Process
     protected function onInput($row)
     {
         $index = "";
+        $originRow = $row;
         foreach ($this->groupColumns as $gColumn) {
             $index .= $row[$gColumn]."\x05";
         }
@@ -180,6 +183,15 @@ class Group extends Process
                 $row[$countColumn] = 1;
             }
             $this->gData[$index] = $row;
+        }
+
+        $customFunc = $this->custom;
+        if ($customFunc !== null) {
+            $this->gData[$index] = $customFunc(
+                $originRow, 
+                $this->gData[$index], 
+                $this->cData[$index]
+            );
         }
     }
 

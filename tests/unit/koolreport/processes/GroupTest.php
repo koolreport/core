@@ -45,9 +45,8 @@ class GroupTest extends \Codeception\Test\Unit
 
         $store = $source->pipe(new Group([
             "by"=>"category",
-            "custom"=>function($row, $result, $c){
-                if ($c==1)
-                {
+            "custom" => function ($row, $result, $c) {
+                if ($c==1) {
                     return $result;
                 }
                 $result["area"] .= ",".$row["area"];

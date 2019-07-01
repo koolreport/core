@@ -1,5 +1,10 @@
 # Change Log
 
+## Version 4.x
+
+1. `PDODataSource`: Adding more options for PDO initiation
+2. `Group`: Adding `custom` property to host an anonymous function for custom grouping
+
 ## Version 4.0.0
 
 1. `Group`: Fix grouping issue

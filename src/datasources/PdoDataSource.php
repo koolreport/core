@@ -100,6 +100,7 @@ class PdoDataSource extends DataSource
         $username = Util::get($this->params, "username", "");
         $password = Util::get($this->params, "password", "");
         $charset = Util::get($this->params, "charset");
+        $options = Util::get($this->params, "options");
         
         $key = md5($connectionString.$username.$password);
         if (PdoDataSource::$connections==null) {
@@ -108,7 +109,12 @@ class PdoDataSource extends DataSource
         if (isset(PdoDataSource::$connections[$key])) {
             $this->connection = PdoDataSource::$connections[$key];
         } else {
-            $this->connection = new PDO($connectionString, $username, $password);
+            $this->connection = new PDO(
+                $connectionString, 
+                $username, 
+                $password, 
+                $options
+            );
             PdoDataSource::$connections[$key] = $this->connection;
         }
         if ($charset) {

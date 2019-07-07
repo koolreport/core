@@ -4,6 +4,8 @@
 
 1. `PDODataSource`: Adding more options for PDO initiation
 2. `Group`: Adding `custom` property to host an anonymous function for custom grouping
+3. `Table`: Adding the missing `count` method
+
 
 ## Version 4.0.0
 

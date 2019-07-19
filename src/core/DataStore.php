@@ -691,7 +691,7 @@ class DataStore extends Node implements IteratorAggregate, ArrayAccess
             return $result;
         }
         return [
-            array_keys[$this->meta["columns"]]
+            array_keys($this->meta["columns"])
         ];
     }
 

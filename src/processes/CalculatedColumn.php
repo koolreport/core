@@ -116,15 +116,21 @@ class CalculatedColumn extends Process
      */
     protected function onInput($data)
     {
-        // print_r($data);
         $this->rowNum++;
         foreach ($this->params as $cKey=>$cValue) {
             switch(gettype($cValue["exp"]))
             {
+            case "number":
+                $data[$cKey] = $cValue["exp"];
+                break;
             case "string":
                 $expression = $cValue["exp"];
-                // echo $expression . ' || ';
                 foreach ($data as $k=>$v) {
+                    //This to avoid null in numeric resulting in empty filled cause error
+                    $type = Utility::get($this->metaData["columns"][$k], "type", "unknown");
+                    if ($type==="number" && $v===null) {
+                        $v = 0;
+                    }
                     if (is_string($v) || is_numeric($v)) {
                         $expression = str_replace("{".$k."}", $v, $expression);
                     }

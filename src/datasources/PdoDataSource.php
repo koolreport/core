@@ -479,23 +479,12 @@ class PdoDataSource extends DataSource
                 
         $this->sendMeta($metaData, $this);
         $this->startInput(null);
-        
-        $numberColumnList = array();
-        foreach ($metaData["columns"] as $cName=>$cMeta) {
-            if ($cMeta["type"]=="number") {
-                array_push($numberColumnList, $cName);
-            }
-        }
-                        
+                                
         if (! isset($row)) {
             $row=$stm->fetch(PDO::FETCH_ASSOC);
         }
             
         while ($row) {
-            // print_r($row); echo '<br>';
-            foreach ($numberColumnList as $cName) {
-                    $row[$cName]+=0;
-            }
             $this->next($row, $this);
             $row=$stm->fetch(PDO::FETCH_ASSOC);
         }

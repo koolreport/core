@@ -77,10 +77,15 @@
                 <td <?php if($tfClass){echo " class='".((gettype($tfClass)=="string")?$tfClass:$tfClass($cKey))."'";} ?> <?php echo ($tfStyle)?"style='$tfStyle'":""; ?> >
                     <?php 
                         $footerValue = "";
-                        $method = strtolower(Utility::get($meta["columns"][$cKey], "footer"));
-                        if( in_array($method, array("count","sum","avg","min","max","mode")) ) {
-                            $footerValue = Table::formatValue($this->dataStore->$method($cKey), $meta["columns"][$cKey]);
-                        }
+                        $method = Utility::get($meta["columns"][$cKey], "footer");
+                        if (gettype($method)!="string" && is_callable($method)) {
+                            $footerValue = $method($this->dataStore);
+                        } else if (gettype($method)=="string") { 
+                            $method = strtolower($method);
+                            if (in_array($method, array("count","sum","avg","min","max","mode")) ) {
+                                $footerValue = Table::formatValue($this->dataStore->$method($cKey), $meta["columns"][$cKey]);
+                            }
+                        }   
                         $footerText = Utility::get($meta["columns"][$cKey],"footerText");
                         if ($footerText!==null) {
                             echo str_replace("@value", $footerValue, $footerText);

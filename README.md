@@ -269,7 +269,7 @@ Please consider your purchase of extended packages or subscription as your donat
 
 # Our vision
 
-__"If you want to go fast, go alone. If you want to grow far, go together"__ - *African Proverb*
+__"If you want to go fast, go alone. If you want to go far, go together"__ - *African Proverb*
 
 We have learned above statement through years of software development. We choose open-source as software model for KoolReport because we understand that:
 

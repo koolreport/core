@@ -19,6 +19,47 @@
     $tfClass = Utility::get($this->cssClass, "tf");
     $groups = $this->generateGroups($meta);
 ?>
+<?php
+    $footer_content = "";
+    if ($this->showFooter) {
+    ob_start();
+?>
+    <tfoot <?php echo ($this->showFooter==="top")?"style='display:table-row-group'":""; ?>>
+        <tr>
+        <?php
+        foreach ($showColumnKeys as $cKey) {
+            $cssStyle = Utility::get($meta["columns"][$cKey], "cssStyle", null);
+            $tfStyle = is_string($cssStyle)?$cssStyle:Utility::get($cssStyle, "tf");
+        ?>
+            <td <?php if($tfClass){echo " class='".((gettype($tfClass)=="string")?$tfClass:$tfClass($cKey))."'";} ?> <?php echo ($tfStyle)?"style='$tfStyle'":""; ?> >
+                <?php 
+                    $footerValue = "";
+                    $method = Utility::get($meta["columns"][$cKey], "footer");
+                    if (gettype($method)!="string" && is_callable($method)) {
+                        $footerValue = $method($this->dataStore);
+                    } else if (gettype($method)=="string") { 
+                        $method = strtolower($method);
+                        if (in_array($method, array("count","sum","avg","min","max","mode")) ) {
+                            $footerValue = Table::formatValue($this->dataStore->$method($cKey), $meta["columns"][$cKey]);
+                        }
+                    }   
+                    $footerText = Utility::get($meta["columns"][$cKey],"footerText");
+                    if ($footerText!==null) {
+                        echo str_replace("@value", $footerValue, $footerText);
+                    } else {
+                        echo $footerValue;
+                    }
+                ?>
+            </td>	
+        <?php	
+        }
+        ?>
+        </tr>
+    </tfoot>
+<?php	
+    $footer_content = ob_get_clean();
+}    
+?>
 <div class="koolphp-table <?php echo $this->responsive?"table-responsive":"";?>" id="<?php echo $this->name; ?>">
     <table<?php echo ($tableCss!==null)?" class='table $tableCss'":" class='table'"; ?>>
         <?php
@@ -64,44 +105,7 @@
         <?php	
         }
         ?>
-        <?php
-        if ($this->showFooter!==null) {
-        ?>
-        <tfoot <?php echo ($this->showFooter==="top")?"style='display:table-row-group'":""; ?>>
-            <tr>
-            <?php
-            foreach ($showColumnKeys as $cKey) {
-                $cssStyle = Utility::get($meta["columns"][$cKey], "cssStyle", null);
-                $tfStyle = is_string($cssStyle)?$cssStyle:Utility::get($cssStyle, "tf");
-            ?>
-                <td <?php if($tfClass){echo " class='".((gettype($tfClass)=="string")?$tfClass:$tfClass($cKey))."'";} ?> <?php echo ($tfStyle)?"style='$tfStyle'":""; ?> >
-                    <?php 
-                        $footerValue = "";
-                        $method = Utility::get($meta["columns"][$cKey], "footer");
-                        if (gettype($method)!="string" && is_callable($method)) {
-                            $footerValue = $method($this->dataStore);
-                        } else if (gettype($method)=="string") { 
-                            $method = strtolower($method);
-                            if (in_array($method, array("count","sum","avg","min","max","mode")) ) {
-                                $footerValue = Table::formatValue($this->dataStore->$method($cKey), $meta["columns"][$cKey]);
-                            }
-                        }   
-                        $footerText = Utility::get($meta["columns"][$cKey],"footerText");
-                        if ($footerText!==null) {
-                            echo str_replace("@value", $footerValue, $footerText);
-                        } else {
-                            echo $footerValue;
-                        }
-                    ?>
-                </td>	
-            <?php	
-            }
-            ?>
-            </tr>
-        </tfoot>
-        <?php	
-        }
-        ?>
+        <?php echo $this->showFooter==="top"?$footer_content:""; ?>
         <tbody>
             <?php
             foreach ($this->dataStore as $i=>$row) {
@@ -141,6 +145,7 @@
             }
             ?>
         </tbody>
+        <?php echo ($this->showFooter && $this->showFooter!=="top")?$footer_content:""; ?>
     </table>
     <?php
     if ($this->paging) {

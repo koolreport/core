@@ -6,7 +6,10 @@
 2. `Group`: Adding `custom` property to host an anonymous function for custom grouping
 3. `Table`: Adding the missing `count` method
 4. `DataStore`: Fix typos in toTableArray() function
-
+5. `Table`: Fix the table footer position
+6. `Table`: Column footer setting is now able to receive custom function
+7. `PdoDataSource`: Remove the auto null to zero conversion
+8. `CalculatedColumn`: Auto converse null to zero
 
 ## Version 4.0.0
 

@@ -20,8 +20,5 @@
         "files": [
             "autoload.php"
         ]
-    },
-    "require-dev": {
-        "codeception/codeception": "^2.4"
     }
 }

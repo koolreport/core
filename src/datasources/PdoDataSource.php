@@ -13,7 +13,7 @@
  /*
  For Pdo with Oracle for Apache on Windows:
     - Install Oracle database 32 bit only (php on Windows is only 32 bit).
-    - Download and extract Oracle Instant Client 32 bit, add the extracted folder 
+    - Download and extract Oracle Instant Client 32 bit, add the extracted folder
     to Windows' Path environment variable.
     - Enable extension=php_pdo_oci.dll in php.ini.
     - Restart Apache.
@@ -27,6 +27,7 @@
  */
 
 namespace koolreport\datasources;
+
 use \koolreport\core\DataSource;
 use \koolreport\core\Utility as Util;
 use PDO;
@@ -45,28 +46,28 @@ class PdoDataSource extends DataSource
 {
     /**
      * List of available connections for reusing
-     * 
+     *
      * @var array $connections List of available connections for reusing
      */
-    static $connections;
+    public static $connections;
 
     /**
      * The current connection
-     * 
+     *
      * @var $connection The current connection
      */
     protected $connection;
     
     /**
      * The query
-     * 
+     *
      * @var string $query The query
      */
     protected $query;
     
     /**
      * The params of query
-     * 
+     *
      * @var array $sqlParams The params of query
      */
     protected $sqlParams;
@@ -75,14 +76,14 @@ class PdoDataSource extends DataSource
     
     /**
      * Whether the total should be counted.
-     * 
+     *
      * @var bool $countToal Whether the total should be counted.
      */
     protected $countTotal;
     
     /**
      * Whether the filter should be counted
-     * 
+     *
      * @var bool $countFilter Whether the filter should be counted
      */
     protected $countFilter;
@@ -90,7 +91,7 @@ class PdoDataSource extends DataSource
 
     /**
      * Datasource initiation
-     * 
+     *
      * @return null
      */
     protected function onInit()
@@ -110,9 +111,9 @@ class PdoDataSource extends DataSource
             $this->connection = PdoDataSource::$connections[$key];
         } else {
             $this->connection = new PDO(
-                $connectionString, 
-                $username, 
-                $password, 
+                $connectionString,
+                $username,
+                $password,
                 $options
             );
             PdoDataSource::$connections[$key] = $this->connection;
@@ -124,13 +125,13 @@ class PdoDataSource extends DataSource
 
     /**
      * Set the query and params
-     * 
+     *
      * @param string $query     The SQL query statement
      * @param array  $sqlParams The parameters of SQL query
-     * 
+     *
      * @return PdoDataSource This datasource object
      */
-    public function query($query,$sqlParams=null)
+    public function query($query, $sqlParams=null)
     {
         $this->originalQuery = $this->query =  (string)$query;
         if ($sqlParams!=null) {
@@ -146,12 +147,12 @@ class PdoDataSource extends DataSource
 
     /**
      * Transform query
-     * 
-     * @param array $queryParams Parameters of query 
-     * 
+     *
+     * @param array $queryParams Parameters of query
+     *
      * @return null
-     */    
-    public function queryProcessing($queryParams) 
+     */
+    public function queryProcessing($queryParams)
     {
         $this->queryParams = $queryParams;
         $driver = strtolower($this->connection->getAttribute(PDO::ATTR_DRIVER_NAME));
@@ -185,11 +186,11 @@ class PdoDataSource extends DataSource
 
     /**
      * Insert params for query
-     * 
+     *
      * @param array $sqlParams The parameters for query
-     * 
+     *
      * @return OracleDataSource This datasource
-     */  
+     */
     public function params($sqlParams)
     {
         $this->sqlParams = $sqlParams;
@@ -198,11 +199,11 @@ class PdoDataSource extends DataSource
 
     /**
      * Prepare SQL statement
-     * 
+     *
      * @param string $query     Query need to bind params
      * @param array  $sqlParams The parameters will be bound to query
-     * 
-     * @return string Procesed query 
+     *
+     * @return string Procesed query
      */
     protected function prepareParams($query, $sqlParams)
     {
@@ -233,10 +234,10 @@ class PdoDataSource extends DataSource
 
     /**
      * Convert type to PdoParamType
-     * 
+     *
      * @param string $type Type
-     * 
-     * @return intger The PDO Param Type 
+     *
+     * @return intger The PDO Param Type
      */
     protected function typeToPDOParamType($type)
     {
@@ -258,10 +259,10 @@ class PdoDataSource extends DataSource
 
     /**
      * Perform data binding
-     * 
+     *
      * @param string $stm       Query need to bind params
      * @param array  $sqlParams The parameters will be bound to query
-     * 
+     *
      * @return null
      */
     protected function bindParams($stm, $sqlParams)
@@ -296,9 +297,9 @@ class PdoDataSource extends DataSource
 
     /**
      * Guess type
-     * 
+     *
      * @param string $native_type Native type of PDO
-     * 
+     *
      * @return string KoolReport type
      */
     protected function guessType($native_type)
@@ -341,9 +342,9 @@ class PdoDataSource extends DataSource
 
     /**
      * Guess type from value
-     * 
+     *
      * @param mixed $value The value
-     * 
+     *
      * @return string Type of value
      */
     protected function guessTypeFromValue($value)
@@ -369,7 +370,7 @@ class PdoDataSource extends DataSource
     
     /**
      * Start piping data
-     * 
+     *
      * @return null
      */
     public function start()
@@ -458,13 +459,11 @@ class PdoDataSource extends DataSource
                 $info = $stm->getColumnMeta($i);
                 $cName = $info["name"];
                 $cType = $this->guessType($info["native_type"]);
-
             }
             $metaData["columns"][$cName] = array(
                 "type"=>$cType,
             );
-            switch($cType)
-            {
+            switch ($cType) {
             case "datetime":
                 $metaData["columns"][$cName]["format"] = "Y-m-d H:i:s";
                 break;

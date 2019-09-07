@@ -10,6 +10,8 @@
 6. `Table`: Column footer setting is now able to receive custom function
 7. `PdoDataSource`: Remove the auto null to zero conversion
 8. `CalculatedColumn`: Auto converse null to zero
+9. `jQuery`: Upgrade to version 3.4.1
+10. `FontAwesome`: Upgrade to 5.10.2
 
 ## Version 4.0.0
 

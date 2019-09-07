@@ -188,10 +188,11 @@ KoolReport.koolphp.table.prototype = {
 
         for(var i=startRowIndex;i<endRowIndex;i++)
         {
+            var tr_prev = $("#"+this.name+" tr[ri="+i+"]").prev();
             var tds = $("#"+this.name+" tr[ri="+i+"] td");
             cIndex.forEach(function(index){
                 var cellValue = $(tds[index]).attr("rv");
-                if(cellValue==currentValues[index])
+                if(cellValue==currentValues[index] && !tr_prev.hasClass("row-group"))
                 {
                     $(tds[index]).addClass("dup");
                     currentRowSpan[index]++;

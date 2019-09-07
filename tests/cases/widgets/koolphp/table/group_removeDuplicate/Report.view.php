@@ -11,23 +11,28 @@
         <?php
         Table::create(array(
             "dataSource"=>array(
-                array("client"=>"aaa","item"=>"flip","price"=>999),
-                array("client"=>"aaa","item"=>"flip","price"=>999),
-                array("client"=>"aaa","item"=>"flip","price"=>999),
-                array("client"=>"bbb","item"=>"flip","price"=>999),
-                array("client"=>"bbb","item"=>"flip","price"=>999),
-                array("client"=>"bbb","item"=>"flip","price"=>999),
-                array("client"=>"ccc","item"=>"flip","price"=>999),
-                array("client"=>"ccc","item"=>"flip","price"=>999),
-                array("client"=>"ccc","item"=>"flip","price"=>999),
+                array("client"=>"aaa","item"=>"flip","price"=>999,"hehe"=>1),
+                array("client"=>"aaa","item"=>"flip","price"=>999,"hehe"=>1),
+                array("client"=>"aaa","item"=>"flip","price"=>888,"hehe"=>1),
+                array("client"=>"aaa","item"=>"flip","price"=>888,"hehe"=>1),
+                array("client"=>"aaa","item"=>"flip","price"=>999,"hehe"=>1),
+                array("client"=>"bbb","item"=>"flip","price"=>888,"hehe"=>1),
+                array("client"=>"bbb","item"=>"flip","price"=>888,"hehe"=>1),
+                array("client"=>"bbb","item"=>"flip","price"=>999,"hehe"=>1),
+                array("client"=>"ccc","item"=>"flip","price"=>888,"hehe"=>1),
+                array("client"=>"ccc","item"=>"flip","price"=>888,"hehe"=>1),
+                array("client"=>"ccc","item"=>"flip","price"=>999,"hehe"=>1),
             ),
             "grouping"=>array(
                 "client"=>array(
                     "top"=>"<b>Client {client}</b>",
+                ),
+                "item"=>array(
+                    "top"=>"<b>Item {item}</b>",
                 )
             ),
-            "columns"=>array("item","price"),
-            "removeDuplicate"=>array("item")
+            "columns"=>array("price","hehe"),
+            "removeDuplicate"=>array("price")
         ));
         ?>
 

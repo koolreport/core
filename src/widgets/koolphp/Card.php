@@ -71,6 +71,7 @@ class Card extends Widget
     protected $cssStyle;
     protected $cssClass;
     protected $indicatorTitle;
+    protected $href;
 
     /**
      * OnInit
@@ -113,6 +114,7 @@ class Card extends Widget
 
         $this->cssStyle = Utility::get($this->params, "cssStyle", array());
         $this->cssClass = Utility::get($this->params, "cssClass", array());
+        $this->href = Utility::get($this->params, "href");
     }
 
     /**
@@ -187,6 +189,23 @@ class Card extends Widget
             return $indicator($value, $baseValue);
         }
         return false;
+    }
+    /**
+     * Return the formatted href
+     * 
+     * @return string Formatted href
+     */
+    protected function getHref()
+    {
+        if ($this->href) {
+            $href = trim($this->href);
+            if (strpos($href, "function") === 0) {
+                return 'onclick="javascript: var __cardclick='.$href.';__cardclick();" ';
+            } else {
+                return 'onclick="window.location.href=\''.$href.'\';" ';
+            }
+        }
+        return null;
     }
 
 }

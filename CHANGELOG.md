@@ -12,6 +12,7 @@
 8. `CalculatedColumn`: Auto converse null to zero
 9. `jQuery`: Upgrade to version 3.4.1
 10. `FontAwesome`: Upgrade to 5.10.2
+11. `Card`: Adding `href` to navigate.
 
 ## Version 4.0.0
 

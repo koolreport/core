@@ -79,7 +79,8 @@ class CSVDataSource extends DataSource
     protected function onInit()
     {
         $this->filePath = Utility::get($this->params, "filePath");
-        $this->fieldSeparator = Utility::get($this->params, "fieldSeparator", ",");
+        $fieldSeparator = Utility::get($this->params, "fieldSeparator", ",");
+        $this->fieldSeparator = Utility::get($this->params, "fieldDelimiter", $fieldSeparator);
         $this->charset = Utility::get($this->params, "charset");
         $this->precision = Utility::get($this->params, "precision", 100);
         $this->firstRowData = Utility::get($this->params, "firstRowData", false);

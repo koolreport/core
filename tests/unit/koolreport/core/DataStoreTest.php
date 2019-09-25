@@ -122,6 +122,26 @@ class DataStoreTest extends \Codeception\Test\Unit
             "meta"=>$meta,
             "data"=>$data
         )));
+    }
 
+    public function testInsert()
+    {
+        $data = array(
+            array("name"=>"Peter","age"=>1),
+            array("name"=>"Peter","age"=>2),
+            array("name"=>"Michael","age"=>5),
+        );
+        $expected = array(
+            array("name"=>"Peter","age"=>1),
+            array("name"=>"Peter","age"=>2),
+            array("name"=>"Michael","age"=>5),
+            array("name"=>"X","age"=>3),
+        );
+        $store = new DataStore($data);
+        $store->insert([
+            "name"=>"X",
+            "age"=>3
+        ],3);
+        $this->assertEquals(json_encode($expected),json_encode($store->data()));
     }
 }

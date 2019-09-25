@@ -14,6 +14,7 @@
 10. `FontAwesome`: Upgrade to 5.10.2
 11. `Card`: Adding `href` to navigate.
 12. `Table`:Fix rowspan issue when use grouping together with removeDuplicate
+13. `DataStore`: Adding `insert()` method to insert row at any place.
 
 ## Version 4.0.0
 

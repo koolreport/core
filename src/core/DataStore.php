@@ -638,6 +638,27 @@ class DataStore extends Node implements IteratorAggregate, ArrayAccess
     }
 
     /**
+     * Insert row of data at any position
+     * 
+     * @param array $row A row to be prepended
+     * 
+     * @return DataStore This datastore
+     */
+    public function insert($row,$position=INF)
+    {
+        if($position<=0)
+        {
+            $this->prepend($row);
+        } else if ($position >= $this->count()) {
+            $this->append($row);
+        } else  {
+            array_splice($this->rows,$position,0,[$row]);
+        }
+        return $this;
+    }
+
+
+    /**
      * Return the number of rows in dataset
      * 
      * @return integer Number of rows in dataset

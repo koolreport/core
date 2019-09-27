@@ -72,6 +72,7 @@ class ArrayDataSource extends DataSource
             "bool"=>"number",
             "numeric"=>"number",
             "string"=>"string",
+            "array"=>"array",
         );
 
         $type = strtolower(gettype($value));

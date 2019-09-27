@@ -10,22 +10,20 @@
         <?php
         Table::create([
             "dataSource"=>array(
-                array("name"=>"Michael","2"=>"abc"),
-                array("name"=>"David","2"=>"abc"),
-                array("name"=>"Peter","2"=>"abc"),
+                array("name"=>"Michael","address"=>["country"=>"US","state"=>"New york"]),
+                array("name"=>"David","address"=>["country"=>"US","state"=>"New york"]),
+                array("name"=>"Peter","address"=>["country"=>"US","state"=>"New york"]),
             ),
             "columns"=>array(
                 "#",
                 "name",
                 ["name"],
                 [
-                    "name",
-                    "label"=>"Calculated",
-                    "value"=>function($row) {
-                        return 100000;
-                    },
-                    "type"=>"number",
-                    "formatValue"=>function($value ){}
+                    "label"=>"Country",
+                    "value"=>function($row)
+                    {
+                        return $row["address"]["country"];
+                    }
                 ]
             )
         ]);

@@ -134,7 +134,7 @@
                         $value = Utility::get($row, $cKey, $this->emptyValue);
                     }
                     ?>
-                        <td rv="<?php echo htmlspecialchars($value);?>" <?php echo ($tdStyle)?"style='$tdStyle'":""; ?> <?php if($tdClass){echo " class='".((gettype($tdClass)=="string")?$tdClass:$tdClass($row,$cKey))."'";} ?>>
+                        <td rv="<?php echo (in_array(gettype($value),array("array")))?"":htmlspecialchars($value);?>" <?php echo ($tdStyle)?"style='$tdStyle'":""; ?> <?php if($tdClass){echo " class='".((gettype($tdClass)=="string")?$tdClass:$tdClass($row,$cKey))."'";} ?>>
                             <?php echo Table::formatValue($value, $meta["columns"][$cKey], $row);?>
                         </td>
                     <?php

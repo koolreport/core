@@ -15,6 +15,10 @@
 11. `Card`: Adding `href` to navigate.
 12. `Table`:Fix rowspan issue when use grouping together with removeDuplicate
 13. `DataStore`: Adding `insert()` method to insert row at any place.
+14. `JsonColumn`: Adding JsonColumn process to turn column value into array
+15. `ArrayColumn`: Adding array column type
+16. `Table`: Adding custom column capability
+17. `Utility`: Format array column type 
 
 ## Version 4.0.0
 

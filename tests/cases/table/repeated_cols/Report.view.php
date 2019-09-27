@@ -3,10 +3,10 @@
 ?>
 <html>
     <head>
-        <title>Test Rendering Data At Client</title>
+        <title>Test Repeating Cols</title>
     </head>
     <body>
-        <h1>Test Rendering Data At Client</h1>
+        <h1>Test Repeated Cols and Json Data</h1>
         <?php
         Table::create([
             "dataSource"=>array(

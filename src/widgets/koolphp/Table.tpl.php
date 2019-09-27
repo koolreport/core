@@ -124,9 +124,18 @@
                 foreach ($showColumnKeys as $cKey) {
                     $cssStyle = Utility::get($meta["columns"][$cKey], "cssStyle", null);
                     $tdStyle = is_string($cssStyle)?$cssStyle:Utility::get($cssStyle, "td");
+                    $value = "";
+                    if($cKey==="#")
+                    {
+                        $value = $i+$meta["columns"][$cKey]["start"];
+                    } else if (strpos($cKey,"__custom")===0) {
+                        $value = $meta["columns"][$cKey]["value"]($row);
+                    } else {
+                        $value = Utility::get($row, $cKey, $this->emptyValue);
+                    }
                     ?>
-                        <td rv="<?php echo ($cKey!=="#")? htmlspecialchars($row[$cKey]):($i+$meta["columns"][$cKey]["start"]);?>" <?php echo ($tdStyle)?"style='$tdStyle'":""; ?> <?php if($tdClass){echo " class='".((gettype($tdClass)=="string")?$tdClass:$tdClass($row,$cKey))."'";} ?>>
-                            <?php echo Table::formatValue(($cKey!=="#")?Utility::get($row, $cKey, $this->emptyValue):($i+$meta["columns"][$cKey]["start"]), $meta["columns"][$cKey], $row);?>
+                        <td rv="<?php echo htmlspecialchars($value);?>" <?php echo ($tdStyle)?"style='$tdStyle'":""; ?> <?php if($tdClass){echo " class='".((gettype($tdClass)=="string")?$tdClass:$tdClass($row,$cKey))."'";} ?>>
+                            <?php echo Table::formatValue($value, $meta["columns"][$cKey], $row);?>
                         </td>
                     <?php
                 }

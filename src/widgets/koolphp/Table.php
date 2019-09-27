@@ -370,6 +370,17 @@ class Table extends Widget
                             array_push($showColumnKeys, $k);
                         }
                     }
+                } else if (gettype($cKey)=="integer" && gettype($cValue) == "array") {
+                    $customKey = "__custom$cKey";
+                    $trueCKey = Utility::get($cValue,0);
+                    array_push($showColumnKeys, $customKey);
+                    $meta["columns"][$customKey] = array_merge(array(
+                        "label"=>$trueCKey?$trueCKey:"Custom Column",
+                        "value"=>($trueCKey)?
+                            function($row) use ($trueCKey){return $row[$trueCKey];}:
+                            function($row){return "";},
+                        "type"=>"string",
+                    ),$cValue);
                 } else {
                     if (gettype($cValue) == "array") {
                         if ($cKey === "#") {
@@ -379,7 +390,6 @@ class Table extends Widget
                                 "start" => 1,
                             );
                         }
-
                         $meta["columns"][$cKey] = array_merge($meta["columns"][$cKey], $cValue);
                         if (!in_array($cKey, $showColumnKeys)) {
                             array_push($showColumnKeys, $cKey);

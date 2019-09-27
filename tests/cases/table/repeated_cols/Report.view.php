@@ -18,11 +18,13 @@
                 "#",
                 "name",
                 ["name"],
+                "address",
                 [
+                    "address",
                     "label"=>"Country",
-                    "value"=>function($row)
+                    "formatValue"=>function($value)
                     {
-                        return $row["address"]["country"];
+                        return $value["country"];
                     }
                 ]
             )

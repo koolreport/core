@@ -171,7 +171,15 @@ class Utility
                 }
             }
             break;
+        case "array":
+            return json_encode($value);
+            break;
         }
+        
+        if (gettype($value)==="array") {
+            return json_encode($value);
+        }
+
         return $value;
     }
     

@@ -67,8 +67,11 @@ class JsonColumn extends Process
     {
         foreach ($this->jsonColumns as $key) {
             if (isset($data[$key])) {
-                $arr = json_decode($data[$key], true);
-                $data[$key] = $arr===null?[]:$arr;
+                if (gettype($data[$key])!=="array")
+                {
+                    $arr = json_decode($data[$key], true);
+                    $data[$key] = $arr===null?[]:$arr;    
+                }
             }
         }
         $this->next($data);

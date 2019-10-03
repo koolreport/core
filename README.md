@@ -14,6 +14,7 @@
 
 # Changelog 
 
+* [Version 4.3.0 (Oct 4th, 2019)](https://www.koolreport.com/docs/koolreport/change_log/#version-4.3.0)
 * [Version 4.0.0 (Jun 6th, 2019)](https://www.koolreport.com/docs/koolreport/change_log/#version-4.0.0)
 * [Version 3.25.4 (Feb 15th, 2019)](https://www.koolreport.com/docs/koolreport/change_log/#version-3.25.4)
 * [Version 3.25.3 (Feb 14th, 2019)](https://www.koolreport.com/docs/koolreport/change_log/#version-3.25.3)
@@ -230,23 +231,23 @@ The KoolReport is licensed under MIT License.
 
 ### Some with a little price
 
-* [Excel](https://www.koolreport.com/packages/excel): Import and export data to Excel [__$29__]
-* [Cube](https://www.koolreport.com/packages/cube): Turn your data into two dimensions cross-tab table [__$19__]
-* [Pivot](https://www.koolreport.com/packages/pivot): Build multi-dimenstional pivot table [__$49__]
-* [Export](https://www.koolreport.com/packages/export): Export your report to PDF, JPG, PNG and other formats [__$29__]
-* [Morris Chart](https://www.koolreport.com/packages/morris_chart): Use morris charts in your report [__$9__]
-* [Inputs](https://www.koolreport.com/packages/inputs): A simplest way to build dynamic reports [__$29__]
-* [BarCode](https://www.koolreport.com/packages/barcode): Generate BarCode and QRCode [__$9__]
+* [Excel](https://www.koolreport.com/packages/excel): Import and export data to Excel [__$49__]
+* [Cube](https://www.koolreport.com/packages/cube): Turn your data into two dimensions cross-tab table [__$29__]
+* [Pivot](https://www.koolreport.com/packages/pivot): Build multi-dimenstional pivot table [__$69__]
+* [Export](https://www.koolreport.com/packages/export): Export your report to PDF, JPG, PNG and other formats [__$49__]
+* [Morris Chart](https://www.koolreport.com/packages/morris_chart): Use morris charts in your report [__$19__]
+* [Inputs](https://www.koolreport.com/packages/inputs): A simplest way to build dynamic reports [__$49__]
+* [BarCode](https://www.koolreport.com/packages/barcode): Generate BarCode and QRCode [__$19__]
 * [Sparklines](https://www.koolreport.com/packages/sparklines): Create tiny charts [__$9__]
-* [DataGrid](https://www.koolreport.com/packages/datagrid): Display data in table format, search, sort, group data and more.. [__$19__]
-* [DrillDown](https://www.koolreport.com/packages/drilldown): Build awesome drill-down, drill-through report easily [__$29__]
-* [ChartJS](https://www.koolreport.com/packages/chartjs): One of the most beautiful and powerful chart libraries for your report [__$29__]
-* [Amazing](https://www.koolreport.com/packages/amazing): Style your report with modern and beautiful theme [__$29__]
+* [DataGrid](https://www.koolreport.com/packages/datagrid): Display data in table format, search, sort, group data and more.. [__$29__]
+* [DrillDown](https://www.koolreport.com/packages/drilldown): Build awesome drill-down, drill-through report easily [__$49__]
+* [ChartJS](https://www.koolreport.com/packages/chartjs): One of the most beautiful and powerful chart libraries for your report [__$49__]
+* [Amazing](https://www.koolreport.com/packages/amazing): Style your report with modern and beautiful theme [__$49__]
 
 
 # KoolReport Pro
 
-[KoolReport Pro](https://www.koolreport.com/get-koolreport-pro) is the most advanced version of KoolReport. It includes latest KoolReport version plus all available advanced packages from KoolPHP Inc. It costs __$129__ for Developer License and __$349__ for Enterprise License. The licenses come with following benefits:
+[KoolReport Pro](https://www.koolreport.com/get-koolreport-pro) is the most advanced version of KoolReport. It includes latest KoolReport version plus all available advanced packages from KoolPHP Inc. It costs __$199__ for Developer License, __$499__ for Team License and __$999__ for Enterprise License. The licenses come with following benefits:
 
 1. Include all __current package and future ones__.
 2. Deploying on __unlimited servers or projects__.

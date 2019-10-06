@@ -238,11 +238,12 @@ The KoolReport is licensed under MIT License.
 * [Morris Chart](https://www.koolreport.com/packages/morris_chart): Use morris charts in your report [__$19__]
 * [Inputs](https://www.koolreport.com/packages/inputs): A simplest way to build dynamic reports [__$49__]
 * [BarCode](https://www.koolreport.com/packages/barcode): Generate BarCode and QRCode [__$19__]
-* [Sparklines](https://www.koolreport.com/packages/sparklines): Create tiny charts [__$9__]
+* [Sparklines](https://www.koolreport.com/packages/sparklines): Create tiny charts [__$19__]
 * [DataGrid](https://www.koolreport.com/packages/datagrid): Display data in table format, search, sort, group data and more.. [__$29__]
 * [DrillDown](https://www.koolreport.com/packages/drilldown): Build awesome drill-down, drill-through report easily [__$49__]
 * [ChartJS](https://www.koolreport.com/packages/chartjs): One of the most beautiful and powerful chart libraries for your report [__$49__]
 * [Amazing](https://www.koolreport.com/packages/amazing): Style your report with modern and beautiful theme [__$49__]
+* [D3](https://www.koolreport.com/packages/d3): Beautiful D3 Chart Library for your great data visualization [__$49__]
 
 
 # KoolReport Pro

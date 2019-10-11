@@ -458,7 +458,7 @@ class PdoDataSource extends DataSource
             } else {
                 $info = $stm->getColumnMeta($i);
                 $cName = $info["name"];
-                $cType = $this->guessType($info["native_type"]);
+                $cType = $this->guessType(Util::get($info, "native_type", "unknown"));
             }
             $metaData["columns"][$cName] = array(
                 "type"=>$cType,

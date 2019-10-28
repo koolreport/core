@@ -1,5 +1,9 @@
 # Change Log
 
+## Version new
+
+1. `DataStore`: Adding distinct() method to get the distinct values of a column
+
 ## Version 4.3.0
 
 1. `PDODataSource`: Adding more options for PDO initiation

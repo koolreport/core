@@ -1313,6 +1313,23 @@ class DataStore extends Node implements IteratorAggregate, ArrayAccess
     }
 
     /**
+     * Return distinct value of a column
+     * 
+     * @param string $key The column name
+     * 
+     * @return array List of distinct values in that columns
+     */
+    public function distinct($key)
+    {
+        $list = array();
+        foreach($this->rows as $row)
+        {
+            $list[$row[$key]] = 1;
+        }
+        return array_keys($list);
+    }
+
+    /**
      * Add extra column meta to existing
      * 
      * Examples

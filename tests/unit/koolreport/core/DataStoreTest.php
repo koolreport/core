@@ -144,4 +144,18 @@ class DataStoreTest extends \Codeception\Test\Unit
         ],3);
         $this->assertEquals(json_encode($expected),json_encode($store->data()));
     }
+
+    public function testDistinct()
+    {
+        $data = array(
+            array("name"=>"Peter","age"=>1),
+            array("name"=>"Peter","age"=>2),
+            array("name"=>"Michael","age"=>5),
+        );
+        $store = new DataStore($data);
+
+        $this->assertEquals($store->distinct("name"),array(
+            "Peter","Michael"
+        ));        
+    }
 }

@@ -703,10 +703,10 @@ class DataStore extends Node implements IteratorAggregate, ArrayAccess
     {
         if ($this->count()>0) {
             $result = array(
-                array_keys($this->data[0])
+                array_keys($this->rows[0])
             );
             
-            foreach ($this->data as $rows) {
+            foreach ($this->rows as $row) {
                 array_push($result, array_values($row));
             }
             return $result;

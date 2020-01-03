@@ -21,5 +21,6 @@ class Report extends \koolreport\KoolReport
     function setup()
     {
         $this->src("array")->pipe($this->dataStore("result"));
+        $this->src("array")->pipe($this->dataStore("abc"));
     }
 }

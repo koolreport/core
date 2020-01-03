@@ -385,7 +385,7 @@ class KoolReport
             $xmlStore.= "</datastore>";
             $xmlStores.=$xmlStore; // Add each store to main stores
         }
-        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?><report name=\"$reportName\"><datastores>$xmlStores</datastores></report>";
+        return "<report name=\"$reportName\"><datastores>$xmlStores</datastores></report>";
     }
 
 

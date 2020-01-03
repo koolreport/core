@@ -322,6 +322,31 @@ class KoolReport
     }
 
     /**
+     * Return all datastore in array form
+     * 
+     * @return array Return all meta and data of all datastores in array form
+     */
+    public function getArray()
+    {
+        $stores = array();
+        foreach($this->dataStores as $name=>$store)
+        {
+            $stores[$name] = $store->getArray();
+        }
+        return $stores;
+    }
+
+    /**
+     * Return all datastore in json form
+     * 
+     * @return array Return all meta and data of all datastores in json form
+     */
+    public function getJson()
+    {
+        return json_encode($this->getArray());
+    }
+
+    /**
      * Return debug view
      * 
      * @return null

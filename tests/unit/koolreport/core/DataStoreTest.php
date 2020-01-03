@@ -158,4 +158,22 @@ class DataStoreTest extends \Codeception\Test\Unit
             "Peter","Michael"
         ));        
     }
+
+    public function testGetArray()
+    {
+        $data = array(
+            array("name"=>"Peter","age"=>1),
+            array("name"=>"Peter","age"=>2),
+            array("name"=>"Michael","age"=>5),
+        );
+        $store = new DataStore($data);
+
+        $this->assertEquals($store->getArray(),array(
+            "meta"=>array("columns"=>array(
+                "name"=>array("type"=>"string"),
+                "age"=>array("type"=>"number"),
+            )),
+            "data"=>$data
+        ));
+    }
 }

@@ -685,6 +685,30 @@ class DataStore extends Node implements IteratorAggregate, ArrayAccess
     }
 
     /**
+     * Get all dataStore in array form
+     * 
+     * @return array Return meta and data of datastore in one array
+     */
+    public function getArray()
+    {
+        return array(
+            "meta"=>$this->metaData,
+            "data"=>$this->rows,
+        );
+    }
+
+    /**
+     * Get all dataStore in json form
+     * 
+     * @return array Return meta and data of datastore in json form
+     */
+    public function getJson()
+    {
+        return json_encode($this->getArray());
+    }
+
+
+    /**
      * Get all rows in array
      * 
      * @return array All rows of data in array
@@ -693,6 +717,7 @@ class DataStore extends Node implements IteratorAggregate, ArrayAccess
     {
         return $this->rows;
     }
+
 
     /**
      * Get all rows in table array
@@ -711,9 +736,9 @@ class DataStore extends Node implements IteratorAggregate, ArrayAccess
             }
             return $result;
         }
-        return [
+        return array(
             array_keys($this->meta["columns"])
-        ];
+        );
     }
 
     /**

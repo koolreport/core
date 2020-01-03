@@ -52,10 +52,10 @@ class PipeTest extends \Codeception\Test\Unit
 
     }
 
-    public function testPipeBranch()
+    public function testPipeTree()
     {
         $start = new Limit(array(0));
-        $start->pipeBranch(
+        $start->pipeTree(
             function ($node) {
                 $node->pipe(new Group())->pipe(new DataStore);
             },

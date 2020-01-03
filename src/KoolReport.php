@@ -347,6 +347,49 @@ class KoolReport
     }
 
     /**
+     * Return all datastore in xml form
+     * 
+     * @return array Return all meta and data of all datastores in xml form
+     */
+    public function getXml()
+    {
+        $xmlStores = "";
+        foreach($this->dataStores as $name=>$store)
+        {
+            $reportName = Utility::getClassName($this);
+
+            $xmlStore = "<datastore name=\"$name\">";
+            $xmlStore .= "<meta>";
+            $xmlStore .= "<columns>";
+                $metaColumns = $store->meta()["columns"];
+                foreach($metaColumns as $cName=>$cSettings)
+                {
+                    $xmlColumn = "<column type=\"".Utility::get($cSettings,"type","unknown")."\" >$cName</column>";
+                    $xmlStore .= $xmlColumn; //Add column to store
+                }
+            $xmlStore .= "</columns>";
+            $xmlStore .= "</meta>";
+            
+            $xmlStore .= "<data>";
+                foreach($store as $row)
+                {
+                    $xmlRow = "<row>";
+                    foreach($row as $k=>$v)
+                    {
+                        $xmlRow .= "<$k>$v</$k>";
+                    }
+                    $xmlRow .= "</row>";
+                    $xmlStore .= $xmlRow; // Add row to store
+                }
+            $xmlStore .= "</data>";
+            $xmlStore.= "</datastore>";
+            $xmlStores.=$xmlStore; // Add each store to main stores
+        }
+        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?><report name=\"$reportName\"><datastores>$xmlStores</datastores></report>";
+    }
+
+
+    /**
      * Return debug view
      * 
      * @return null

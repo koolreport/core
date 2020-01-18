@@ -668,43 +668,15 @@ class DataStore extends Node implements IteratorAggregate, ArrayAccess
         return count($this->rows);
     }
 
-    /**
-     * Get the json representation of data store
-     * 
-     * @return string Json string representing datatore
-     */
-    public function toJson()
-    {
-        //Return data as json
-        return json_encode(
-            array(
-                "meta"=>$this->metaData,
-                "data"=>$this->rows
-            )
-        );
-    }
-
-    /**
-     * Get all dataStore in array form
-     * 
-     * @return array Return meta and data of datastore in one array
-     */
-    public function getArray()
-    {
-        return array(
-            "meta"=>$this->metaData,
-            "data"=>$this->rows,
-        );
-    }
 
     /**
      * Get all dataStore in json form
      * 
      * @return array Return meta and data of datastore in json form
      */
-    public function getJson()
+    public function toJson()
     {
-        return json_encode($this->getArray());
+        return json_encode($this->toArray());
     }
 
 

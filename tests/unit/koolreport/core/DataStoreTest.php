@@ -118,10 +118,7 @@ class DataStoreTest extends \Codeception\Test\Unit
         );
         $store = new DataStore($data);
 
-        $this->assertEquals($store->toJson(),json_encode(array(
-            "meta"=>$meta,
-            "data"=>$data
-        )));
+        $this->assertEquals($store->toJson(),json_encode($data));
     }
 
     public function testInsert()
@@ -159,7 +156,7 @@ class DataStoreTest extends \Codeception\Test\Unit
         ));        
     }
 
-    public function testGetArray()
+    public function testToArray()
     {
         $data = array(
             array("name"=>"Peter","age"=>1),
@@ -168,12 +165,6 @@ class DataStoreTest extends \Codeception\Test\Unit
         );
         $store = new DataStore($data);
 
-        $this->assertEquals($store->getArray(),array(
-            "meta"=>array("columns"=>array(
-                "name"=>array("type"=>"string"),
-                "age"=>array("type"=>"number"),
-            )),
-            "data"=>$data
-        ));
+        $this->assertEquals($store->toArray(),$data);
     }
 }

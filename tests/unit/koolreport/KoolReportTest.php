@@ -48,17 +48,9 @@ class KoolReportTest extends \Codeception\Test\Unit
         };
         $this->assertEquals(
             array(
-                "result"=> array(
-                    "meta"=>array(
-                        "columns"=>array(
-                            "name"=>array("type"=>"string"),
-                            "age"=>array("type"=>"number"),
-                        )
-                    ),
-                    "data"=>$data
-                )
+                "result"=> $data
             ),
-            $report->run()->getArray()
+            $report->run()->toArray()
         );
     }
 }

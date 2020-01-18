@@ -2,11 +2,9 @@
 
 ## Version new
 
-1. `DataStore`: Adding distinct() method to get the distinct values of a column
-2. `DataStore`: Adding `getArray()` method to get meta and data in array form from datastore
-3. `DataStore`: Adding `getJson()` method to get meta and data in json form from datastore
-4. `KoolReport`: Adding `getArray()` method to get meta and data in array form from report
-4. `KoolReport`: Adding `getJson()` method to get meta and data in json form from report
+1. `DataStore`: Adding `distinct()` method to get the distinct values of a column
+4. `KoolReport`: Adding `toArray()` method to get data in array from report
+4. `KoolReport`: Adding `toJson()` method to get data in json from report
 
 
 ## Version 4.3.0

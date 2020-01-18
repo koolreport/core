@@ -1,6 +1,6 @@
 <?php
 /**
- * This file contains process to define JSON column
+ * This file contains process to spread a column data to multiple column
  *
  * @category  Core
  * @package   KoolReport
@@ -11,11 +11,12 @@
  */
 
 /* Usage
- * ->pipe(new JsonColumn(array(
- *      "column1","column2"
+ * ->pipe(new JsonSpread(array(
+ *      "column1",
+ *      "column2" 
  * )))
  *
- * It will turn the column1 and column2 which contains json string into array type
+ *
  */
 namespace koolreport\processes;
 

@@ -13,7 +13,7 @@
 /* Usage
  * ->pipe(new JsonSpread(array(
  *      "column1",
- *      "column2" 
+ *      "column2"=>array("name","age") 
  * )))
  *
  *
@@ -33,10 +33,10 @@ use \koolreport\core\Utility;
  * @license   MIT License https://www.koolreport.com/license#mit-license
  * @link      https://www.koolphp.net
  */
-class JsonColumn extends Process
+class JsonSpread extends Process
 {
     protected $jsonColumns;
-
+    protected $metaSent = false;
 
     /**
      * Handle on initiation
@@ -45,17 +45,20 @@ class JsonColumn extends Process
      */
     protected function onInit()
     {
-        $this->jsonColumns = $this->params;
-    }
-
-    protected function onMetaReceived($metaData)
-    {
-        foreach ($this->jsonColumns as $key) {
-            if (isset($metaData["columns"][$key])) {
-                $metaData["columns"][$key]["type"] = "array";
+        $this->jsonColumns = array();
+        foreach($this->params as $k=>$v)
+        {
+            if(gettype($v)==="array")
+            {
+                $this->jsonColumns[$k] = $v;
             }
+            else
+            {
+                $this->jsonColumns[$v] = false;
+            }
+            
         }
-        return $metaData;
+        $this->metaSent = false;
     }
 
     /**
@@ -65,17 +68,50 @@ class JsonColumn extends Process
      *
      * @return null
      */
-    protected function onInput($data)
+    protected function onInput($row)
     {
-        foreach ($this->jsonColumns as $key) {
-            if (isset($data[$key])) {
-                if (gettype($data[$key])!=="array")
-                {
-                    $arr = json_decode($data[$key], true);
-                    $data[$key] = $arr===null?[]:$arr;    
+        if (!$this->metaSent) {
+            $this->pushMeta($row);
+            $this->metaSent = true;
+        }
+
+        foreach($this->jsonColumns as $cKey=>$cCols)
+        {
+            $cArray = json_decode($row[$cKey],true);
+            if ($cArray!=null) {
+                $listSubCols = ($cCols===false)?array_keys($cArray):$cCols;
+                foreach($listSubCols as $subCol) {
+                    $row[$cKey.".".$subCol] = $cArray[$subCol];
                 }
             }
         }
-        $this->next($data);
+
+        $this->next($row);
     }
+
+    /**
+     * Process and send data after receiving first row
+     */
+    protected function pushMeta($row)
+    {
+        $columns = array();
+        foreach($this->jsonColumns as $cKey=>$cCols)
+        {
+            $cArray = json_decode($row[$cKey],true);
+            if($cArray!=null)
+            {
+                $listSubCols = ($cCols===false)?array_keys($cArray):$cCols;
+                foreach($listSubCols as $subCol) {
+                    $columns[$cKey.".".$subCol] = array(
+                        "type"=>Utility::guessType($cArray[$subCol])
+                    );
+                }
+
+            }
+        }
+        $meta = $this->metaData;
+        $meta["columns"] = array_merge($meta["columns"],$columns);
+        $this->sendMeta($meta);
+    }
+
 }

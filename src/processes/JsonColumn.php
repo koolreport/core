@@ -11,10 +11,11 @@
  */
 
 /* Usage
- * ->pipe(new Limit(array(10,5)))
+ * ->pipe(new JsonColumn(array(
+ *      "column1","column2"
+ * )))
  *
- * Limit number of row to 10 and starting from row 5
- *
+ * It will turn the column1 and column2 which contains json string into array type
  */
 namespace koolreport\processes;
 

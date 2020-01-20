@@ -60,7 +60,7 @@ class Utility
             "bool"=>"number",
             "numeric"=>"number",
             "string"=>"string",
-            "array"=>"array"
+            "array"=>"array",
         );
 
         $type = strtolower(gettype($value));

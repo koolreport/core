@@ -6,8 +6,8 @@
 2. `KoolReport`: Adding `toArray()` method to get data in array from report
 3. `KoolReport`: Adding `toJson()` method to get data in json from report
 4. `KoolReport`: Adding `getXml()` method to return xml representing all report in xml
-5. Adding `ExistedPdoDataSource` in case we have pdo connection instead of raw connection settings.
-6. Minor bug fixes
+5. `ExistedPdoDataSource`: Adding this new datasource to use in case we have existing pdo connection instead of raw connection settings.
+6. `JsonSpread`: New process to spread json string into multiple columns.
 
 
 ## Version 4.3.0

@@ -144,7 +144,7 @@ class ResourceManager
                 $fullLocalPath
             );
 
-            //Gnerate hastag created from the "koolreport" root
+            //Gnerate has started from the "koolreport" root
             $objectHashFolderName = crc32(
                 "koolreport".
                 substr($fullLocalPath,strpos($fullLocalPath,"koolreport"))

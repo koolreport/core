@@ -143,13 +143,15 @@ class ResourceManager
                 "",
                 $fullLocalPath
             );
-            
+
+            //Gnerate hastag created from the "koolreport" root
             $objectHashFolderName = crc32(
-                "koolreport"
-                .$fullLocalPath
-                .@filemtime($fullLocalPath)
+                "koolreport".
+                substr($fullLocalPath,strpos($fullLocalPath,"koolreport"))
                 .$this->report->version().$version
             );
+
+
             $objectHashFolderName = ($objectHashFolderName<0)
                 ?abs($objectHashFolderName)."0"
                 :"$objectHashFolderName";

@@ -1,5 +1,9 @@
 # Change Log
 
+## Version 4.5.1
+
+1. `ResourceManager`: Fix issue with load balancing
+
 ## Version 4.5.0
 
 1. `DataStore`: Adding `distinct()` method to get the distinct values of a column

@@ -13,7 +13,6 @@
 5. `ExistedPdoDataSource`: Adding this new datasource to use in case we have existing pdo connection instead of raw connection settings.
 6. `JsonSpread`: New process to spread json string into multiple columns.
 
-
 ## Version 4.3.0
 
 1. `PDODataSource`: Adding more options for PDO initiation

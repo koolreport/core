@@ -235,7 +235,7 @@ class Table extends Widget
                 foreach ($calculate as $paramName => $def) {
                     if (is_array($def)) {
                         $method = strtolower($def[0]);
-                        if (in_array($method, array("sum", "count", "min", "max", "mode"))) {
+                        if (in_array($method, array("sum", "count", "min", "max", "mode","avg"))) {
                             $agroup[$paramName] = Table::formatValue($store->$method($def[1]), $meta["columns"][$def[1]]);
                         }
 

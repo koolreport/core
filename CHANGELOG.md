@@ -1,5 +1,9 @@
 # Change Log
 
+## New version
+
+1. `Table`: Adding `avg` method to row group
+
 ## Version 4.5.1
 
 1. `ResourceManager`: Fix issue with load balancing

@@ -28,34 +28,24 @@ use \koolreport\core\Utility as Util;
 class RestfulDataSource extends DataSource
 {
     /**
-     * Either "table" format or "associate" format
-     * 
-     * @var string $dataFormat Either "table" format or "associate" format
-     */
-    protected $dataFormat = "associate";
-
-    /**
-     * Containing data
-     * 
-     * @var array $data Containing data
-     */
-    protected $data;
-
-    /**
      * Be called when arraydatasource is initiated
      * 
      * @return null
      */
     protected function onInit()
     {
-        $this->url = Util::get($this->params, 'url');
         $this->curlOptions = Util::get($this->params, 'curlOptions', []);
         $this->method = Util::get($this->params, 'method', 'get');
-        $this->headers = Util::get($this->params, 'headers');
-        $this->apiParams = Util::get($this->params, 'apiParams');
+        $this->url = Util::get($this->params, 'url');
+        $this->reqHeaders = Util::get($this->params, 'reqHeaders');
+        $this->reqData = Util::get($this->params, 'reqData');
+        $this->iteration = Util::get($this->params, 'iteration', []);
+
+        $this->metaData = array("columns"=>array());
+        $this->metaSent = false;
     }
 
-    function curl($method, $url, $curlOptions = [], $headers, $data)
+    protected function curl($method, $url, $curlOptions = [], $headers, $data)
     {
         $options = $curlOptions;
         $curl = curl_init();
@@ -70,8 +60,11 @@ class RestfulDataSource extends DataSource
             default:
                 if ($data) $url = sprintf("%s?%s", $url, http_build_query($data));
         }
+        // // Optional Authentication:
+        // $options[CURLOPT_HTTPAUTH] = CURLAUTH_BASIC;
+        // $options[CURLOPT_USERPWD] = "username:password";
         if ($headers) $options[CURLOPT_HTTPHEADER] = $headers;
-        $options[CURLOPT_URL] =$url;
+        $options[CURLOPT_URL] = $url;
         $options[CURLOPT_RETURNTRANSFER] = 1;
         curl_setopt_array($curl, $options);
         $result = curl_exec($curl);
@@ -79,26 +72,26 @@ class RestfulDataSource extends DataSource
         return $result;
     }
 
-    function fileGetContent()
+    protected function fileGetContent()
     {
     }
 
-    function Guzzle()
+    protected function Guzzle()
     {
     }
 
-    function Httpful()
+    protected function Httpful()
     {
     }
 
-    function RestClient()
+    protected function RestClient()
     {
     }
 
-    function callAPI()
+    protected function callAPI()
     {
         $result = $this->curl($this->method, $this->url, $this->curlOptions,
-            $this->headers, $this->apiParams);
+            $this->reqHeaders, $this->reqData);
         return $result;
     }
     
@@ -131,14 +124,38 @@ class RestfulDataSource extends DataSource
         return "unknown";
     }
 
-    function rawToArray($result)
+    protected function rawToArray($result)
     {
         return json_decode($result, true);
     }
 
-    function mapRow($row)
+    protected function mapRow($row)
     {
         return $row;
+    }
+
+    protected function requestApiAndSend()
+    {
+        $rawData = $this->callAPI();
+        $data = $this->rawToArray($rawData);
+        if (is_array($data) && count($data)>0) {
+            if (! $this->metaSent) {
+                $metaData = $this->metaData;
+                $row0 = $this->mapRow($data[0]);
+                foreach ($row0 as $key=>$value) {
+                    $metaData["columns"][$key]=array(
+                        "type"=>$this->guessType($value),
+                    );
+                }
+                $this->sendMeta($metaData, $this);
+                $this->metaSent = true;
+                $this->startInput(null);
+            }
+            foreach ($data as $row) {
+                $row = $this->mapRow($row);
+                $this->next($row);
+            }
+        }
     }
 
     /**
@@ -148,23 +165,18 @@ class RestfulDataSource extends DataSource
      */
     public function start()
     {
-        $rawData = $this->callAPI();
-        $data = $this->rawToArray($rawData);
-        // Util::prettyPrint($data); 
-        if (is_array($data) && count($data)>0) {
-            $metaData = array("columns"=>array());
-            $row0 = $this->mapRow($data[0]);
-            foreach ($row0 as $key=>$value) {
-                $metaData["columns"][$key]=array(
-                    "type"=>$this->guessType($value),
-                );
+        if (! empty($this->iteration)) {
+            $originalUrl = $this->url;
+            foreach ($this->iteration as $iter) {
+                // print_r($iter); echo "<br>";
+                foreach ($iter as $placeholder => $replace) {
+                    $this->url = str_replace($placeholder, $replace, $originalUrl);
+                    // echo "url={$this->url} <br>";
+                }
+                $this->requestApiAndSend();
             }
-            $this->sendMeta($metaData, $this);
-            $this->startInput(null);
-            foreach ($data as $row) {
-                $row = $this->mapRow($row);
-                $this->next($row);
-            }
+        } else {
+            $this->requestApiAndSend();
         }
         $this->endInput(null);
     }

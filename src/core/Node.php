@@ -346,7 +346,7 @@ class Node
      * 
      * @param array $metaData The passing meta data
      * 
-     * @return null
+     * @return array
      */
     protected function onMetaReceived($metaData)
     {

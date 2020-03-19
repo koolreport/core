@@ -316,7 +316,7 @@ class MySQLDataSource extends DataSource
         }
     }
 
-    protected function prepareAndBind($query, $params)
+    protected function prepareAndBind($query, $params = [])
     {
         $paramNames = array_keys($params);
         uksort(
@@ -420,5 +420,52 @@ class MySQLDataSource extends DataSource
         }
 
         $this->endInput(null);
+    }
+
+    public function fetchFields($query)
+    {
+        $columns = [];
+        $stmt = $this->prepareAndBind($query, []);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result===false) {
+            throw new \Exception("Error on query >>> ".$this->connection->error);
+        }
+        $finfo = $result->fetch_fields();
+        $numcols = count($finfo);
+        for ($i=0; $i<$numcols; $i++) {
+            $type = $this->mapFieldTypeToBindType($finfo[$i]->type);
+                $columns[$finfo[$i]->name] = array(
+                        "type"=>$type,
+                    );
+            switch($type)
+            {
+            case "datetime":
+                $columns[$finfo[$i]->name]["format"] = "Y-m-d H:i:s";
+                break;
+            case "date":
+                $columns[$finfo[$i]->name]["format"] = "Y-m-d";
+                break;
+            case "time":
+                $columns[$finfo[$i]->name]["format"] = "H:i:s";
+                break;          
+            }
+        }
+        return $columns;
+    }
+
+    public function fetchData($query)
+    {
+        $data = [];
+        $stmt = $this->prepareAndBind($query, []);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result===false) {
+            throw new \Exception("Error on query >>> ".$this->connection->error);
+        }
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+        return $data;
     }
 }

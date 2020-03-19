@@ -452,22 +452,22 @@ class Utility
         //with the root folder of the website, so we add backup with
         //second way  to calculate the document root with script_name
         //and script_filename
-        $old_way = str_replace("\\", "/", realpath($_SERVER["DOCUMENT_ROOT"]));
+        // $old_way = str_replace("\\", "/", realpath($_SERVER["DOCUMENT_ROOT"]));
         $script_filename = str_replace(
             "\\",
             "/",
             realpath($_SERVER["SCRIPT_FILENAME"])
         );
-        $script_name = str_replace("\\", "/", realpath($_SERVER["SCRIPT_NAME"]));
+        $script_name = str_replace("\\", "/", $_SERVER["SCRIPT_NAME"]);
         $new_way = str_replace($script_name, "", $script_filename);
-        
-        if ($old_way==$new_way) {
-            return $old_way;
-        } elseif (is_dir($old_way)) {
-            return $old_way;
-        } else {
-            return $new_way;
-        }
+        // if ($old_way==$new_way) {
+        //     return $old_way;
+        // } elseif (is_dir($old_way)) {
+        //     return $old_way;
+        // } else {
+        //     return $new_way;
+        // }
+        return $new_way;
     }
 
     /**
@@ -495,38 +495,6 @@ class Utility
         return substr($path, 0, strrpos($path, '/'));
     }
     
-    
-    /**
-     * Get the dirname
-     *
-     * @param string $realpath The real path
-     *
-     * @return string Return the symbolic path
-     */
-    public static function getSymbolicPath($realpath)
-    {
-        $root = $_SERVER['DOCUMENT_ROOT'];
-        $script = $_SERVER['SCRIPT_FILENAME'];
-        $root = str_replace('\\', '/', $root);
-        $script = str_replace('\\', '/', $script);
-        $realpath = str_replace('\\', '/', $realpath);
-        
-        $dir = str_replace($root, '', $script);
-        $pos = false;
-        $dir = self::getDir($dir);
-        while (! empty($dir)) {
-            $pos = strpos($realpath, $dir);
-            if ($pos) {
-                break;
-            }
-            $dir = self::getDir($dir);
-        }
-        if ($pos) {
-            $realpath = $root . substr($realpath, $pos);
-        }
-        return $realpath;
-    }
-
     /**
      * Merge array recursively
      *

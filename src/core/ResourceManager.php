@@ -89,7 +89,6 @@ class ResourceManager
                  */
 
                 $script_folder = Utility::standardizePathSeparator(
-                    // realpath(dirname($_SERVER["SCRIPT_FILENAME"]))
                     dirname($_SERVER["SCRIPT_FILENAME"])
                 );
                 $asset_path = $script_folder."/koolreport_assets";            
@@ -170,7 +169,6 @@ class ResourceManager
                 $assetUrl = str_replace($document_root, "", $objectTargetPath);
             }
         }
-        // echo "assetUrl=$assetUrl<br>";
         return $assetUrl;
     }
 

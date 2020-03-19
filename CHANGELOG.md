@@ -3,6 +3,7 @@
 ## New version
 
 1. `Table`: Adding `avg` method to row group
+2. `ResourceManager`: Enhance way to export asset folder and generate asset url
 
 ## Version 4.5.1
 

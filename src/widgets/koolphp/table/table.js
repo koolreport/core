@@ -16,7 +16,7 @@ KoolReport.koolphp.table.prototype = {
     events:null,
     initEvents:function()
     {
-        $('#'+this.name+" tr").on('click',function(event){
+        $('#'+this.name+" tbody tr").on('click',function(event){
             var rowIndex = $(event.currentTarget).attr("ri");
             var rowData = this.getRowData(rowIndex);
             this.fireEvent('rowClick',{table:this,rowData:rowData,rowIndex:rowIndex});

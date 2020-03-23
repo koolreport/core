@@ -4,6 +4,7 @@
 
 1. `Table`: Adding `avg` method to row group
 2. `ResourceManager`: Enhance way to export asset folder and generate asset url
+3. `Table`: Fix issue with rowClick activated when clicked on header
 
 ## Version 4.5.1
 

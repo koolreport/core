@@ -6,7 +6,7 @@ function(chartType,chartId,cKeys,data,options,loader)
     this.chartType = chartType;
     this.chartId = chartId;
     this.data = data;
-    this.options = options;
+    this.options = Array.isArray(options)?{}:options;
     this.events = {};
     this.cKeys = cKeys;
     this.loader = loader;

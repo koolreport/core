@@ -5,6 +5,7 @@
 1. `Table`: Adding `avg` method to row group
 2. `ResourceManager`: Enhance way to export asset folder and generate asset url
 3. `Table`: Fix issue with rowClick activated when clicked on header
+4. `Google Charts`: Fix error caused by empty options while using new version of Google Charts.
 
 ## Version 4.5.1
 

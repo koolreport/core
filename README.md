@@ -14,6 +14,7 @@
 
 # Changelog 
 
+* [Version 4.7.0 (May 15th, 2020)](https://www.koolreport.com/docs/koolreport/change_log/#version-4.7.0)
 * [Version 4.5.1 (Feb 4th, 2020)](https://www.koolreport.com/docs/koolreport/change_log/#version-4.5.1)
 * [Version 4.5.0 (Jan 21st, 2020)](https://www.koolreport.com/docs/koolreport/change_log/#version-4.5.0)
 * [Version 4.3.0 (Oct 4th, 2019)](https://www.koolreport.com/docs/koolreport/change_log/#version-4.3.0)

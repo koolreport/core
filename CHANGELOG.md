@@ -1,6 +1,6 @@
 # Change Log
 
-## New version
+## Version 4.7.0
 
 1. `Table`: Adding `avg` method to row group
 2. `ResourceManager`: Enhance way to export asset folder and generate asset url

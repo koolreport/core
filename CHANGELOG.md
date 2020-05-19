@@ -1,5 +1,9 @@
 # Change Log
 
+## Version 4.7.1
+
+1. Fix version number of KoolReport to make sure new resource is generated correctly.
+
 ## Version 4.7.0
 
 1. `Table`: Adding `avg` method to row group

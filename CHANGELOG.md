@@ -1,5 +1,9 @@
 # Change Log
 
+## New version
+
+1. Google Chart: Only redraw when chart is loaded.
+
 ## Version 4.7.1
 
 1. Fix version number of KoolReport to make sure new resource is generated correctly.

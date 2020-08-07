@@ -159,6 +159,9 @@ KoolReport.google.chart.prototype = {
     },
     redraw:function()
     {
+        if(this.chart===null) {
+            return;
+        }
         if (this.options.showColumns) {
             var view = new google.visualization.DataView(this.dataTable);
             view.setColumns([0].concat(this.options.showColumns));

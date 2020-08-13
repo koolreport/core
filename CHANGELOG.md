@@ -3,6 +3,9 @@
 ## New version
 
 1. Google Chart: Only redraw when chart is loaded.
+2. `Count`: Adding new Count process to count rows with condition.
+3. `DataStore`: Add method `getScalar()`
+4. `Filter`: Adding operator `<>`
 
 ## Version 4.7.1
 

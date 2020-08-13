@@ -210,6 +210,17 @@ class DataStore extends Node implements IteratorAggregate, ArrayAccess
         return null;
     }
 
+    public function getScalar()
+    {
+        if($this->count()===0) {
+            return null;
+        }
+        foreach($this->rows[0] as $v) {
+            return $v;
+        }
+        return null;
+    }
+
     /**
      * Break datastore into smaller group by specific column value
      * 

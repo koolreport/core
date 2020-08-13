@@ -71,6 +71,7 @@ class Filter extends Process
             }
 
             break;
+        case '<>':
         case '!=':
         case 'notEqual':
             if ($type === 'string' && is_string($value) && is_string($condition[2])) {

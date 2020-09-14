@@ -245,7 +245,7 @@ class PdoDataSource extends DataSource
             case "boolean":
                 return PDO::PARAM_BOOL;
             case "integer":
-                return PDO::PARAM_STR;
+                return PDO::PARAM_INT;
             case "NULL":
                 return PDO::PARAM_NULL;
             case "resource":

@@ -180,7 +180,7 @@ class Table extends Widget
      * 
      * @return string Formatted value
      */
-    public static function formatValue($value, $format, $row = null)
+    public static function formatValue($value, $format, $row = null, $cKey = null)
     {
         $formatValue = Utility::get($format, "formatValue", null);
 
@@ -188,7 +188,7 @@ class Table extends Widget
             eval('$fv="' . str_replace('@value', '$value', $formatValue) . '";');
             return $fv;
         } else if (is_callable($formatValue)) {
-            return $formatValue($value, $row);
+            return $formatValue($value, $row, $cKey);
         } else {
             return Utility::format($value, $format);
         }

@@ -329,6 +329,36 @@ class Utility
     }
 
     /**
+     * Set an key value inside an array
+     *
+     * @param array  $arr     The array
+     * @param string $keys    The key
+     * @param mixed  $value   The  value to fill
+     *
+     * @return array The array
+     */
+    public static function set(&$arr, $keys, $value = null)
+    {
+        if (is_array($keys)) {
+            if (count($keys) === 0) {
+                return $value;
+            }
+            $fKey = $keys[0];
+            if (count($keys) === 1) {
+                return self::set($arr, $fKey, $value);
+            }
+            if (! isset($arr[$fKey]) || ! is_array($arr[$fKey])) {
+                $arr[$fKey] = [];
+            }
+            $restKeys = array_slice($keys, 1);
+            return self::set($arr[$fKey], $restKeys, $value);
+        } else {
+            $arr[$keys] = $value;
+            return $arr[$keys];
+        }
+    }
+
+    /**
      * Get array if the value inside an array is a string
      *
      * @param array  $arr     The array

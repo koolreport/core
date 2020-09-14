@@ -1,6 +1,6 @@
 <?php
 /**
- * This file contains base class to pull data from array
+ * This file contains base class to pull data from an API
  *
  * @category  Core
  * @package   KoolReport
@@ -14,21 +14,10 @@ namespace koolreport\datasources;
 use \koolreport\core\DataSource;
 use \koolreport\core\Utility as Util;
 
-
-/**
- * ArrayDataSource helps to load data from array
- *
- * @category  Core
- * @package   KoolReport
- * @author    KoolPHP Inc <support@koolphp.net>
- * @copyright 2017-2028 KoolPHP Inc
- * @license   MIT License https://www.koolreport.com/license#mit-license
- * @link      https://www.koolphp.net
- */
 class APIDataSource extends DataSource
 {
     /**
-     * Be called when arraydatasource is initiated
+     * Be called when APIDataSource is initiated
      * 
      * @return null
      */

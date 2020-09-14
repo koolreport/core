@@ -335,9 +335,11 @@ class MySQLDataSource extends DataSource
                 (is_int($v) ? "i" : "s");
         }
         if (! empty($typeStr)) {
-            // call_user_func_array('mysqli_stmt_bind_param', 
-            //     array_merge(array($stmt, $typeStr), $paramValues)); 
             call_user_func_array(array($stmt, 'bind_param'), [$typeStr] + $params);
+            // call_user_func_array(array($stmt, 'bind_param'), array_merge([$typeStr], $params));
+            // call_user_func_array(array($stmt, 'bind_param'), array_merge([$typeStr], array_values($params)));
+            // $stmt->bind_param($typeStr, ...array_values($params)); //spread operator ... only available since PHP 5.6
+            // $stmt->bind_param($typeStr, ...$params); //spread operator ... only available since PHP 5.6
         }
         return $stmt;
     }

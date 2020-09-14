@@ -40,7 +40,7 @@
                     } else if (gettype($method)=="string") { 
                         $method = strtolower($method);
                         if (in_array($method, array("count","sum","avg","min","max","mode")) ) {
-                            $footerValue = Table::formatValue($this->dataStore->$method($cKey), $meta["columns"][$cKey]);
+                            $footerValue = Table::formatValue($this->dataStore->$method($cKey), $meta["columns"][$cKey], $cKey);
                         }
                     }   
                     $footerText = Utility::get($meta["columns"][$cKey],"footerText");
@@ -135,7 +135,7 @@
                     }
                     ?>
                         <td rv="<?php echo (in_array(gettype($value),array("array")))?"":htmlspecialchars($value);?>" <?php echo ($tdStyle)?"style='$tdStyle'":""; ?> <?php if($tdClass){echo " class='".((gettype($tdClass)=="string")?$tdClass:$tdClass($row,$cKey))."'";} ?>>
-                            <?php echo Table::formatValue($value, $meta["columns"][$cKey], $row);?>
+                            <?php echo Table::formatValue($value, $meta["columns"][$cKey], $row, $cKey);?>
                         </td>
                     <?php
                 }

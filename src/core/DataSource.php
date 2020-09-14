@@ -130,4 +130,9 @@ class DataSource extends Node
         $class = get_called_class();
         return new $class($params, $report);
     } 
+
+    public function getQuery()
+    {
+        return $this->query;
+    }
 }

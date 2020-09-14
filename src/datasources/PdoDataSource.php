@@ -489,4 +489,120 @@ class PdoDataSource extends DataSource
         }
         $this->endInput(null);
     }
+
+    public function fetchFields($query)
+    {
+        $columns = [];
+        $query = $this->prepareParams($query, []);
+        $stm = $this->connection->prepare($query);
+        $stm->execute();
+        $error = $stm->errorInfo();
+        // if($error[2]!=null)
+        if ($error[0]!='00000') {
+            throw new \Exception("Query Error >> [".$error[2]."] >> $query");
+            return;
+        }
+        $driver = strtolower($this->connection->getAttribute(PDO::ATTR_DRIVER_NAME));
+        $metaSupportDrivers = array('dblib', 'mysql', 'pgsql', 'sqlite');
+        $metaSupport = false;
+        foreach ($metaSupportDrivers as $supportDriver) {
+            if (strpos($driver, $supportDriver) !== false) {
+                $metaSupport = true;
+            }
+        }
+            
+        if (!$metaSupport) {
+            $row = $stm->fetch(PDO::FETCH_ASSOC);
+            $cNames = empty($row) ? array() : array_keys($row);
+            $numcols = count($cNames);
+        } else {
+            $numcols = $stm->columnCount();
+        }
+
+        // $metaData = array("columns"=>array());
+        for ($i=0;$i<$numcols;$i++) {
+            if (! $metaSupport) {
+                $cName = $cNames[$i];
+                $cType = $this->guessTypeFromValue($row[$cName]);
+            } else {
+                $info = $stm->getColumnMeta($i);
+                $cName = $info["name"];
+                $cType = $this->guessType(Util::get($info, "native_type", "unknown"));
+            }
+            $columns[$cName] = array(
+                "type"=>$cType,
+            );
+            switch ($cType) {
+            case "datetime":
+                $columns[$cName]["format"] = "Y-m-d H:i:s";
+                break;
+            case "date":
+                $columns[$cName]["format"] = "Y-m-d";
+                break;
+            case "time":
+                $columns[$cName]["format"] = "H:i:s";
+                break;
+            }
+        }
+        return $columns;
+    }
+
+    public function fetchData($query, $queryParams = null)
+    {
+        if (isset($queryParams) && 
+            (isset($queryParams['countTotal']) || isset($queryParams['countFilter']))) {
+            $driver = strtolower($this->connection->getAttribute(PDO::ATTR_DRIVER_NAME));
+            switch ($driver) {
+                case 'mysql':
+                    list($query, $totalQuery, $filterQuery)
+                        = MySQLDataSource::processQuery($query, $queryParams);
+                    break;
+                case 'oci':
+                    list($query, $totalQuery, $filterQuery)
+                        = OracleDataSource::processQuery($query, $queryParams);
+                    break;
+                case 'pgsql':
+                    list($query, $totalQuery, $filterQuery)
+                        = PostgreSQLDataSource::processQuery($query, $queryParams);
+                    break;
+                case 'sqlsrv':
+                    list($query, $totalQuery, $filterQuery)
+                        = SQLSRVDataSource::processQuery($query, $queryParams);
+                    break;
+                default:
+                    break;
+            }
+            $queries = [
+                'data' => $query,
+                'total' => $totalQuery,
+                'filter' => $filterQuery
+            ];
+        } else {
+            $queries = [
+                'data' => $query
+            ];
+        }
+        // echo "fetData queries = "; Util::prettyPrint($queries);
+        $result = [];
+        foreach ($queries as $key => $query) {
+            $stm = $this->connection->prepare($query);
+            $stm->execute();
+    
+            $error = $stm->errorInfo();
+            // if($error[2]!=null)
+            if ($error[0]!='00000') {
+                throw new \Exception("Query Error >> [".$error[2]."] >> $query");
+                return;
+            }
+    
+            $rows = [];
+            while ($row = $stm->fetch(PDO::FETCH_ASSOC)) {
+                $rows[] = $row;
+            }
+
+            $result[$key] = $rows;
+        }
+
+        return $result;
+    }
 }

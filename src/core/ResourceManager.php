@@ -169,6 +169,10 @@ class ResourceManager
                 $assetUrl = str_replace($document_root, "", $objectTargetPath);
             }
         }
+        // $protocol = isset($_SERVER['HTTPS']) && (strcasecmp($_SERVER['HTTPS'], 'on')===0 || $_SERVER['HTTPS']==1)
+        // || isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strcasecmp($_SERVER['HTTP_X_FORWARDED_PROTO'], 'https')===0 ? "https" : "http";
+        // $http_host = (!empty($_SERVER['HTTP_HOST']))?"$protocol://".$_SERVER['HTTP_HOST']:"http://localhost";
+        // $assetUrl = $http_host . $assetUrl;
         return $assetUrl;
     }
 

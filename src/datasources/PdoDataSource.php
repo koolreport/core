@@ -375,6 +375,7 @@ class PdoDataSource extends DataSource
      */
     public function start()
     {
+        // $this->connection->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, false);
         $metaData = array("columns"=>array());
 
         $searchParams = Util::get($this->queryParams, 'searchParams', []);
@@ -488,6 +489,7 @@ class PdoDataSource extends DataSource
             $row=$stm->fetch(PDO::FETCH_ASSOC);
         }
         $this->endInput(null);
+        // $stm->closeCursor();
     }
 
     public function fetchFields($query)

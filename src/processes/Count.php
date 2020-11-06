@@ -22,8 +22,8 @@ class Count extends Process
                 $this->funcs[$cKey] = $countFunc;
             }
         }
-        $this->counters["total"] = 0;
-        $this->funcs["total"] = function($row) {
+        $this->counters["{{all}}"] = 0;
+        $this->funcs["{{all}}"] = function($row) {
             return true;
         };
     }
@@ -48,7 +48,7 @@ class Count extends Process
                 );
             }
         }
-        $metaData["columns"]["total"] = array(
+        $metaData["columns"]["{{all}}"] = array(
             "type"=>"number"
         );
         return $metaData;

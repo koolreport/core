@@ -44,7 +44,7 @@ class KoolReport
      */
     public function version()
     {
-        return "4.7.1";
+        return "5.0.0";
     }
 
     /**

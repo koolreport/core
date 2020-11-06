@@ -1,6 +1,6 @@
 # Change Log
 
-## New version
+## Version 5.0.0
 
 1. Google Chart: Only redraw when chart is loaded.
 2. `Count`: Adding new Count process to count rows with condition.

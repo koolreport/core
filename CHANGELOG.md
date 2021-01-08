@@ -1,5 +1,9 @@
 # Change Log
 
+## Version 5.x.x
+
+1. Improved: `Filter` process to compare when string of number is compared to number, we will use number comparison.
+
 ## Version 5.0.0
 
 1. Google Chart: Only redraw when chart is loaded.

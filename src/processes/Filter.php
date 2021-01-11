@@ -83,7 +83,7 @@ class Filter extends Process
             break;
         case '>':
         case 'gt':
-            if ($type === 'string') {
+            if ($type === 'string' && is_string($value) && is_string($condition[2])) {
                 $isFiltered = strcmp($value, $condition[2]) > 0;
             } else {
                 $isFiltered = $value > $condition[2];
@@ -91,7 +91,7 @@ class Filter extends Process
 
             break;
         case '>=':
-            if ($type === 'string') {
+            if ($type === 'string' && is_string($value) && is_string($condition[2])) {
                 $isFiltered = strcmp($value, $condition[2]) >= 0;
             } else {
                 $isFiltered = $value >= $condition[2];
@@ -100,7 +100,7 @@ class Filter extends Process
             break;
         case '<':
         case 'lt':
-            if ($type === 'string') {
+            if ($type === 'string' && is_string($value) && is_string($condition[2])) {
                 $isFiltered = strcmp($value, $condition[2]) < 0;
             } else {
                 $isFiltered = $value < $condition[2];
@@ -108,7 +108,7 @@ class Filter extends Process
 
             break;
         case '<=':
-            if ($type === 'string') {
+            if ($type === 'string' && is_string($value) && is_string($condition[2])) {
                 $isFiltered = strcmp($value, $condition[2]) <= 0;
             } else {
                 $isFiltered = $value <= $condition[2];

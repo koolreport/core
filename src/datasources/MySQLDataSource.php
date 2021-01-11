@@ -319,7 +319,7 @@ class MySQLDataSource extends DataSource
     protected function prepareAndBind($query, $params = [])
     {
         $paramNames = array_keys($params);
-        uksort(
+        usort(
             $paramNames,
             function ($k1, $k2) {
                 return strlen($k1) < strlen($k2);

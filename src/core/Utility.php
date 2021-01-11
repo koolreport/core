@@ -490,6 +490,13 @@ class Utility
         );
         $script_name = str_replace("\\", "/", $_SERVER["SCRIPT_NAME"]);
         $new_way = str_replace($script_name, "", $script_filename);
+
+        // $script_name = self::get($_SERVER, "SCRIPT_NAME",
+        //     self::get($_SERVER, "REQUEST_URI",
+        //         self::get($_SERVER, "PHP_SELF", "")));
+        // $script_name = strtok($script_name, '?');
+        // $script_name = str_replace("\\", "/", $script_name);
+
         // if ($old_way==$new_way) {
         //     return $old_way;
         // } elseif (is_dir($old_way)) {

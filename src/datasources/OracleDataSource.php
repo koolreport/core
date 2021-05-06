@@ -113,7 +113,7 @@ class OracleDataSource extends DataSource
     {
         $username = Util::get($this->params, "username", "");
         $password = Util::get($this->params, "password", "");
-        $connString = Util::get($this->params, "connectionString", "");
+        $connString = Util::get($this->params, "connectionString", ""); //localhost:8080/XE
 
         $key = md5($username.$password.$connString);
 

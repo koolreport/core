@@ -96,7 +96,7 @@ class SQLSRVDataSource extends DataSource
      */
     protected function onInit()
     {
-        $host = Util::get($this->params, "host", "");//host\instanceName
+        $host = Util::get($this->params, "host", ""); //"serverName\\sqlexpress, 1542"
         $username = Util::get($this->params, "username", "");
         $password = Util::get($this->params, "password", "");
         $dbname = Util::get($this->params, "dbname", "");

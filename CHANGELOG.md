@@ -3,6 +3,7 @@
 ## Version 5.1.0
 
 1. Improved: Calculate correctly the document root folder
+2. Add port option to PostgreSQLDataSource
 
 ## Version 5.0.1
 

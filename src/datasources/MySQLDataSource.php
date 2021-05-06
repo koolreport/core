@@ -88,7 +88,7 @@ class MySQLDataSource extends DataSource
      */
     protected function onInit()
     {
-        $host = Util::get($this->params, "host", "");
+        $host = Util::get($this->params, "host", ""); //localhost:3306
         $username = Util::get($this->params, "username", "");
         $password = Util::get($this->params, "password", "");
         $dbname = Util::get($this->params, "dbname", "");

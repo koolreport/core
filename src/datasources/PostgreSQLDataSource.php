@@ -89,10 +89,11 @@ class PostgreSQLDataSource extends DataSource
     protected function onInit()
     {
         $host = Util::get($this->params, "host", "");//host\instanceName
+        $port = Util::get($this->params, "port", 5432);
         $username = Util::get($this->params, "username", "");
         $password = Util::get($this->params, "password", "");
         $dbname = Util::get($this->params, "dbname", "");
-        $connString = "host=$host dbname=$dbname user=$username password=$password";
+        $connString = "host=$host port=$port dbname=$dbname user=$username password=$password";
         
         $key = md5($connString);
 

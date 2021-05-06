@@ -476,35 +476,22 @@ class Utility
      * @return string the document root path
      */
     public static function getDocumentRoot()
-    {
+        {
         //The old method is to use the document_root from $_SERVER
         //Howerver in some hosting the document root is not the same
         //with the root folder of the website, so we add backup with
         //second way  to calculate the document root with script_name
         //and script_filename
-        // $old_way = str_replace("\\", "/", realpath($_SERVER["DOCUMENT_ROOT"]));
+
         $script_filename = str_replace(
             "\\",
             "/",
             realpath($_SERVER["SCRIPT_FILENAME"])
         );
         $script_name = str_replace("\\", "/", $_SERVER["SCRIPT_NAME"]);
-        $new_way = str_replace($script_name, "", $script_filename);
-
-        // $script_name = self::get($_SERVER, "SCRIPT_NAME",
-        //     self::get($_SERVER, "REQUEST_URI",
-        //         self::get($_SERVER, "PHP_SELF", "")));
-        // $script_name = strtok($script_name, '?');
-        // $script_name = str_replace("\\", "/", $script_name);
-
-        // if ($old_way==$new_way) {
-        //     return $old_way;
-        // } elseif (is_dir($old_way)) {
-        //     return $old_way;
-        // } else {
-        //     return $new_way;
-        // }
-        return $new_way;
+        $endPoint = strpos(strtolower($script_filename),strtolower($script_name));
+        $documentRoot = substr($script_filename,0,$endPoint);
+        return $documentRoot;
     }
 
     /**

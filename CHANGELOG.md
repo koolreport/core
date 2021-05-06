@@ -1,5 +1,9 @@
 # Change Log
 
+## Version 5.1.0
+
+1. Improved: Calculate correctly the document root folder
+
 ## Version 5.0.1
 
 1. Improved: `Filter` process to compare when string of number is compared to number, we will use number comparison.

@@ -102,6 +102,7 @@ class Timeline extends Chart
                 "loader"=>array(
                     "package"=>$this->package,
                     "stability"=>$this->stability,
+                    "language"=>$this->language,
                     "mapsApiKey"=>$this->mapsApiKey
                 )
             )

@@ -43,6 +43,7 @@ class Chart extends Widget
     protected $mapsApiKey;
     protected $package = "corechart";
     protected $stability = "current";
+    protected $language = "en";
 
     /**
      * Return the resource settings for table
@@ -76,6 +77,8 @@ class Chart extends Widget
         $this->title = Utility::get($this->params, "title");
         $this->pointerOnHover = Utility::get($this->params, "pointerOnHover");
         $this->mapsApiKey = Utility::get($this->params, "mapsApiKey", '');
+        $this->language = Utility::get($this->params, "language", $this->language);
+        $this->stability = Utility::get($this->params, "stability", $this->stability);
 
         if (!$this->dataStore) {
             //Backward compatible with setting through "data"
@@ -282,6 +285,7 @@ class Chart extends Widget
                     "loader"=>array(
                         "package"=>$this->package,
                         "stability"=>$this->stability,
+                        "language"=>$this->language,
                         "mapsApiKey"=>$this->mapsApiKey
                     )
                 )

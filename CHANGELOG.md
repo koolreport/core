@@ -6,6 +6,7 @@
 2. Added: Add port option to PostgreSQLDataSource
 3. Added: Ability to change version of Google Charts
 4. Added: Ability to set language locale for Google Charts
+5. Added: Ability to render empty sub report for later updating from client
 
 ## Version 5.0.1
 

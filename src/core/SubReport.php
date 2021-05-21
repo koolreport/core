@@ -80,11 +80,14 @@ trait SubReport
         $class = Utility::get($subReports, $name);
         if ($class!=null) {
             echo "<sub-report id='$name' name='$name'>";
-            if($params!==false) {
-                //If params is not exclusively set to false then render normally.
+            if(gettype($params)==="array") {
+                //If the params is array type then render report normally
                 $params["@reportName"] = $name;
                 $r = new $class($params);
                 $r->run()->render();    
+            } else {
+                //Otherwise will cho content from params
+                echo $params;
             }
             echo "</sub-report>";
             $GLOBALS["__ACTIVE_KOOLREPORT__"] = $this;

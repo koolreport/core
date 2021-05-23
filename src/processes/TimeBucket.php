@@ -92,6 +92,7 @@ class TimeBucket extends Process
             "quarter" => "Y-Q{q}",
             "week" => "Y-W",
             "date" => "Y-m-d",
+            "day" => "Y-m-d",
             "hour" => "Y-m-d H",
             "minute" => "Y-m-d H:i",
             "dayofmonth" => "d",

@@ -221,7 +221,8 @@ class SQLSRVDataSource extends DataSource
         uksort(
             $sqlParams,
             function ($k1, $k2) {
-                return strlen($k1) < strlen($k2);
+                if (strlen($k1) == strlen($k2)) return 0;
+                else return strlen($k1) < strlen($k2) ? 1 : -1;
             }
         );
         foreach ($sqlParams as $key=>$value) {
@@ -318,7 +319,8 @@ class SQLSRVDataSource extends DataSource
         uksort(
             $paramNames,
             function ($k1, $k2) {
-                return strlen($k1) < strlen($k2);
+                if (strlen($k1) == strlen($k2)) return 0;
+                else return strlen($k1) < strlen($k2) ? 1 : -1;
             }
         );
         foreach ($paramNames as $k) {
@@ -397,5 +399,42 @@ class SQLSRVDataSource extends DataSource
         }
     
         $this->endInput(null);
+    }
+
+    public function fetchData($query, $queryParams = null)
+    {
+        if (isset($queryParams) && 
+            (isset($queryParams['countTotal']) || isset($queryParams['countFilter']))) {
+            list($query, $totalQuery, $filterQuery)
+                = self::processQuery($query, $queryParams);
+            
+            $queries = [
+                'data' => $query,
+                'total' => $totalQuery,
+                'filter' => $filterQuery
+            ];
+        } else {
+            $queries = [
+                'data' => $query
+            ];
+        }
+        $result = [];
+        foreach ($queries as $key => $query) {
+            $query = $this->bindParams($this->query, $this->sqlParams);
+            $stmt = $this->prepareAndBind($query, []);
+            if ($stmt === false) {
+                die(print_r(sqlsrv_errors(), true));
+            } 
+            if ($result===false) {
+                throw new \Exception("Error on query >>> ".$this->connection->error);
+            }
+            $rows = [];
+            while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+                // print_r($row); echo "<br>";
+                $rows[] = $row;
+            }
+            $result[$key] = $rows;
+        }
+        return $result;
     }
 }

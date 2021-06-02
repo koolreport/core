@@ -203,7 +203,8 @@ class PostgreSQLDataSource extends DataSource
         uksort(
             $sqlParams,
             function ($k1, $k2) {
-                return strlen($k1) < strlen($k2);
+                if (strlen($k1) == strlen($k2)) return 0;
+                else return strlen($k1) < strlen($k2) ? 1 : -1;
             }
         );
         foreach ($sqlParams as $key=>$value) {
@@ -330,7 +331,8 @@ class PostgreSQLDataSource extends DataSource
         uksort(
             $paramNames,
             function ($k1, $k2) {
-                return strlen($k1) < strlen($k2);
+                if (strlen($k1) == strlen($k2)) return 0;
+                else return strlen($k1) < strlen($k2) ? 1 : -1;
             }
         );
         foreach ($paramNames as $i => $k) {
@@ -413,5 +415,43 @@ class PostgreSQLDataSource extends DataSource
         }
 
         $this->endInput(null);
+    }
+
+    public function fetchData($query, $queryParams = null)
+    {
+        if (isset($queryParams) && 
+            (isset($queryParams['countTotal']) || isset($queryParams['countFilter']))) {
+            list($query, $totalQuery, $filterQuery)
+                = self::processQuery($query, $queryParams);
+            
+            $queries = [
+                'data' => $query,
+                'total' => $totalQuery,
+                'filter' => $filterQuery
+            ];
+        } else {
+            $queries = [
+                'data' => $query
+            ];
+        }
+        $result = [];
+        foreach ($queries as $key => $query) {
+            $query = $this->bindParams($this->query, $this->sqlParams);
+            $queryResult = $this->prepareAndBind($query, []);
+            if (! $queryResult) {
+                echo pg_last_error($this->connection);
+                exit;
+            }
+            if ($queryResult===false) {
+                throw new \Exception("Error on query >>> ".$this->connection->error);
+            }
+            $rows = [];
+            while ($row = pg_fetch_assoc($queryResult)) {
+                // print_r($row); echo "<br>";
+                $rows[] = $row;
+            }
+            $result[$key] = $rows;
+        }
+        return $result;
     }
 }

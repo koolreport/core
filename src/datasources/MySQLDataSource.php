@@ -215,7 +215,8 @@ class MySQLDataSource extends DataSource
         uksort(
             $sqlParams, 
             function ($k1, $k2) {
-                return strlen($k1) < strlen($k2);
+                if (strlen($k1) == strlen($k2)) return 0;
+                else return strlen($k1) < strlen($k2) ? 1 : -1;
             }
         );
         foreach ($sqlParams as $key=>$value) {
@@ -319,10 +320,11 @@ class MySQLDataSource extends DataSource
     protected function prepareAndBind($query, $params = [])
     {
         $paramNames = array_keys($params);
-        usort(
+        uksort(
             $paramNames,
             function ($k1, $k2) {
-                return strlen($k1) < strlen($k2);
+                if (strlen($k1) == strlen($k2)) return 0;
+                else return strlen($k1) < strlen($k2) ? 1 : -1;
             }
         );
         foreach ($paramNames as $k) {
@@ -456,18 +458,41 @@ class MySQLDataSource extends DataSource
         return $columns;
     }
 
-    public function fetchData($query)
+    public function fetchData($query, $queryParams = null)
     {
-        $data = [];
-        $stmt = $this->prepareAndBind($query, []);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($result===false) {
-            throw new \Exception("Error on query >>> ".$this->connection->error);
+        if (isset($queryParams) && 
+            (isset($queryParams['countTotal']) || isset($queryParams['countFilter']))) {
+            list($query, $totalQuery, $filterQuery)
+                = self::processQuery($query, $queryParams);
+            
+            $queries = [
+                'data' => $query,
+                'total' => $totalQuery,
+                'filter' => $filterQuery
+            ];
+        } else {
+            $queries = [
+                'data' => $query
+            ];
         }
-        while ($row = $result->fetch_assoc()) {
-            $data[] = $row;
+        $result = [];
+        foreach ($queries as $key => $query) {
+            $query = $this->bindParams($query, $this->sqlParams);
+            // print_r($this->sqlParams); echo "<br>";
+            // echo "query=$query<br>";
+            $stmt = $this->prepareAndBind($query, []);
+            $stmt->execute();
+            $queryResult = $stmt->get_result();
+            if ($result===false) {
+                throw new \Exception("Error on query >>> ".$this->connection->error);
+            }
+            $rows = [];
+            while ($row = $queryResult->fetch_assoc()) {
+                // print_r($row); echo "<br>";
+                $rows[] = $row;
+            }
+            $result[$key] = $rows;
         }
-        return $data;
+        return $result;
     }
 }

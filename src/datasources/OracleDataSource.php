@@ -228,7 +228,8 @@ class OracleDataSource extends DataSource
         uksort(
             $sqlParams,
             function ($k1, $k2) {
-                return strlen($k1) < strlen($k2);
+                if (strlen($k1) == strlen($k2)) return 0;
+                else return strlen($k1) < strlen($k2) ? 1 : -1;
             }
         );
         foreach ($sqlParams as $key=>$value) {
@@ -406,5 +407,44 @@ class OracleDataSource extends DataSource
         }
     
         $this->endInput(null);
+    }
+
+    public function fetchData($query, $queryParams = null)
+    {
+        if (isset($queryParams) && 
+            (isset($queryParams['countTotal']) || isset($queryParams['countFilter']))) {
+            list($query, $totalQuery, $filterQuery)
+                = self::processQuery($query, $queryParams);
+            
+            $queries = [
+                'data' => $query,
+                'total' => $totalQuery,
+                'filter' => $filterQuery
+            ];
+        } else {
+            $queries = [
+                'data' => $query
+            ];
+        }
+        $result = [];
+        foreach ($queries as $key => $query) {
+            $query = $this->bindParams($this->query, $this->sqlParams);
+            $stid = $this->prepareAndBind($query, []);
+            if (! $stid) {
+                echo oci_error();
+                exit;
+            }
+            oci_execute($stid);
+            if ($result===false) {
+                throw new \Exception("Error on query >>> ".$this->connection->error);
+            }
+            $rows = [];
+            while ($row = oci_fetch_array($stid, OCI_ASSOC+OCI_RETURN_NULLS)) {
+                // print_r($row); echo "<br>";
+                $rows[] = $row;
+            }
+            $result[$key] = $rows;
+        }
+        return $result;
     }
 }

@@ -4,6 +4,8 @@
 
 1. Improved: Calculate correctly the document root folder
 2. Add port option to PostgreSQLDataSource
+3. Fix uksort call in various datasources to work with PHP 8.x
+4. Add fetchData method to OracleDataSource, PostgreSQLDataSource, SQLSRVDataSource
 
 ## Version 5.0.1
 

@@ -135,4 +135,10 @@ class DataSource extends Node
     {
         return $this->query;
     }
+
+    public function getSqlParams()
+    {
+        return $this->sqlParams;
+    }
+
 }

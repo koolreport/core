@@ -587,7 +587,9 @@ class PdoDataSource extends DataSource
         // echo "fetData queries = "; Util::prettyPrint($queries);
         $result = [];
         foreach ($queries as $key => $query) {
+            $query = $this->prepareParams($query, $this->sqlParams);
             $stm = $this->connection->prepare($query);
+            $this->bindParams($stm, $this->sqlParams);
             $stm->execute();
     
             $error = $stm->errorInfo();

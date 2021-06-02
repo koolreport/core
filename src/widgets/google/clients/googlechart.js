@@ -64,6 +64,7 @@ KoolReport.google.chart.prototype = {
             //Load the package
             google.charts.load(this.loader.stability,{
                 packages:[this.loader.package],
+                language:this.loader.language,
                 mapsApiKey:this.loader.mapsApiKey}
             );
             google.charts.setOnLoadCallback(this.init.bind(this));

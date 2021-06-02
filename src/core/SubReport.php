@@ -69,7 +69,7 @@ trait SubReport
     /**
      * Render a sub report inside report
      * 
-     * @param string $name   The name of subrepor that defined in report settings
+     * @param string $name   The name of subreport that defined in report settings
      * @param array  $params Parameters that you want to send to sub report
      * 
      * @return null
@@ -79,10 +79,16 @@ trait SubReport
         $subReports = Utility::get($this->reportSettings, "subReports");
         $class = Utility::get($subReports, $name);
         if ($class!=null) {
-            $params["@reportName"] = $name;
-            $r = new $class($params);
             echo "<sub-report id='$name' name='$name'>";
-            $r->run()->render();
+            if(gettype($params)==="array") {
+                //If the params is array type then render report normally
+                $params["@reportName"] = $name;
+                $r = new $class($params);
+                $r->run()->render();    
+            } else {
+                //Otherwise will cho content from params
+                echo $params;
+            }
             echo "</sub-report>";
             $GLOBALS["__ACTIVE_KOOLREPORT__"] = $this;
         } else {
@@ -94,4 +100,6 @@ trait SubReport
             );
         }
     }
+
+
 }

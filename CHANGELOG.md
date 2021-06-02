@@ -2,10 +2,15 @@
 
 ## Version 5.1.0
 
-1. Improved: Calculate correctly the document root folder
-2. Add port option to PostgreSQLDataSource
-3. Fix uksort call in various datasources to work with PHP 8.x
-4. Add fetchData method to OracleDataSource, PostgreSQLDataSource, SQLSRVDataSource
+1. Fixed: Calculate correctly the document root folder
+2. Added: Add port option to PostgreSQLDataSource
+3. Added: Ability to change version of Google Charts
+4. Added: Ability to set language locale for Google Charts
+5. Added: Ability to render empty sub report for later updating from client
+6. Improved: Calculate correctly the document root folder
+7. Added: port option to PostgreSQLDataSource
+8. Fixed: uksort call in various datasources to work with PHP 8.x
+9. Added: fetchData method to OracleDataSource, PostgreSQLDataSource, SQLSRVDataSource
 
 ## Version 5.0.1
 

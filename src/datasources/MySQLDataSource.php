@@ -337,7 +337,13 @@ class MySQLDataSource extends DataSource
                 (is_int($v) ? "i" : "s");
         }
         if (! empty($typeStr)) {
-            call_user_func_array(array($stmt, 'bind_param'), [$typeStr] + $params);
+            // echo "typeStr=$typeStr<br>"; 
+            // echo "[typeStr] + params="; print_r([$typeStr] + $params); echo "<br>";
+            // echo "...array_values(params) = "; print_r(...array_values($params)); echo "<br>";
+            $arr = [$typeStr] + $params;
+            $refArr = [];
+            foreach($arr as $k => $v){$refArr[] = &$arr[$k];}
+            call_user_func_array(array($stmt, 'bind_param'), $refArr);
             // call_user_func_array(array($stmt, 'bind_param'), array_merge([$typeStr], $params));
             // call_user_func_array(array($stmt, 'bind_param'), array_merge([$typeStr], array_values($params)));
             // $stmt->bind_param($typeStr, ...array_values($params)); //spread operator ... only available since PHP 5.6

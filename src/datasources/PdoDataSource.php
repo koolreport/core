@@ -613,16 +613,17 @@ class PdoDataSource extends DataSource
     /**
      * General way to execute a query
      * @param mixed $sql 
-     * @return mixed 
+     * @return boolean Whether the sql is succesfully executed 
      */
     public function execute($sql, $params=null)
     {
         if(is_array($params)) {
             //Need prepare
             $stm = $this->connection->prepare($sql);
-            return $stm->execute($params);
+            $success = $stm->execute($params); 
         } else {
-            return $this->connection->exec($sql);
+            $success = $this->connection->exec($sql);
         }
+        return $success===false?false:true;
     }
 }

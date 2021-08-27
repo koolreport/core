@@ -213,7 +213,7 @@ class PdoDataSource extends DataSource
         uksort(
             $sqlParams,
             function ($k1, $k2) {
-                return strlen($k1) < strlen($k2);
+                return strlen($k1) - strlen($k2);
             }
         );
         $resultQuery = $query;
@@ -273,7 +273,7 @@ class PdoDataSource extends DataSource
         uksort(
             $sqlParams,
             function ($k1, $k2) {
-                return strlen($k1) < strlen($k2);
+                return strlen($k1) - strlen($k2);
             }
         );
         $paramNum = 0;

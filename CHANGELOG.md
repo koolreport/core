@@ -3,6 +3,7 @@
 ## New version
 
 1. Added: PDODataSource is able to execute other statement like update, delete with `execute()` method
+2. Added: Forward process
 
 ## Version 5.1.0
 

@@ -87,6 +87,13 @@ class PdoDataSource extends DataSource
      * @var bool $countFilter Whether the filter should be counted
      */
     protected $countFilter;
+
+
+    /**
+     * Store error info if there is
+     * @var array
+     */
+    protected $errorInfo;
     
 
     /**
@@ -610,6 +617,11 @@ class PdoDataSource extends DataSource
         return $result;
     }
 
+    public function errorInfo()
+    {
+        return $this->errorInfo;
+    }
+
     /**
      * General way to execute a query
      * @param mixed $sql 
@@ -620,10 +632,20 @@ class PdoDataSource extends DataSource
         if(is_array($params)) {
             //Need prepare
             $stm = $this->connection->prepare($sql);
-            $success = $stm->execute($params); 
+            $success = $stm->execute($params);
+            if($success===false) {
+                $this->errorInfo = $stm->errorInfo();
+            } else {
+                $this->errorInfo = null;
+            } 
         } else {
             $success = $this->connection->exec($sql);
+            if($success===false) {
+                $this->errorInfo = $this->connection->errorInfo();
+            } else {
+                $this->errorInfo = null;
+            }
         }
-        return $success===false?false:true;
+        return $success!==false;
     }
 }

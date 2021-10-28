@@ -23,8 +23,6 @@ foreach ($this->dataStores as $name=>$dataStore) {
             'table'=>'table table-hover table-striped table-bordered'
         )
     ));
-    ?>
-<?php
 }
 ?>
 

@@ -1304,8 +1304,8 @@ class DataStore extends Node implements IteratorAggregate, ArrayAccess
                 } else {
                     $dstore->push(
                         array_merge(
-                            $secondNullRow,
-                            $this->rows[$i]
+                            $this->rows[$i],
+                            $secondNullRow
                         )
                     );
                 }

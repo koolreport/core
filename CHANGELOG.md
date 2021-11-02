@@ -4,9 +4,8 @@
 
 1. Added: PDODataSource is able to execute other statement like update, delete with `execute()` method
 2. Added: Forward process
-3. Fixed: DataStore left join when the 2nd datastore row is null
-4. Added: multiple "role" => "annotation" columns for Google chart
-5. Added: Hebrew language file for Table widget
+3. Added: multiple "role" => "annotation" columns for Google chart
+4. Added: Hebrew language file for Table widget
 
 ## Version 5.1.0
 

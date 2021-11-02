@@ -14,6 +14,7 @@
 
 # Changelog 
 
+* [Version 5.1.0 (July 7th, 2021)](https://www.koolreport.com/docs/koolreport/change_log/#version-5.1.0)
 * [Version 5.0.1 (Jan 11st, 2021)](https://www.koolreport.com/docs/koolreport/change_log/#version-5.0.1)
 * [Version 5.0.0 (Nov 11st, 2020)](https://www.koolreport.com/docs/koolreport/change_log/#version-5.0.0)
 * [Version 4.7.1 (May 19th, 2020)](https://www.koolreport.com/docs/koolreport/change_log/#version-4.7.1)

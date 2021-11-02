@@ -304,7 +304,7 @@ class KoolReport
     /**
      * Run the report
      *
-     * @return KoolReport Return this report object
+     * @return $this Return this report object
      */
     public function run()
     {

@@ -221,8 +221,7 @@ class SQLSRVDataSource extends DataSource
         uksort(
             $sqlParams,
             function ($k1, $k2) {
-                if (strlen($k1) == strlen($k2)) return 0;
-                else return strlen($k1) < strlen($k2) ? 1 : -1;
+                return strlen($k1) - strlen($k2);
             }
         );
         foreach ($sqlParams as $key=>$value) {
@@ -319,8 +318,7 @@ class SQLSRVDataSource extends DataSource
         uksort(
             $paramNames,
             function ($k1, $k2) {
-                if (strlen($k1) == strlen($k2)) return 0;
-                else return strlen($k1) < strlen($k2) ? 1 : -1;
+                return strlen($k1) - strlen($k2);
             }
         );
         foreach ($paramNames as $k) {

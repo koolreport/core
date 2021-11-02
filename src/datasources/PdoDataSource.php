@@ -87,6 +87,13 @@ class PdoDataSource extends DataSource
      * @var bool $countFilter Whether the filter should be counted
      */
     protected $countFilter;
+
+
+    /**
+     * Store error info if there is
+     * @var array
+     */
+    protected $errorInfo;
     
 
     /**
@@ -213,7 +220,7 @@ class PdoDataSource extends DataSource
         uksort(
             $sqlParams,
             function ($k1, $k2) {
-                return strlen($k1) < strlen($k2);
+                return strlen($k1) - strlen($k2);
             }
         );
         $resultQuery = $query;
@@ -273,7 +280,7 @@ class PdoDataSource extends DataSource
         uksort(
             $sqlParams,
             function ($k1, $k2) {
-                return strlen($k1) < strlen($k2);
+                return strlen($k1) - strlen($k2);
             }
         );
         $paramNum = 0;
@@ -608,5 +615,37 @@ class PdoDataSource extends DataSource
         }
 
         return $result;
+    }
+
+    public function errorInfo()
+    {
+        return $this->errorInfo;
+    }
+
+    /**
+     * General way to execute a query
+     * @param mixed $sql 
+     * @return boolean Whether the sql is succesfully executed 
+     */
+    public function execute($sql, $params=null)
+    {
+        if(is_array($params)) {
+            //Need prepare
+            $stm = $this->connection->prepare($sql);
+            $success = $stm->execute($params);
+            if($success===false) {
+                $this->errorInfo = $stm->errorInfo();
+            } else {
+                $this->errorInfo = null;
+            } 
+        } else {
+            $success = $this->connection->exec($sql);
+            if($success===false) {
+                $this->errorInfo = $this->connection->errorInfo();
+            } else {
+                $this->errorInfo = null;
+            }
+        }
+        return $success!==false;
     }
 }

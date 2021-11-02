@@ -128,8 +128,9 @@ class CSVDataSource extends DataSource
         // $offset = ftell($fileHandle);
             
         $data = array();
+        $enclosure = '"';
         if (($handle = fopen($this->filePath, "r")) !== false) {
-            $row = fgetcsv($handle, 0, $this->fieldSeparator);
+            $row = fgetcsv($handle, 0, $this->fieldSeparator, $enclosure);
             //Convert to UTF8 if assign charset to utf8
             $row = array_map(
                 function ($item) {

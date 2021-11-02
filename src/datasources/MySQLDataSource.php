@@ -389,6 +389,8 @@ class MySQLDataSource extends DataSource
         }
 
         $query = $this->bindParams($this->query, $this->sqlParams);
+        // echo "query=$query<br>";
+        // echo "this->sqlParams="; print_r($this->sqlParams); echo "<br>";
         // $result = $this->connection->query($query);
         $stmt = $this->prepareAndBind($query, $searchParams);
         $stmt->execute();

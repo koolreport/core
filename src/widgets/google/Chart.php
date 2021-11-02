@@ -13,7 +13,7 @@
 namespace koolreport\widgets\google;
 
 use \koolreport\core\DataStore;
-use \koolreport\core\Utility;
+use \koolreport\core\Utility as Util;
 use \koolreport\core\Widget;
 
 /**
@@ -69,20 +69,20 @@ class Chart extends Widget
         $this->useDataSource();
         $this->useAutoName("gchart");
 
-        $this->clientEvents = Utility::get($this->params, "clientEvents", array());
-        $this->columns = Utility::get($this->params, "columns", null);
-        $this->options = Utility::get($this->params, "options", array());
-        $this->width = Utility::get($this->params, "width", "100%");
-        $this->height = Utility::get($this->params, "height", "400px");
-        $this->title = Utility::get($this->params, "title");
-        $this->pointerOnHover = Utility::get($this->params, "pointerOnHover");
-        $this->mapsApiKey = Utility::get($this->params, "mapsApiKey", '');
-        $this->language = Utility::get($this->params, "language", $this->language);
-        $this->stability = Utility::get($this->params, "stability", $this->stability);
+        $this->clientEvents = Util::get($this->params, "clientEvents", array());
+        $this->columns = Util::get($this->params, "columns", null);
+        $this->options = Util::get($this->params, "options", array());
+        $this->width = Util::get($this->params, "width", "100%");
+        $this->height = Util::get($this->params, "height", "400px");
+        $this->title = Util::get($this->params, "title");
+        $this->pointerOnHover = Util::get($this->params, "pointerOnHover");
+        $this->mapsApiKey = Util::get($this->params, "mapsApiKey", '');
+        $this->language = Util::get($this->params, "language", $this->language);
+        $this->stability = Util::get($this->params, "stability", $this->stability);
 
         if (!$this->dataStore) {
             //Backward compatible with setting through "data"
-            $data = Utility::get($this->params, "data");
+            $data = Util::get($this->params, "data");
             if (is_array($data)) {
                 if (count($data) > 0) {
                     $this->dataStore = new DataStore;
@@ -91,7 +91,7 @@ class Chart extends Widget
                     $meta = array("columns" => array());
                     foreach ($row as $cKey => $cValue) {
                         $meta["columns"][$cKey] = array(
-                            "type" => Utility::guessType($cValue),
+                            "type" => Util::guessType($cValue),
                         );
                     }
                     $this->dataStore->meta($meta);
@@ -107,12 +107,12 @@ class Chart extends Widget
             }
         }
 
-        $this->type = Utility::getClassName($this);
+        $this->type = Util::getClassName($this);
         if ($this->type == "Chart") {
-            $this->type = Utility::get($this->params, "type");
+            $this->type = Util::get($this->params, "type");
         }
         //Color Scheme
-        $this->colorScheme = Utility::get($this->params, "colorScheme");
+        $this->colorScheme = Util::get($this->params, "colorScheme");
         if (!is_array($this->colorScheme)) {
             $theme = $this->getReport()->getTheme();
             if ($theme) {
@@ -157,7 +157,8 @@ class Chart extends Widget
         if ($this->columns != null) {
             foreach ($this->columns as $cKey => $cValue) {
                 if (gettype($cValue) == "array") {
-                    $columns[$cKey] = array_merge($meta["columns"][$cKey], $cValue);
+                    $cMeta = Util::get($meta, ["columns", $cKey], []);
+                    $columns[$cKey] = array_merge($cMeta, $cValue);
                 } else {
                     $columns[$cValue] = $meta["columns"][$cValue];
                 }
@@ -184,17 +185,24 @@ class Chart extends Widget
 
         $data = array();
         $header = array();
-        $columnExtraRoles = array("annotation", "annotationText", "certainty", "emphasis", "interval", "scope", "style", "tooltip");
+        $columnExtraRoles = array(
+            "annotation", "annotationText", "certainty", "emphasis", "interval", "scope", "style", "tooltip"
+        );
         foreach ($columns as $cKey => $cSetting) {
-            array_push($header, "" . Utility::get($cSetting, "label", $cKey));
-            foreach ($columnExtraRoles as $cRole) {
-                if (isset($cSetting[$cRole])) {
-                    array_push(
-                        $header,
-                        array(
-                            "role" => $cRole,
-                        )
-                    );
+            $role = Util::get($cSetting, 'role');
+            if (in_array($role, $columnExtraRoles)) {
+                array_push($header, $cSetting);
+            } else {
+                array_push($header, "" . Util::get($cSetting, "label", $cKey));
+                foreach ($columnExtraRoles as $cRole) {
+                    if (isset($cSetting[$cRole])) {
+                        array_push(
+                            $header,
+                            array(
+                                "role" => $cRole,
+                            )
+                        );
+                    }
                 }
             }
         }
@@ -203,8 +211,8 @@ class Chart extends Widget
         foreach ($this->dataStore as $row) {
             $gRow = array();
             foreach ($columns as $cKey => $cSetting) {
-                $value = $row[$cKey];
-                $cType = Utility::get($cSetting, "type", "unknown");
+                $value = Util::get($row, $cKey);
+                $cType = Util::get($cSetting, "type", "unknown");
                 if ($cType === "number") {
                     $value = $value !== null ? floatval($value) : $value;
                 } else if ($cType === "string") {
@@ -212,12 +220,20 @@ class Chart extends Widget
                 }
                 $fValue = $this->formatValue($value, $cSetting, $row);
 
-                array_push(
-                    $gRow,
-                    ($fValue === $value)
-                    ? $value
-                    : array("v" => $value, "f" => $fValue)
+                $role = Util::get($cSetting, "role");
+                $columnExtraRoles = array(
+                    "annotation", "annotationText", "certainty", "emphasis", "interval", "scope", "style", "tooltip"
                 );
+                if (in_array($role, $columnExtraRoles)) {
+                    array_push($gRow, $fValue);
+                } else {
+                    array_push(
+                        $gRow,
+                        ($fValue === $value)
+                        ? $value
+                        : array("v" => $value, "f" => $fValue)
+                    );
+                }
 
                 foreach ($columnExtraRoles as $cRole) {
                     if (isset($cSetting[$cRole])) {
@@ -246,7 +262,7 @@ class Chart extends Widget
      */
     protected function formatValue($value, $format, $row = null)
     {
-        $formatValue = Utility::get($format, "formatValue", null);
+        $formatValue = Util::get($format, "formatValue", null);
 
         if (is_string($formatValue)) {
             eval('$fv="' . str_replace('@value', '$value', $formatValue) . '";');
@@ -254,7 +270,7 @@ class Chart extends Widget
         } else if (is_callable($formatValue)) {
             return $formatValue($value, $row);
         } else {
-            return Utility::format($value, $format);
+            return Util::format($value, $format);
         }
     }
 

@@ -4,8 +4,10 @@
 
 1. Added: PDODataSource is able to execute other statement like update, delete with `execute()` method
 2. Added: Forward process
-3. Added: multiple "role" => "annotation" columns for Google chart
+3. Added: Multiple "role" => "annotation" columns for Google chart
 4. Added: Hebrew language file for Table widget
+5. Added: Alias `rowspan` and `groupCellsInColumns` for `removeDuplicate` of Koolphp Table widget
+6. Added: make `removeDuplicate` work with both column names and column orders
 
 ## Version 5.1.0
 

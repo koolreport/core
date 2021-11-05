@@ -155,8 +155,8 @@ KoolReport.koolphp.table.prototype = {
     },
     handleRemoveDuplicate:function()
     {
-        var cNames = this.options.removeDuplicate;
-        if(cNames==[]) return;
+        var cNamesOrOrders = this.options.removeDuplicate;
+        if(cNamesOrOrders==[]) return;
         var startRowIndex = 0;
         var endRowIndex = 0;
         var _root = $('#'+this.name);
@@ -177,7 +177,7 @@ KoolReport.koolphp.table.prototype = {
         var currentRootTds = [];
         var currentRowSpan = [];
         this.options.cKeys.forEach(function(key,index){
-            if(cNames.indexOf(key)>-1)
+            if(cNamesOrOrders.indexOf(key)>-1 || cNamesOrOrders.indexOf(index)>-1)
             {
                 cIndex.push(index);
                 currentValues.push(null);

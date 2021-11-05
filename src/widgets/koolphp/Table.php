@@ -133,7 +133,11 @@ class Table extends Widget
             $this->dataStore->meta($meta);
         }
 
-        $this->removeDuplicate = Utility::get($this->params, "removeDuplicate", array());
+        $removeDuplicate = Utility::get($this->params, "removeDuplicate", array());
+        $rowspan = Utility::get($this->params, "rowspan", $removeDuplicate);
+        $groupCellsInColumns = Utility::get($this->params, "groupCellsInColumns", $rowspan);
+        $this->removeDuplicate = $groupCellsInColumns;
+        
         $this->cssClass = Utility::get($this->params, "cssClass", array());
         $this->excludedColumns = Utility::get($this->params, "excludedColumns", array());
 

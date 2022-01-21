@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This class manage the js,css resources of KoolReport's Widget
  * 
@@ -23,7 +24,9 @@
  */
 
 namespace koolreport\core;
+
 use \koolreport\core\Utility;
+
 /**
  * This class manage the js,css resources of KoolReport's Widget
  * 
@@ -42,7 +45,7 @@ class AssetManager
      * @var Widget $widget The widget or its descendant
      */
     protected $widget;
-    
+
     /**
      * The url to public asset folder
      * 
@@ -74,14 +77,22 @@ class AssetManager
      * 
      * @return string The public url to resource
      */
-    public function getAssetUrl($filepath=null)
+    public function getAssetUrl($filepath = null)
     {
-        if ($filepath) {
-            return $this->assetUrl."/".$filepath;
+        if (
+            $filepath &&
+            (substr($filepath, 0, 8) === "https://"
+                || substr($filepath, 0, 7) === "http://"
+                || substr($filepath, 0, 1) === "/")
+        ) {
+            return $filepath;
         }
-        return $this->assetUrl."/";
+        if ($filepath) {
+            return $this->assetUrl . "/" . $filepath;
+        }
+        return $this->assetUrl . "/";
     }
-    
+
     /**
      * Publish an asset folder to public place
      * 
@@ -96,8 +107,8 @@ class AssetManager
     public function publish($assetFolder)
     {
         $widgetSourceAssetPath = dirname(Utility::getClassPath($this->widget))
-        ."/".$assetFolder;
-        
+            . "/" . $assetFolder;
+
         if (!is_dir($widgetSourceAssetPath)) {
             throw new \Exception("Widget's assets folder is not existed");
         }

@@ -123,6 +123,7 @@ class PdoDataSource extends DataSource
                 $password,
                 $options
             );
+
             PdoDataSource::$connections[$key] = $this->connection;
         }
         if ($charset) {
@@ -166,7 +167,7 @@ class PdoDataSource extends DataSource
         //drivers = Array ( [0] => mysql [1] => oci [2] => pgsql [3] => sqlite [4] => sqlsrv )
         switch ($driver) {
             case 'mysql':
-                list($this->query, $this->totalQuery, $this->filterQuery)
+                list($this->query, $this->totalQuery, $this->filterQuery, $this->aggregates)
                     = MySQLDataSource::processQuery($this->originalQuery, $queryParams);
                 break;
             case 'oci':
@@ -212,31 +213,96 @@ class PdoDataSource extends DataSource
      *
      * @return string Procesed query
      */
-    protected function prepareParams($query, $sqlParams)
+    protected function prepareAndBind($query, $params)
     {
-        if (empty($sqlParams)) {
-            $sqlParams = [];
+        if (empty($params)) {
+            $params = [];
         }
-        uksort(
-            $sqlParams,
+        $paNames = array_keys($params);
+        // Sort param names, longest name first,
+        // so that longer ones are replaced before shorter ones in query
+        // to avoid case when a shorter name is a substring of a longer name
+        usort(
+            $paNames,
             function ($k1, $k2) {
-                return strlen($k1) - strlen($k2);
+                return strlen($k2) - strlen($k1);
             }
         );
-        $resultQuery = $query;
-        $paramNum = 0;
-        foreach ($sqlParams as $paName => $paValue) {
+        // echo "paNames = "; print_r($paNames); echo "<br>";
+
+        // Spread array parameters
+        $query = $query;
+        foreach ($paNames as $paName) {
+            $paValue = $params[$paName];
             if (gettype($paValue)==="array") {
                 $paramList = [];
                 foreach ($paValue as $i=>$value) {
-                    // $paramList[] = $paName . "_param$i";
-                    $paramList[] = ":pdoParam$paramNum";
-                    $paramNum++;
+                    // $paramList[] = ":pdoParam$paramNum";
+                    $paArrElName = $paName . "_arr_$i";
+                    $paramList[] = $paArrElName;
+                    $params[$paArrElName] = $value;
                 }
-                $resultQuery = str_replace($paName, implode(",", $paramList), $resultQuery);
+                $query = str_replace($paName, implode(",", $paramList), $query);
+            } 
+        }
+
+        $paNames = array_keys($params);
+        usort(
+            $paNames,
+            function ($k1, $k2) {
+                return strlen($k2) - strlen($k1);
+            }
+        );
+        // echo "paNames = "; print_r($paNames); echo "<br><br>";
+        // echo "query = $query<br><br>";
+        // echo "params = "; print_r($params); echo "<br><br>";
+
+        $newParams = [];
+        $hashedPaNames = [];
+        foreach ($paNames as $paName) {
+            $count = 1;
+            $pos = -1;
+            while (true) {
+                $pos = strpos($query, $paName, $pos + 1);
+                // echo "query = $query<br>";
+                // echo "paName = $paName<br>";
+                // echo "count = $count<br>";
+                // echo "pos = "; var_dump($pos); echo "<br>";
+                // echo "<br>";
+                if ($pos === false) {
+                    break;
+                } else {
+                    $newPaName = $count > 1 ? $paName . "_" . $count : $paName;
+                    $newParams[$newPaName] = $params[$paName];
+                    // $hashedPaName = $newPaName;
+                    $hashedPaName = md5($newPaName);
+                    $hashedPaNames[$newPaName] = $hashedPaName;
+                    $query = substr_replace($query, $hashedPaName, $pos, strlen($paName));
+                }
+                $count++;
             }
         }
-        return $resultQuery;
+        foreach ($newParams as $newPaName => $value) {
+            $hashedPaName = $hashedPaNames[$newPaName];
+            $query = str_replace($hashedPaName, $newPaName, $query);
+        }
+
+        // echo "query = $query<br><br>";
+        // echo "newParams = "; print_r($newParams); echo "<br><br>";
+
+        $stm = $this->connection->prepare($query);
+
+        // $paramNum = 0;
+        // $newParams[":a"] = 1;
+        foreach ($newParams as $paName => $paValue) {
+            $type = gettype($paValue);
+            $paramType = $this->typeToPDOParamType($type);
+            // echo "paramType=$paramType <br>";
+            // echo "paValue=$paValue <br>";
+            $stm->bindValue($paName, $paValue, $paramType);
+        }
+
+        return $stm;
     }
 
     /**
@@ -261,44 +327,6 @@ class PdoDataSource extends DataSource
             case "string":
             default:
                 return PDO::PARAM_STR;
-        }
-    }
-
-    /**
-     * Perform data binding
-     *
-     * @param string $stm       Query need to bind params
-     * @param array  $sqlParams The parameters will be bound to query
-     *
-     * @return null
-     */
-    protected function bindParams($stm, $sqlParams)
-    {
-        if (empty($sqlParams)) {
-            $sqlParams = [];
-        }
-        uksort(
-            $sqlParams,
-            function ($k1, $k2) {
-                return strlen($k1) - strlen($k2);
-            }
-        );
-        $paramNum = 0;
-        foreach ($sqlParams as $paName => $paValue) {
-            $type = gettype($paValue);
-            if ($type === 'array') {
-                foreach ($paValue as $i=>$value) {
-                    $paramType = $this->typeToPDOParamType(gettype($value));
-                    $paramName = ":pdoParam$paramNum";
-                    $paramNum++;
-                    $stm->bindValue($paramName, $value, $paramType);
-                }
-            } else {
-                $paramType = $this->typeToPDOParamType($type);
-                // echo "paramType=$paramType <br>";
-                // echo "paValue=$paValue <br>";
-                $stm->bindValue($paName, $paValue, $paramType);
-            }
         }
     }
 
@@ -387,15 +415,20 @@ class PdoDataSource extends DataSource
 
         $searchParams = Util::get($this->queryParams, 'searchParams', []);
 
+        if (empty($this->sqlParams)) $this->sqlParams = [];
+        if (empty($searchParams)) $searchParams = [];
+
         if ($this->countTotal) {
-            $totalQuery = $this->prepareParams($this->totalQuery, $this->sqlParams);
-            $stm = $this->connection->prepare($totalQuery);
-            // echo "totalQuery=$totalQuery<br>";
-            $this->bindParams($stm, $this->sqlParams);
+            // $totalQuery = $this->prepareParams($this->totalQuery, $this->sqlParams);
+            // $stm = $this->connection->prepare($totalQuery);
+            // $this->bindParams($stm, $this->sqlParams);
+            $stm = $this->prepareAndBind($this->totalQuery, $this->sqlParams);
             $stm->execute();
             $error = $stm->errorInfo();
             if ($error[2]!=null) {
-                throw new \Exception("Query Error >> [".$error[2]."] >> $totalQuery");
+                throw new \Exception("Query Error >> ".json_encode($error)." >> $this->totalQuery"
+                    . " || Sql params = " . json_encode($this->sqlParams)
+                );
                 return;
             }
             $row = $stm->fetch();
@@ -404,41 +437,71 @@ class PdoDataSource extends DataSource
         }
 
         if ($this->countFilter) {
-            $filterQuery = $this->prepareParams($this->filterQuery, $this->sqlParams);
-            // $filterQuery = $this->prepareParams($this->filterQuery, $searchParams);
-            $stm = $this->connection->prepare($filterQuery);
-            // echo "filterQuery=$filterQuery<br>";
-            $this->bindParams($stm, $this->sqlParams);
-            $this->bindParams($stm, $searchParams);
-            // if (! empty($this->queryParams['searchParams']))
-            //     $this->bindParams($stm, $this->queryParams['searchParams']);
+            // $filterQuery = $this->prepareParams($this->filterQuery, $this->sqlParams);
+            // $stm = $this->connection->prepare($filterQuery);
+            // $this->bindParams($stm, $this->sqlParams);
+            // $this->bindParams($stm, $searchParams);
+            $stm = $this->prepareAndBind($this->filterQuery, array_merge($this->sqlParams, $searchParams));
             $stm->execute();
             $error = $stm->errorInfo();
             if ($error[2]!=null) {
-                throw new \Exception("Query Error >> [".$error[2]."] >> $filterQuery");
-                return;
+                throw new \Exception("Query Error >> ".json_encode($error)." >> $this->filterQuery"
+                    . " || Sql params = " . json_encode($this->sqlParams)
+                    . " || Search params = " . json_encode($searchParams)
+                );
             }
             $row = $stm->fetch();
             $result = $row[0];
             $metaData['filterRecords'] = $result;
         }
+
+        if (!empty($this->aggregates)) {
+            foreach ($this->aggregates as $aggregate) {
+                $operator = $aggregate["operator"];
+                $field = $aggregate["field"];
+                $aggQuery = $aggregate["aggQuery"];
+                // $aggQuery = $this->prepareParams($aggQuery, $this->sqlParams);
+                // $stm = $this->connection->prepare($aggQuery);
+                // $this->bindParams($stm, $this->sqlParams);
+                // $this->bindParams($stm, $searchParams);
+                $stm = $this->prepareAndBind($aggQuery, array_merge($this->sqlParams, $searchParams));
+                $stm->execute();
+                $error = $stm->errorInfo();
+                if ($error[2]!=null) {
+                    throw new \Exception("Query Error >> ".json_encode($error)." >> $aggQuery"
+                        . " || Sql params = " . json_encode($this->sqlParams)
+                        . " || Search params = " . json_encode($searchParams)
+                    );
+                }
+                $row = $stm->fetch();
+                $result = $row[0];
+                Util::set($metaData, ['aggregates', $operator, $field], $result);
+            }
+        }
+
+
         $row = null;
 
-        $query = $this->prepareParams($this->query, $this->sqlParams);
-        // $query = $this->prepareParams($this->query, $searchParams);
+        $query = $this->query;
         // echo "pdodatasource start query=$query <br>";
-        $stm = $this->connection->prepare($query);
-        $this->bindParams($stm, $this->sqlParams);
-        $this->bindParams($stm, $searchParams);
-        // if (! empty($this->queryParams['searchParams']))
-        //     $this->bindParams($stm, $this->queryParams['searchParams']);
+        // echo "this->sqlParams = "; Util::prettyPrint($this->sqlParams);
+        // echo "searchParams = "; Util::prettyPrint($searchParams);
+        // $query = $this->prepareParams($query, $this->sqlParams);
+        // $query = $this->prepareParams($query, $searchParams);
+        // $stm = $this->connection->prepare($query);
+        // $this->bindParams($stm, $this->sqlParams);
+        // $this->bindParams($stm, $searchParams);
+        
+        $stm = $this->prepareAndBind($query, array_merge($this->sqlParams, $searchParams));
         $stm->execute();
 
         $error = $stm->errorInfo();
         // if($error[2]!=null)
         if ($error[0]!='00000') {
-            throw new \Exception("Query Error >> [".$error[2]."] >> $query");
-            return;
+            throw new \Exception("Query Error >> ".json_encode($error)." >> $query"
+                . " || Sql params = " . json_encode($this->sqlParams)
+                . " || Search params = " . json_encode($searchParams)
+            );
         }
 
         $driver = strtolower($this->connection->getAttribute(PDO::ATTR_DRIVER_NAME));
@@ -502,14 +565,15 @@ class PdoDataSource extends DataSource
     public function fetchFields($query)
     {
         $columns = [];
-        $query = $this->prepareParams($query, []);
-        $stm = $this->connection->prepare($query);
+        // $query = $this->prepareParams($query, []);
+        // $stm = $this->connection->prepare($query);
+        $stm = $this->prepareAndBind($query, $this->sqlParams);
         $stm->execute();
         $error = $stm->errorInfo();
         // if($error[2]!=null)
         if ($error[0]!='00000') {
-            throw new \Exception("Query Error >> [".$error[2]."] >> $query");
-            return;
+            throw new \Exception("Query Error >> ".json_encode($error)." >> $query"
+            );
         }
         $driver = strtolower($this->connection->getAttribute(PDO::ATTR_DRIVER_NAME));
         $metaSupportDrivers = array('dblib', 'mysql', 'pgsql', 'sqlite');
@@ -594,16 +658,18 @@ class PdoDataSource extends DataSource
         // echo "fetData queries = "; Util::prettyPrint($queries);
         $result = [];
         foreach ($queries as $key => $query) {
-            $query = $this->prepareParams($query, $this->sqlParams);
-            $stm = $this->connection->prepare($query);
-            $this->bindParams($stm, $this->sqlParams);
+            // $query = $this->prepareParams($query, $this->sqlParams);
+            // $stm = $this->connection->prepare($query);
+            // $this->bindParams($stm, $this->sqlParams);
+            $stm = $this->prepareAndBind($query, $this->sqlParams);
             $stm->execute();
     
             $error = $stm->errorInfo();
             // if($error[2]!=null)
             if ($error[0]!='00000') {
-                throw new \Exception("Query Error >> [".$error[2]."] >> $query");
-                return;
+                throw new \Exception("Query Error >> ".json_encode($error)." >> $query"
+                    . " || Sql params = " . json_encode($this->sqlParams)
+                );
             }
     
             $rows = [];

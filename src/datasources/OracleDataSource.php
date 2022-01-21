@@ -120,7 +120,7 @@ class OracleDataSource extends DataSource
         if (isset(OracleDataSource::$connections[$key])) {
             $this->connection = OracleDataSource::$connections[$key];
         } else {
-            $conn = oci_connect($username, $password, $connString);
+            $conn = oci_connect($username, $password, $connString, "", OCI_SYSDBA);
             if ($conn) {
                 $this->connection = $conn;
             } else {
@@ -176,8 +176,23 @@ class OracleDataSource extends DataSource
         $processedQuery = "select * from (select a.*, rownum as rnum 
             from (select * from ($query) $orderSql) a $limitSearchSql ) tmp 
             where rnum >= $start";
-        // echo "query=" . $processedQuery . '<br>';
-        return [$processedQuery, $totalQuery, $filterQuery];
+
+        $thisAggregates = [];
+        if (!empty($queryParams["aggregates"])) {
+            $aggregates = $queryParams["aggregates"];
+            foreach ($aggregates as $operator => $fields) {
+                foreach ($fields as $field) {
+                    $aggQuery = "SELECT $operator($field) FROM ($query) tmp $searchSql";
+                    $thisAggregates[] = [
+                        "operator" => $operator,
+                        "field" => $field,
+                        "aggQuery" => $aggQuery
+                    ];
+                }
+            }
+        }
+            
+        return [$processedQuery, $totalQuery, $filterQuery, $thisAggregates];
     }
 
     /**
@@ -190,7 +205,7 @@ class OracleDataSource extends DataSource
     public function queryProcessing($queryParams) 
     {
         $this->queryParams = $queryParams;
-        list($this->query, $this->totalQuery, $this->filterQuery) 
+        list($this->query, $this->totalQuery, $this->filterQuery, $this->aggregates)
             = self::processQuery($this->originalQuery, $queryParams);
 
         $this->countTotal = Util::get($queryParams, 'countTotal', false);
@@ -220,32 +235,91 @@ class OracleDataSource extends DataSource
      * 
      * @return string Procesed query 
      */
-    protected function bindParams($query, $sqlParams)
+    protected function prepareAndBind($query, $params = [])
     {
-        if (empty($sqlParams)) {
-            $sqlParams = [];
-        }
-        uksort(
-            $sqlParams,
+        $paNames = array_keys($params);
+        // Sort param names, longest name first,
+        // so that longer ones are replaced before shorter ones in query
+        // to avoid case when a shorter name is a substring of a longer name
+        usort(
+            $paNames,
             function ($k1, $k2) {
-                return strlen($k1) - strlen($k2);
+                return strlen($k2) - strlen($k1);
             }
         );
-        foreach ($sqlParams as $key=>$value) {
-            if (gettype($value)==="array") {
-                $value = array_map(
-                    function ($v) {
-                        return $this->escape($v);
-                    },
-                    $value
-                );
-                $value = implode(",", $value);
-                $query = str_replace($key, $value, $query);
-            } else {
-                $query = str_replace($key, $this->escape($value), $query);
+        // echo "paNames = "; print_r($paNames); echo "<br>";
+
+        // Spreadh array parameters
+        foreach ($paNames as $paName) {
+            $paValue = $params[$paName];
+            if (gettype($paValue)==="array") {
+                $paramList = [];
+                foreach ($paValue as $i=>$value) {
+                    // $paramList[] = ":pdoParam$paramNum";
+                    $paArrElName = $paName . "_arr_$i";
+                    $paramList[] = $paArrElName;
+                    $params[$paArrElName] = $value;
+                }
+                $query = str_replace($paName, implode(",", $paramList), $query);
+            } 
+        }
+        
+        $paNames = array_keys($params);
+        usort(
+            $paNames,
+            function ($k1, $k2) {
+                return strlen($k2) - strlen($k1);
+            }
+        );
+        // echo "paNames = "; print_r($paNames); echo "<br>";
+        // echo "query = $query<br><br>";
+
+        $newParams = [];
+        $poses = [];
+        $hashedPaNames = [];
+        foreach ($paNames as $paName) {
+            $count = 1;
+            $pos = -1;
+            while (true) {
+                $pos = strpos($query, $paName, $pos + 1);
+                if ($pos === false) {
+                    break;
+                } else {
+                    $newPaName = $count > 1 ? $paName . "_" . $count : $paName;
+                    $newParams[$newPaName] = $params[$paName];
+                    $poses[$newPaName] = $pos;
+                    // $hashedPaName = $newPaName;
+                    $hashedPaName = md5($newPaName);
+                    $hashedPaNames[$newPaName] = $hashedPaName;
+                    $query = substr_replace($query, $hashedPaName, $pos, strlen($paName));
+                }
+                $count++;
             }
         }
-        return $query;
+        foreach ($newParams as $newPaName => $value) {
+            $hashedPaName = $hashedPaNames[$newPaName];
+            $query = str_replace($hashedPaName, $newPaName, $query);
+        }
+        
+        // echo "query = $query<br><br>";
+        // echo "newParams = "; print_r($newParams); echo "<br><br>";
+
+        $result = oci_parse($this->connection, $query);
+        foreach ($newParams as $k => $v) {
+            // oci_bind_by_name uses reference instead of value
+            // so must use $newParams[$k] instead of $v
+            oci_bind_by_name($result, $k, $newParams[$k]); 
+        }
+        if (! $result) {
+            throw new \Exception(
+                "Oracle error: " . oci_error()
+                . " || Query = $query"
+                . " || Params = " . json_encode($params)
+            );
+        }
+        // echo "result = "; var_dump($result); echo "<br>";
+        
+        return $result;
     }
     
     /**
@@ -319,15 +393,6 @@ class OracleDataSource extends DataSource
             return "unknown";
         }
     }
-
-    protected function prepareAndBind($query, $params)
-    {
-        $result = oci_parse($this->connection, $query);
-        foreach ($params as $k => $v) {
-            oci_bind_by_name($result, $k, $v);
-        }
-        return $result;
-    }
     
     /**
      * Start piping data
@@ -340,13 +405,11 @@ class OracleDataSource extends DataSource
 
         $searchParams = Util::get($this->queryParams, 'searchParams', []);
 
+        if (empty($this->sqlParams)) $this->sqlParams = [];
+        if (empty($searchParams)) $searchParams = [];
+
         if ($this->countTotal) {
-            $totalQuery = $this->bindParams($this->totalQuery, $this->sqlParams);
-            $totalResult = oci_parse($this->connection, $totalQuery);
-            if (! $totalResult) {
-                echo oci_error();
-                exit;
-            }
+            $totalResult = $this->prepareAndBind($this->totalQuery, $this->sqlParams);
             oci_execute($totalResult);
             $row = oci_fetch_array($totalResult, OCI_BOTH+OCI_RETURN_NULLS);
             $total = $row[0];
@@ -354,28 +417,29 @@ class OracleDataSource extends DataSource
         }
 
         if ($this->countFilter) {
-            $filterQuery = $this->bindParams($this->filterQuery, $this->sqlParams);
-            // $filterResult = oci_parse($this->connection, $filterQuery);
-            $filterResult = $this->prepareAndBind($filterQuery, $searchParams);
-            if (! $filterResult) {
-                echo oci_error();
-                exit;
-            }
+            $filterResult = $this->prepareAndBind($this->filterQuery, array_merge($this->sqlParams, $searchParams));
             oci_execute($filterResult);
             $row = oci_fetch_array($filterResult, OCI_BOTH+OCI_RETURN_NULLS);
             $total = $row[0];
             $metaData['filterRecords'] = $total;
         }
 
-        $query = $this->bindParams($this->query, $this->sqlParams);
-        // $stid = oci_parse($this->connection, $query);
-        // echo "oracle query=$query <br>";
-        // echo "searchParams="; print_r($searchParams);
-        $stid = $this->prepareAndBind($query, $searchParams);
-        if (! $stid) {
-            echo oci_error();
-            exit;
+        if (!empty($this->aggregates)) {
+            foreach ($this->aggregates as $aggregate) {
+                $operator = $aggregate["operator"];
+                $field = $aggregate["field"];
+                $aggQuery = $aggregate["aggQuery"];
+                $aggResult = $this->prepareAndBind($aggQuery, array_merge($this->sqlParams, $searchParams));
+                oci_execute($aggResult);
+                $row = oci_fetch_array($aggResult, OCI_BOTH+OCI_RETURN_NULLS);
+                $result = $row[0];
+                Util::set($metaData, ['aggregates', $operator, $field], $result);
+            }
         }
+
+        // echo "oracle query=$this->query <br>";
+        // echo "searchParams="; print_r($searchParams);
+        $stid = $this->prepareAndBind($this->query, array_merge($this->sqlParams, $searchParams));
         oci_execute($stid);
         $num_fields = oci_num_fields($stid);
         // $metaData = array("columns"=>array());
@@ -402,6 +466,7 @@ class OracleDataSource extends DataSource
         $this->startInput(null);
         
         while ($row = oci_fetch_array($stid, OCI_ASSOC+OCI_RETURN_NULLS)) {
+            // echo "row="; print_r($row); echo "<br>";
             $this->next($row, $this);
         }
     
@@ -425,25 +490,17 @@ class OracleDataSource extends DataSource
                 'data' => $query
             ];
         }
-        $result = [];
+        $data = [];
         foreach ($queries as $key => $query) {
-            $query = $this->bindParams($this->query, $this->sqlParams);
-            $stid = $this->prepareAndBind($query, []);
-            if (! $stid) {
-                echo oci_error();
-                exit;
-            }
+            $stid = $this->prepareAndBind($this->query, $this->sqlParams);
             oci_execute($stid);
-            if ($result===false) {
-                throw new \Exception("Error on query >>> ".$this->connection->error);
-            }
             $rows = [];
             while ($row = oci_fetch_array($stid, OCI_ASSOC+OCI_RETURN_NULLS)) {
                 // print_r($row); echo "<br>";
                 $rows[] = $row;
             }
-            $result[$key] = $rows;
+            $data[$key] = $rows;
         }
-        return $result;
+        return $data;
     }
 }

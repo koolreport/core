@@ -151,8 +151,23 @@ class PostgreSQLDataSource extends DataSource
         $filterQuery = "SELECT count(*) FROM ($query) tmp $searchSql";
         $totalQuery = "SELECT count(*) FROM ($query) tmp";
         $processedQuery = "select * from ($query) tmp $searchSql $orderSql $limit";
-        // echo "query=" . $processedQuery . '<br>';
-        return [$processedQuery, $totalQuery, $filterQuery];
+
+        $thisAggregates = [];
+        if (!empty($queryParams["aggregates"])) {
+            $aggregates = $queryParams["aggregates"];
+            foreach ($aggregates as $operator => $fields) {
+                foreach ($fields as $field) {
+                    $aggQuery = "SELECT $operator($field) FROM ($query) tmp $searchSql";
+                    $thisAggregates[] = [
+                        "operator" => $operator,
+                        "field" => $field,
+                        "aggQuery" => $aggQuery
+                    ];
+                }
+            }
+        }
+
+        return [$processedQuery, $totalQuery, $filterQuery, $thisAggregates];
     }
 
     /**
@@ -165,7 +180,7 @@ class PostgreSQLDataSource extends DataSource
     public function queryProcessing($queryParams) 
     {
         $this->queryParams = $queryParams;
-        list($this->query, $this->totalQuery, $this->filterQuery)
+        list($this->query, $this->totalQuery, $this->filterQuery, $this->aggregates)
             = self::processQuery($this->originalQuery, $queryParams);
 
         $this->countTotal = Util::get($queryParams, 'countTotal', false);
@@ -185,42 +200,6 @@ class PostgreSQLDataSource extends DataSource
     {
         $this->sqlParams = $sqlParams;
         return $this;
-    }
-    
-    /**
-     * Perform data binding
-     * 
-     * @param string $query     Query need to bind params
-     * @param array  $sqlParams The parameters will be bound to query
-     * 
-     * @return string Procesed query 
-     */
-    protected function bindParams($query, $sqlParams)
-    {
-        if (empty($sqlParams)) {
-            $sqlParams = [];
-        } 
-        uksort(
-            $sqlParams,
-            function ($k1, $k2) {
-                return strlen($k1) - strlen($k2);
-            }
-        );
-        foreach ($sqlParams as $key=>$value) {
-            if (gettype($value)==="array") {
-                $value = array_map(
-                    function ($v) {
-                        return $this->escape($v);
-                    },
-                    $value
-                );
-                $value = implode(",", $value);
-                $query = str_replace($key, $value, $query);
-            } else {
-                $query = str_replace($key, $this->escape($value), $query);
-            }
-        }
-        return $query;
     }
     
     /**
@@ -316,27 +295,97 @@ class PostgreSQLDataSource extends DataSource
         
         $native_type = strtolower($native_type);
         
-        foreach ($pg_to_php as $key=>$value) {
-            if (strpos($native_type, $key)!==false) {
-                return $value;
-            }
-        }
-        return "unknown";
+        $mappedType = Util::get($pg_to_php, $native_type, "unknown");
+        return $mappedType;
     }
 
-    protected function prepareAndBind($query, $params)
+    protected function prepareAndBind($query, $params = [])
     {
-        $paramNames = array_keys($params);
-        uksort(
-            $paramNames,
+        $paNames = array_keys($params);
+        // Sort param names, longest name first,
+        // so that longer ones are replaced before shorter ones in query
+        // to avoid case when a shorter name is a substring of a longer name
+        usort(
+            $paNames,
             function ($k1, $k2) {
-                return strlen($k1) - strlen($k2);
+                return strlen($k2) - strlen($k1);
             }
         );
-        foreach ($paramNames as $i => $k) {
-            $query = str_replace($k, "$" . ($i+1), $query);
+        // echo "paNames = "; print_r($paNames); echo "<br>";
+
+        // Spreadh array parameters
+        foreach ($paNames as $paName) {
+            $paValue = $params[$paName];
+            if (gettype($paValue)==="array") {
+                $paramList = [];
+                foreach ($paValue as $i=>$value) {
+                    // $paramList[] = ":pdoParam$paramNum";
+                    $paArrElName = $paName . "_arr_$i";
+                    $paramList[] = $paArrElName;
+                    $params[$paArrElName] = $value;
+                }
+                $query = str_replace($paName, implode(",", $paramList), $query);
+            } 
         }
-        $result = pg_query_params($this->connection, $query, array_values($params));
+
+        $paNames = array_keys($params);
+        usort(
+            $paNames,
+            function ($k1, $k2) {
+                return strlen($k2) - strlen($k1);
+            }
+        );
+        // echo "paNames = "; print_r($paNames); echo "<br><br>";
+        // echo "query = $query<br><br>";
+
+        $newParams = [];
+        $poses = [];
+        $hashedPaNames = [];
+        foreach ($paNames as $paName) {
+            $count = 1;
+            $pos = -1;
+            while (true) {
+                $pos = strpos($query, $paName, $pos + 1);
+                if ($pos === false) {
+                    break;
+                } else {
+                    $newPaName = $count > 1 ? $paName . "_" . $count : $paName;
+                    $newParams[$newPaName] = $params[$paName];
+                    $poses[$newPaName] = $pos;
+                    // $hashedPaName = $newPaName;
+                    $hashedPaName = md5($newPaName);
+                    $hashedPaNames[$newPaName] = $hashedPaName;
+                    $query = substr_replace($query, $hashedPaName, $pos, strlen($paName));
+                }
+                $count++;
+            }
+        }
+        // Sort new params by their positions, smallest one first
+        uksort(
+            $newParams, 
+            function ($k1, $k2) use ($poses) {
+                return $poses[$k1] - $poses[$k2];
+            }
+        );
+
+        $count = 1;
+        foreach ($newParams as $newPaName => $value) {
+            $hashedPaName = $hashedPaNames[$newPaName];
+            $query = str_replace($hashedPaName, "$" . $count, $query);
+            $count++;
+        }
+
+        // echo "query = $query<br><br>";
+        // echo "newParams = "; print_r($newParams); echo "<br>";
+
+        $result = pg_query_params($this->connection, $query, array_values($newParams));
+        if (!$result) {
+            throw new \Exception(
+                "PostgreSQL error: " . pg_last_error($this->connection)
+                . " || Query = $query"
+                . " || Params = " . json_encode($params)
+            );
+        }
         return $result;
     }
     
@@ -351,9 +400,11 @@ class PostgreSQLDataSource extends DataSource
 
         $searchParams = Util::get($this->queryParams, 'searchParams', []);
 
+        if (empty($this->sqlParams)) $this->sqlParams = [];
+        if (empty($searchParams)) $searchParams = [];
+
         if ($this->countTotal) {
-            $totalQuery = $this->bindParams($this->totalQuery, $this->sqlParams);
-            $totalResult = pg_query($this->connection, $totalQuery);
+            $totalResult = $this->prepareAndBind($this->totalQuery, $this->sqlParams);
             if (!$totalResult) {
                 echo pg_last_error($this->connection);
                 exit;
@@ -364,25 +415,25 @@ class PostgreSQLDataSource extends DataSource
         }
 
         if ($this->countFilter) {
-            $filterQuery = $this->bindParams($this->filterQuery, $this->sqlParams);
-            // $filterResult = pg_query($this->connection, $filterQuery);
-            $filterResult = $this->prepareAndBind($filterQuery, $searchParams);
-            if (!$filterResult) {
-                echo pg_last_error($this->connection);
-                exit;
-            }
+            $filterResult = $this->prepareAndBind($this->filterQuery, array_merge($this->sqlParams, $searchParams));
             $row = pg_fetch_array($filterResult);
             $total = $row[0];
             $metaData['filterRecords'] = $total;
         }
 
-        $query = $this->bindParams($this->query, $this->sqlParams);
-        // $result = pg_query($this->connection, $query);
-        $result = $this->prepareAndBind($query, $searchParams);
-        if (! $result) {
-            echo pg_last_error($this->connection);
-            exit;
+        if (!empty($this->aggregates)) {
+            foreach ($this->aggregates as $aggregate) {
+                $operator = $aggregate["operator"];
+                $field = $aggregate["field"];
+                $aggQuery = $aggregate["aggQuery"];
+                $aggResult = $this->prepareAndBind($aggQuery, array_merge($this->sqlParams, $searchParams));
+                $row = pg_fetch_array($aggResult);
+                $result = $row[0];
+                Util::set($metaData, ['aggregates', $operator, $field], $result);
+            }
         }
+
+        $result = $this->prepareAndBind($this->query, array_merge($this->sqlParams, $searchParams));
 
         $num_fields = pg_num_fields($result);
 
@@ -432,24 +483,16 @@ class PostgreSQLDataSource extends DataSource
                 'data' => $query
             ];
         }
-        $result = [];
+        $data = [];
         foreach ($queries as $key => $query) {
-            $query = $this->bindParams($this->query, $this->sqlParams);
-            $queryResult = $this->prepareAndBind($query, []);
-            if (! $queryResult) {
-                echo pg_last_error($this->connection);
-                exit;
-            }
-            if ($queryResult===false) {
-                throw new \Exception("Error on query >>> ".$this->connection->error);
-            }
+            $queryResult = $this->prepareAndBind($this->query, $this->sqlParams);
             $rows = [];
             while ($row = pg_fetch_assoc($queryResult)) {
                 // print_r($row); echo "<br>";
                 $rows[] = $row;
             }
-            $result[$key] = $rows;
+            $data[$key] = $rows;
         }
-        return $result;
+        return $data;
     }
 }

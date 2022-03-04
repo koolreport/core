@@ -71,6 +71,16 @@ class Map extends Process
         if (is_callable($func)) {
             $this->newMeta = $func($metaData);
         }
+        if (Util::get($this->params, "sendMetaImmediately", false)) {
+            $this->sendMeta($this->newMeta);
+            $this->metaSent = true;
+        }
+    }
+
+    protected function onInputStart()
+    {
+        // echo "Map onInputStart<br>";
+        $this->index = 0;
     }
 
     /**
@@ -146,6 +156,8 @@ class Map extends Process
                 $newRows = $return;
             }
             $newRows = $this->to2DArray($newRows);
+            // echo "Map index = "; print_r($this->index); echo "<br>";
+            // echo "Map newRows = "; print_r($newRows); echo "<br>";
             if (!$this->metaSent) {
                 $colMetas = $this->newMeta['columns'];
                 $newRow = Util::get($newRows, 0, []);
@@ -156,6 +168,7 @@ class Map extends Process
                     }
                 }
                 $this->newMeta['columns'] = $colMetas;
+                // echo "Map sendMeta 1<br>";
                 $this->sendMeta($this->newMeta);
                 $this->metaSent = true;
             }
@@ -164,6 +177,7 @@ class Map extends Process
             }
         } else {
             if (!$this->metaSent) {
+                // echo "Map sendMeta 2<br>";
                 $this->sendMeta($this->newMeta);
                 $this->metaSent = true;
             }

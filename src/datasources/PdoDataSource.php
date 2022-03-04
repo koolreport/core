@@ -402,20 +402,15 @@ class PdoDataSource extends DataSource
         }
         return "unknown";
     }
-    
-    /**
-     * Start piping data
-     *
-     * @return null
-     */
-    public function start()
+
+    protected function buildMetaData()
     {
-        // $this->connection->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, false);
+        // echo "pdodatasource buildMetaData<br>";
         $metaData = array("columns"=>array());
+        
+        if (empty($this->sqlParams)) $this->sqlParams = [];
 
         $searchParams = Util::get($this->queryParams, 'searchParams', []);
-
-        if (empty($this->sqlParams)) $this->sqlParams = [];
         if (empty($searchParams)) $searchParams = [];
 
         if ($this->countTotal) {
@@ -479,8 +474,14 @@ class PdoDataSource extends DataSource
             }
         }
 
-
-        $row = null;
+        $driver = strtolower($this->connection->getAttribute(PDO::ATTR_DRIVER_NAME));
+        $metaSupportDrivers = array('dblib', 'mysql', 'pgsql', 'sqlite');
+        $metaSupport = false;
+        foreach ($metaSupportDrivers as $supportDriver) {
+            if (strpos($driver, $supportDriver) !== false) {
+                $metaSupport = true;
+            }
+        }
 
         $query = $this->query;
         // echo "pdodatasource start query=$query <br>";
@@ -492,10 +493,10 @@ class PdoDataSource extends DataSource
         // $this->bindParams($stm, $this->sqlParams);
         // $this->bindParams($stm, $searchParams);
         
-        $stm = $this->prepareAndBind($query, array_merge($this->sqlParams, $searchParams));
-        $stm->execute();
+        $this->stm = $this->prepareAndBind($query, array_merge($this->sqlParams, $searchParams));
+        $this->stm->execute();
 
-        $error = $stm->errorInfo();
+        $error = $this->stm->errorInfo();
         // if($error[2]!=null)
         if ($error[0]!='00000') {
             throw new \Exception("Query Error >> ".json_encode($error)." >> $query"
@@ -503,22 +504,15 @@ class PdoDataSource extends DataSource
                 . " || Search params = " . json_encode($searchParams)
             );
         }
-
-        $driver = strtolower($this->connection->getAttribute(PDO::ATTR_DRIVER_NAME));
-        $metaSupportDrivers = array('dblib', 'mysql', 'pgsql', 'sqlite');
-        $metaSupport = false;
-        foreach ($metaSupportDrivers as $supportDriver) {
-            if (strpos($driver, $supportDriver) !== false) {
-                $metaSupport = true;
-            }
-        }
             
+        $this->firstRow = null;
         if (!$metaSupport) {
-            $row = $stm->fetch(PDO::FETCH_ASSOC);
+            $this->firstRow = $stm->fetch(PDO::FETCH_ASSOC);
             $cNames = empty($row) ? array() : array_keys($row);
             $numcols = count($cNames);
         } else {
-            $numcols = $stm->columnCount();
+            
+            $numcols = $this->stm->columnCount();
         }
 
         // $metaData = array("columns"=>array());
@@ -527,7 +521,7 @@ class PdoDataSource extends DataSource
                 $cName = $cNames[$i];
                 $cType = $this->guessTypeFromValue($row[$cName]);
             } else {
-                $info = $stm->getColumnMeta($i);
+                $info = $this->stm->getColumnMeta($i);
                 $cName = $info["name"];
                 $cType = $this->guessType(Util::get($info, "native_type", "unknown"));
             }
@@ -546,20 +540,101 @@ class PdoDataSource extends DataSource
                 break;
             }
         }
-                
-        $this->sendMeta($metaData, $this);
+           
+        $this->builtMetaData = $metaData;
+        // echo "this->metaData = "; var_dump($this->metaData); echo "<br>";
+    }
+    
+    /**
+     * Start piping data
+     *
+     * @return null
+     */
+    public function start()
+    {
+        // echo "pdodatasource start()<br>";
+
+        // $this->connection->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, false);
+        
+        $this->buildMetaData();
+        $this->sendMeta($this->builtMetaData, $this);
+
         $this->startInput(null);
                                 
-        if (! isset($row)) {
-            $row=$stm->fetch(PDO::FETCH_ASSOC);
+        if (! isset($this->firstRow)) {
+            $row=$this->stm->fetch(PDO::FETCH_ASSOC);
+        } else {
+            $row = $this->firstRow;
         }
             
         while ($row) {
+            // echo "pdodatasource start row = "; print_r($row); echo "<br><br>";
             $this->next($row, $this);
-            $row=$stm->fetch(PDO::FETCH_ASSOC);
+            $row=$this->stm->fetch(PDO::FETCH_ASSOC);
         }
         $this->endInput(null);
         // $stm->closeCursor();
+        $this->endOfStm = true;
+    }
+
+    public function startMetaOnly()
+    {
+        // echo "pdodatasource startMetaOnly<br>";
+        if (!isset($this->builtMetaData)) {
+            // echo "buildMetaData<br>";
+            $this->buildMetaData();
+            // var_dump($this->builtMetaData); echo "<br>";
+            // echo "pdodatasource -> startMetaOnly: ";
+            // var_dump($metaData);
+            // echo "<br>";
+            $this->sendMeta($this->builtMetaData, $this);
+        } else {
+            // var_dump($this->builtMetaData); echo "<br>";
+        }
+    }
+
+    public function startGenerator($genName)
+    {
+        $this->startInput(null);
+
+        $report = $this->getReport();
+        $report->saveDataGenRow = $genName;
+
+        if (isset($this->endOfStm) && $this->endOfStm === true) {
+            $this->stm->execute();
+            $this->firstRow = $this->stm->fetch(PDO::FETCH_ASSOC);
+            $this->endOfStm = false;
+        }
+
+        if (! isset($this->firstRow)) {
+            $row=$this->stm->fetch(PDO::FETCH_ASSOC);
+        } else {
+            $row = $this->firstRow;
+        }
+        // echo "firstRow = "; var_dump($row); echo "<br>";
+
+        while ($row) {
+            // echo "pdodatasource startGenerator row = "; print_r($row); echo "<br><br>";
+            $this->next($row, $this);
+            foreach ($report->dataGenRow as $outGenName => $rows) {
+                // echo "outGenName = $outGenName<br>";
+                if ($outGenName !== $genName) {
+                    $report->dataGenRow[$outGenName] = [];
+                    continue;
+                }
+                // echo "genName = $genName<br>";
+                if (!empty($rows)) {
+                    // echo "yield rows = "; print_r($rows); echo "<br><br>";
+                    foreach ($rows as $row) yield $genName => $row;
+                    $report->dataGenRow[$genName] = [];
+                } 
+            }
+            $row = $this->stm->fetch(PDO::FETCH_ASSOC);
+        }
+        $report->saveDataGenRow = null;
+        // echo "pdoDataSource endInput<br>";
+        $this->endInput(null);
+        $this->endOfStm = true;
     }
 
     public function fetchFields($query)
@@ -697,8 +772,10 @@ class PdoDataSource extends DataSource
     {
         if(is_array($params)) {
             //Need prepare
-            $stm = $this->connection->prepare($sql);
-            $success = $stm->execute($params);
+            // $stm = $this->connection->prepare($sql);
+            // $success = $stm->execute($params);
+            $stm = $this->prepareAndBind($sql, $params);
+            $success = $stm->execute();
             if($success===false) {
                 $this->errorInfo = $stm->errorInfo();
             } else {

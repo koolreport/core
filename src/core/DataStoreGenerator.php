@@ -25,7 +25,7 @@ use ArrayAccess;
  * @license   MIT License https://www.koolreport.com/license#mit-license
  * @link      https://www.koolphp.net
  */
-class DataStore extends Node implements IteratorAggregate, ArrayAccess
+class DataStoreGenerator extends Node implements IteratorAggregate, ArrayAccess
 {
     /**
      * Contain array of associate array containing data of datastore
@@ -80,8 +80,7 @@ class DataStore extends Node implements IteratorAggregate, ArrayAccess
      * @return null
      */
     protected function onInit()
-    {
-        
+    {        
     }
     /**
      * Be called when row is input
@@ -95,9 +94,32 @@ class DataStore extends Node implements IteratorAggregate, ArrayAccess
      */
     protected function onInput($row)
     {
-        $this->append($row);
+        // echo "DatastoreGenerator onInput<br>";
+        // print_r($row); echo "<br><br>";
+        // if (!isset($this->report)) {
+        //     $this->report = $this->getReport();
+        // }
+        // echo "datastoreGenerator: "; print_r($row); echo "<br>";
+        // echo "this->name = {$this->name}<br>";
+        if (isset($this->report->saveDataGenRow)) {
+            if ($this->report->saveDataGenRow === $this->name) {
+                $this->report->dataGenRow[$this->name][] = $row;
+            }
+        }
+    }
+
+    public function getRowGenerator()
+    {
+        return $this->rowGenerator ? $this->rowGenerator : null;
     }
     
+    public function source($source)
+    {
+        //The one that forward data to.
+        array_push($this->sources, $source);
+        $this->report = $this->getReport();
+    }
+
     /**
      * Return the number of rows
      * 
@@ -124,6 +146,8 @@ class DataStore extends Node implements IteratorAggregate, ArrayAccess
      */
     public function meta($metaData=null)
     {
+        // debug_print_backtrace();
+        // if (isset($metaData)) echo "datastoreGenerator -> Set meta<br>";
         if ($metaData) {
             $this->metaData = $metaData;
             return $this;
@@ -1425,13 +1449,5 @@ class DataStore extends Node implements IteratorAggregate, ArrayAccess
     public function offsetGet($index)
     {
         return isset($this->rows[$index]) ? $this->rows[$index] : null;
-    }
-
-    public function getRowGenerator()
-    {
-        foreach ($this->rows as $row) {
-            // echo "getRowGenerator row = "; var_dump($row); echo "<br>";
-            yield $row;
-        } 
     }
 }

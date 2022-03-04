@@ -282,17 +282,18 @@ class Utility
      */
     public static function get($arr, $keys, $default=null)
     {
-        if (! is_array($arr)) {
-            return $default;
+        // if (! is_array($arr)) {
+        //     return $default;
+        // }
+        // return isset($arr[$keys]) ? $arr[$keys] : $default;
+        if (is_string($keys) || is_int($keys)) {
+            return isset($arr[$keys]) ? $arr[$keys] : $default;
         }
         if (is_array($keys) and count($keys) > 0) {
             foreach ($keys as $key) {
                 $arr = self::get($arr, $key, $default);
             }
             return $arr;
-        }
-        if (is_string($keys) || is_int($keys)) {
-            return isset($arr[$keys]) ? $arr[$keys] : $default;
         }
         return $default;
     }
@@ -482,7 +483,8 @@ class Utility
         //with the root folder of the website, so we add backup with
         //second way  to calculate the document root with script_name
         //and script_filename
-
+        if (isset($_SERVER["DOCUMENT_ROOT"])) return $_SERVER["DOCUMENT_ROOT"];
+        
         $script_filename = str_replace(
             "\\",
             "/",

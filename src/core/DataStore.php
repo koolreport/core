@@ -1426,12 +1426,4 @@ class DataStore extends Node implements IteratorAggregate, ArrayAccess
     {
         return isset($this->rows[$index]) ? $this->rows[$index] : null;
     }
-
-    public function getRowGenerator()
-    {
-        foreach ($this->rows as $row) {
-            // echo "getRowGenerator row = "; var_dump($row); echo "<br>";
-            yield $row;
-        } 
-    }
 }

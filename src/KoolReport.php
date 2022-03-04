@@ -287,99 +287,6 @@ class KoolReport
         }
     }
 
-    public function dataStoreGenerator($name)
-    {
-        if (!isset($this->dataGenRow)) $this->dataGenRow = [];
-        if (!isset($this->dataStoresGenerator)) $this->dataStoresGenerator = [];
-        if (gettype($name) == "string") {
-            if (!isset($this->dataStoresGenerator[$name])) {
-                $this->dataStoresGenerator[$name] = new \koolreport\core\DataStoreGenerator;
-                $this->dataStoresGenerator[$name]->name = $name;
-            }
-            $this->dataGenRow[$name] = [];
-            return $this->dataStoresGenerator[$name];
-        } else {
-            //$name's type is different from string
-            //return everything for further process
-            return $name;
-        }
-    }
-
-    public function dataGenerator($name)
-    {
-        $dataGen = null;
-        if (isset($this->dataGens[$name])) $dataGen = $this->dataGens[$name];
-        return $dataGen;
-    }
-
-    public function buildDataGenerator($genName)
-    {
-        // echo "KoolReport -> buildDataGenerator() genName = $genName <br>";
-        $dataGens = [];
-        foreach ($this->dataSources as $src) {
-                // echo "before a src->startGenerator<br>";
-                // var_dump($src);
-                // echo "dataSource->startGenerator<br>";
-                $dataGens[] = $src->startGenerator($genName);
-                // echo "after src->startGenerator<br>";
-                // exit;
-        }
-        // echo "buildDataGenerator after foreach<br>";
-        $combinedGen = $this->combineGeneratorsSequentially($dataGens);
-        return $combinedGen;
-    }
-
-    /**
-        * Yield all values from $generator1, then all values from $generator2
-        * Keys are preserved
-        */
-    public function combineGeneratorsSequentially($generators)
-    {
-        foreach ($generators as $generator) {
-            yield from $generator;
-        }
-    }
-
-    /**
-    * Yield a value from $generator1, then a value from $generator2, and so on
-    * Keys are preserved
-    */
-    public function combine_alternatively($generator1, $generator2)
-    {
-        while ($generator1->valid() || $generator2->valid()) {
-            if ($generator1->valid()) {
-                yield $generator1->key() => $generator1->current();
-                $generator1->next();
-            }
-            if ($generator2->valid()) {
-                yield $generator2->key() => $generator2->current();
-                $generator2->next();
-            }
-        }
-    }
-
-    public function runGenerator($genName = null)
-    {
-        // echo "KoolReport -> runGenerator() <br>";
-        foreach ($this->dataSources as $src) {
-            // echo "before a src->startGenerator<br>";
-            // var_dump($src);
-            // echo "dataSource->startMetaOnly<br>";
-            $src->startMetaOnly();
-            // echo "after src->startGenerator<br>";
-            // exit;
-        }
-        if (!isset($this->dataGens)) $this->dataGens = [];
-        if (!isset($genName)) {
-            foreach ($this->dataStoresGenerator as $genName => $v) {
-                // echo "genName = $genName <br>";
-                $this->dataStoresGenerator[$genName]->rowGenerator = $this->buildDataGenerator($genName);
-            }
-        } else {
-            $this->dataStoresGenerator[$genName]->rowGenerator = $this->buildDataGenerator($genName);
-        }
-    }
-
     /**
      * Get the data store with a name, if not found, create a new one,
      * This is alias/short name for dataStore() method
@@ -405,7 +312,6 @@ class KoolReport
             if ($this->dataSources != null) {
                 foreach ($this->dataSources as $dataSource) {
                     if (!$dataSource->isEnded()) {
-                        // echo "dataSource->start<br>";
                         $dataSource->start();
                     }
                 }

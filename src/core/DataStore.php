@@ -83,6 +83,31 @@ class DataStore extends Node implements IteratorAggregate, ArrayAccess
     {
         
     }
+
+    public function source($source)
+    {
+        //The one that forward data to.
+        array_push($this->sources, $source);
+        $this->report = $this->getReport();
+    }
+
+    public function getRowGenerator()
+    {
+        // echo "datstore getRowGenerator<br>";
+        if ($this->report->generatorUsed) {
+            // echo "report->generatorUsed<br>";
+            return $this->rowGenerator ? $this->rowGenerator : null;
+        } else {
+            // echo "NOT report->generatorUsed<br>";
+            return $this->getGeneratorFromRows();
+        }
+    }
+
+    public function getGeneratorFromRows()
+    {
+        foreach ($this->rows as $row) yield $row;
+    }
+
     /**
      * Be called when row is input
      * 
@@ -95,7 +120,16 @@ class DataStore extends Node implements IteratorAggregate, ArrayAccess
      */
     protected function onInput($row)
     {
-        $this->append($row);
+        if ($this->report->generatorUsed) {
+            // echo "report->generatorUsed row = "; print_r($row); echo "<br>";
+            if (isset($this->report->saveDataGenRow)) {
+                if ($this->report->saveDataGenRow === $this->name) {
+                    $this->report->dataGenRow[$this->name][] = $row;
+                }
+            }
+        } else {
+            $this->append($row);
+        }
     }
     
     /**
@@ -1427,11 +1461,4 @@ class DataStore extends Node implements IteratorAggregate, ArrayAccess
         return isset($this->rows[$index]) ? $this->rows[$index] : null;
     }
 
-    public function getRowGenerator()
-    {
-        foreach ($this->rows as $row) {
-            // echo "getRowGenerator row = "; var_dump($row); echo "<br>";
-            yield $row;
-        } 
-    }
 }

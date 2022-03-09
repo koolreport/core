@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file contain class to handle pulling data from MySQL, Oracle, SQL Server and many others.
  *
@@ -10,7 +11,7 @@
  * @link      https://www.koolphp.net
  */
 
- /*
+/*
  For Pdo with Oracle for Apache on Windows:
     - Install Oracle database 32 bit only (php on Windows is only 32 bit).
     - Download and extract Oracle Instant Client 32 bit, add the extracted folder
@@ -57,14 +58,14 @@ class PdoDataSource extends DataSource
      * @var $connection The current connection
      */
     protected $connection;
-    
+
     /**
      * The query
      *
      * @var string $query The query
      */
     protected $query;
-    
+
     /**
      * The params of query
      *
@@ -73,14 +74,14 @@ class PdoDataSource extends DataSource
     protected $sqlParams;
 
     protected $queryParams;
-    
+
     /**
      * Whether the total should be counted.
      *
      * @var bool $countToal Whether the total should be counted.
      */
     protected $countTotal;
-    
+
     /**
      * Whether the filter should be counted
      *
@@ -94,7 +95,7 @@ class PdoDataSource extends DataSource
      * @var array
      */
     protected $errorInfo;
-    
+
 
     /**
      * Datasource initiation
@@ -109,9 +110,9 @@ class PdoDataSource extends DataSource
         $password = Util::get($this->params, "password", "");
         $charset = Util::get($this->params, "charset");
         $options = Util::get($this->params, "options");
-        
-        $key = md5($connectionString.$username.$password);
-        if (PdoDataSource::$connections==null) {
+
+        $key = md5($connectionString . $username . $password);
+        if (PdoDataSource::$connections == null) {
             PdoDataSource::$connections = array();
         }
         if (isset(PdoDataSource::$connections[$key])) {
@@ -139,10 +140,10 @@ class PdoDataSource extends DataSource
      *
      * @return PdoDataSource This datasource object
      */
-    public function query($query, $sqlParams=null)
+    public function query($query, $sqlParams = null)
     {
         $this->originalQuery = $this->query =  (string)$query;
-        if ($sqlParams!=null) {
+        if ($sqlParams != null) {
             $this->sqlParams = $sqlParams;
         }
         return $this;
@@ -185,7 +186,7 @@ class PdoDataSource extends DataSource
             default:
                 break;
         }
-        
+
         $this->countTotal = Util::get($queryParams, 'countTotal', false);
         $this->countFilter = Util::get($queryParams, 'countFilter', false);
 
@@ -234,16 +235,16 @@ class PdoDataSource extends DataSource
         $query = $query;
         foreach ($paNames as $paName) {
             $paValue = $params[$paName];
-            if (gettype($paValue)==="array") {
+            if (gettype($paValue) === "array") {
                 $paramList = [];
-                foreach ($paValue as $i=>$value) {
+                foreach ($paValue as $i => $value) {
                     // $paramList[] = ":pdoParam$paramNum";
                     $paArrElName = $paName . "_arr_$i";
                     $paramList[] = $paArrElName;
                     $params[$paArrElName] = $value;
                 }
                 $query = str_replace($paName, implode(",", $paramList), $query);
-            } 
+            }
         }
 
         $paNames = array_keys($params);
@@ -340,35 +341,35 @@ class PdoDataSource extends DataSource
     protected function guessType($native_type)
     {
         $map = array(
-            "character"=>"string",
-            "char"=>"string",
-            "string"=>"string",
-            "str"=>"string",
-            "text"=>"string",
-            "blob"=>"string",
-            "binary"=>"string",
-            "enum"=>"string",
-            "set"=>"string",
-            "int"=>"number",
-            "double"=>"number",
-            "float"=>"number",
-            "long"=>"number",
-            "numeric"=>"number",
-            "decimal"=>"number",
-            "real"=>"number",
-            "tinyint"=>"number",
-            "bit"=>"number",
-            "boolean"=>"number",
-            "datetime"=>"datetime",
-            "date"=>"date",
-            "time"=>"time",
-            "year"=>"datetime",
+            "character" => "string",
+            "char" => "string",
+            "string" => "string",
+            "str" => "string",
+            "text" => "string",
+            "blob" => "string",
+            "binary" => "string",
+            "enum" => "string",
+            "set" => "string",
+            "int" => "number",
+            "double" => "number",
+            "float" => "number",
+            "long" => "number",
+            "numeric" => "number",
+            "decimal" => "number",
+            "real" => "number",
+            "tinyint" => "number",
+            "bit" => "number",
+            "boolean" => "number",
+            "datetime" => "datetime",
+            "date" => "date",
+            "time" => "time",
+            "year" => "datetime",
         );
-        
+
         $native_type = strtolower($native_type);
-        
-        foreach ($map as $key=>$value) {
-            if (strpos($native_type, $key)!==false) {
+
+        foreach ($map as $key => $value) {
+            if (strpos($native_type, $key) !== false) {
                 return $value;
             }
         }
@@ -385,18 +386,18 @@ class PdoDataSource extends DataSource
     protected function guessTypeFromValue($value)
     {
         $map = array(
-            "float"=>"number",
-            "double"=>"number",
-            "int"=>"number",
-            "integer"=>"number",
-            "bool"=>"number",
-            "numeric"=>"number",
-            "string"=>"string",
+            "float" => "number",
+            "double" => "number",
+            "int" => "number",
+            "integer" => "number",
+            "bool" => "number",
+            "numeric" => "number",
+            "string" => "string",
         );
 
         $type = strtolower(gettype($value));
-        foreach ($map as $key=>$value) {
-            if (strpos($type, $key)!==false) {
+        foreach ($map as $key => $value) {
+            if (strpos($type, $key) !== false) {
                 return $value;
             }
         }
@@ -406,23 +407,21 @@ class PdoDataSource extends DataSource
     protected function buildMetaData()
     {
         // echo "pdodatasource buildMetaData<br>";
-        $metaData = array("columns"=>array());
-        
+        $metaData = array("columns" => array());
+
         if (empty($this->sqlParams)) $this->sqlParams = [];
 
         $searchParams = Util::get($this->queryParams, 'searchParams', []);
         if (empty($searchParams)) $searchParams = [];
 
         if ($this->countTotal) {
-            // $totalQuery = $this->prepareParams($this->totalQuery, $this->sqlParams);
-            // $stm = $this->connection->prepare($totalQuery);
-            // $this->bindParams($stm, $this->sqlParams);
             $stm = $this->prepareAndBind($this->totalQuery, $this->sqlParams);
             $stm->execute();
             $error = $stm->errorInfo();
-            if ($error[2]!=null) {
-                throw new \Exception("Query Error >> ".json_encode($error)." >> $this->totalQuery"
-                    . " || Sql params = " . json_encode($this->sqlParams)
+            if ($error[2] != null) {
+                throw new \Exception(
+                    "Query Error >> " . json_encode($error) . " >> $this->totalQuery"
+                        . " || Sql params = " . json_encode($this->sqlParams)
                 );
                 return;
             }
@@ -432,17 +431,14 @@ class PdoDataSource extends DataSource
         }
 
         if ($this->countFilter) {
-            // $filterQuery = $this->prepareParams($this->filterQuery, $this->sqlParams);
-            // $stm = $this->connection->prepare($filterQuery);
-            // $this->bindParams($stm, $this->sqlParams);
-            // $this->bindParams($stm, $searchParams);
             $stm = $this->prepareAndBind($this->filterQuery, array_merge($this->sqlParams, $searchParams));
             $stm->execute();
             $error = $stm->errorInfo();
-            if ($error[2]!=null) {
-                throw new \Exception("Query Error >> ".json_encode($error)." >> $this->filterQuery"
-                    . " || Sql params = " . json_encode($this->sqlParams)
-                    . " || Search params = " . json_encode($searchParams)
+            if ($error[2] != null) {
+                throw new \Exception(
+                    "Query Error >> " . json_encode($error) . " >> $this->filterQuery"
+                        . " || Sql params = " . json_encode($this->sqlParams)
+                        . " || Search params = " . json_encode($searchParams)
                 );
             }
             $row = $stm->fetch();
@@ -462,10 +458,11 @@ class PdoDataSource extends DataSource
                 $stm = $this->prepareAndBind($aggQuery, array_merge($this->sqlParams, $searchParams));
                 $stm->execute();
                 $error = $stm->errorInfo();
-                if ($error[2]!=null) {
-                    throw new \Exception("Query Error >> ".json_encode($error)." >> $aggQuery"
-                        . " || Sql params = " . json_encode($this->sqlParams)
-                        . " || Search params = " . json_encode($searchParams)
+                if ($error[2] != null) {
+                    throw new \Exception(
+                        "Query Error >> " . json_encode($error) . " >> $aggQuery"
+                            . " || Sql params = " . json_encode($this->sqlParams)
+                            . " || Search params = " . json_encode($searchParams)
                     );
                 }
                 $row = $stm->fetch();
@@ -484,40 +481,31 @@ class PdoDataSource extends DataSource
         }
 
         $query = $this->query;
-        // echo "pdodatasource start query=$query <br>";
-        // echo "this->sqlParams = "; Util::prettyPrint($this->sqlParams);
-        // echo "searchParams = "; Util::prettyPrint($searchParams);
-        // $query = $this->prepareParams($query, $this->sqlParams);
-        // $query = $this->prepareParams($query, $searchParams);
-        // $stm = $this->connection->prepare($query);
-        // $this->bindParams($stm, $this->sqlParams);
-        // $this->bindParams($stm, $searchParams);
-        
         $this->stm = $this->prepareAndBind($query, array_merge($this->sqlParams, $searchParams));
         $this->stm->execute();
 
         $error = $this->stm->errorInfo();
         // if($error[2]!=null)
-        if ($error[0]!='00000') {
-            throw new \Exception("Query Error >> ".json_encode($error)." >> $query"
-                . " || Sql params = " . json_encode($this->sqlParams)
-                . " || Search params = " . json_encode($searchParams)
+        if ($error[0] != '00000') {
+            throw new \Exception(
+                "Query Error >> " . json_encode($error) . " >> $query"
+                    . " || Sql params = " . json_encode($this->sqlParams)
+                    . " || Search params = " . json_encode($searchParams)
             );
         }
-            
+
         $this->firstRow = null;
         if (!$metaSupport) {
             $this->firstRow = $stm->fetch(PDO::FETCH_ASSOC);
             $cNames = empty($row) ? array() : array_keys($row);
             $numcols = count($cNames);
         } else {
-            
             $numcols = $this->stm->columnCount();
         }
 
         // $metaData = array("columns"=>array());
-        for ($i=0;$i<$numcols;$i++) {
-            if (! $metaSupport) {
+        for ($i = 0; $i < $numcols; $i++) {
+            if (!$metaSupport) {
                 $cName = $cNames[$i];
                 $cType = $this->guessTypeFromValue($row[$cName]);
             } else {
@@ -526,25 +514,24 @@ class PdoDataSource extends DataSource
                 $cType = $this->guessType(Util::get($info, "native_type", "unknown"));
             }
             $metaData["columns"][$cName] = array(
-                "type"=>$cType,
+                "type" => $cType,
             );
             switch ($cType) {
-            case "datetime":
-                $metaData["columns"][$cName]["format"] = "Y-m-d H:i:s";
-                break;
-            case "date":
-                $metaData["columns"][$cName]["format"] = "Y-m-d";
-                break;
-            case "time":
-                $metaData["columns"][$cName]["format"] = "H:i:s";
-                break;
+                case "datetime":
+                    $metaData["columns"][$cName]["format"] = "Y-m-d H:i:s";
+                    break;
+                case "date":
+                    $metaData["columns"][$cName]["format"] = "Y-m-d";
+                    break;
+                case "time":
+                    $metaData["columns"][$cName]["format"] = "H:i:s";
+                    break;
             }
         }
-           
+
         $this->builtMetaData = $metaData;
-        // echo "this->metaData = "; var_dump($this->metaData); echo "<br>";
     }
-    
+
     /**
      * Start piping data
      *
@@ -553,24 +540,23 @@ class PdoDataSource extends DataSource
     public function start()
     {
         // echo "pdodatasource start()<br>";
-
         // $this->connection->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, false);
-        
+
         $this->buildMetaData();
         $this->sendMeta($this->builtMetaData, $this);
 
         $this->startInput(null);
-                                
-        if (! isset($this->firstRow)) {
-            $row=$this->stm->fetch(PDO::FETCH_ASSOC);
+
+        if (!isset($this->firstRow)) {
+            $row = $this->stm->fetch(PDO::FETCH_ASSOC);
         } else {
             $row = $this->firstRow;
         }
-            
+
         while ($row) {
             // echo "pdodatasource start row = "; print_r($row); echo "<br><br>";
             $this->next($row, $this);
-            $row=$this->stm->fetch(PDO::FETCH_ASSOC);
+            $row = $this->stm->fetch(PDO::FETCH_ASSOC);
         }
         $this->endInput(null);
         // $stm->closeCursor();
@@ -581,20 +567,14 @@ class PdoDataSource extends DataSource
     {
         // echo "pdodatasource startMetaOnly<br>";
         if (!isset($this->builtMetaData)) {
-            // echo "buildMetaData<br>";
             $this->buildMetaData();
-            // var_dump($this->builtMetaData); echo "<br>";
-            // echo "pdodatasource -> startMetaOnly: ";
-            // var_dump($metaData);
-            // echo "<br>";
             $this->sendMeta($this->builtMetaData, $this);
-        } else {
-            // var_dump($this->builtMetaData); echo "<br>";
         }
     }
 
     public function startGenerator($genName)
     {
+        // echo "pdodatasource startGenerator<br>";
         $this->startInput(null);
 
         $report = $this->getReport();
@@ -606,13 +586,14 @@ class PdoDataSource extends DataSource
             $this->endOfStm = false;
         }
 
-        if (! isset($this->firstRow)) {
-            $row=$this->stm->fetch(PDO::FETCH_ASSOC);
+        if (!isset($this->firstRow)) {
+            $row = $this->stm->fetch(PDO::FETCH_ASSOC);
         } else {
             $row = $this->firstRow;
         }
         // echo "firstRow = "; var_dump($row); echo "<br>";
 
+        if (!isset($report->dataGenRow)) $report->dataGenRow = [];
         while ($row) {
             // echo "pdodatasource startGenerator row = "; print_r($row); echo "<br><br>";
             $this->next($row, $this);
@@ -627,7 +608,7 @@ class PdoDataSource extends DataSource
                     // echo "yield rows = "; print_r($rows); echo "<br><br>";
                     foreach ($rows as $row) yield $genName => $row;
                     $report->dataGenRow[$genName] = [];
-                } 
+                }
             }
             $row = $this->stm->fetch(PDO::FETCH_ASSOC);
         }
@@ -646,8 +627,9 @@ class PdoDataSource extends DataSource
         $stm->execute();
         $error = $stm->errorInfo();
         // if($error[2]!=null)
-        if ($error[0]!='00000') {
-            throw new \Exception("Query Error >> ".json_encode($error)." >> $query"
+        if ($error[0] != '00000') {
+            throw new \Exception(
+                "Query Error >> " . json_encode($error) . " >> $query"
             );
         }
         $driver = strtolower($this->connection->getAttribute(PDO::ATTR_DRIVER_NAME));
@@ -658,7 +640,7 @@ class PdoDataSource extends DataSource
                 $metaSupport = true;
             }
         }
-            
+
         if (!$metaSupport) {
             $row = $stm->fetch(PDO::FETCH_ASSOC);
             $cNames = empty($row) ? array() : array_keys($row);
@@ -668,8 +650,8 @@ class PdoDataSource extends DataSource
         }
 
         // $metaData = array("columns"=>array());
-        for ($i=0;$i<$numcols;$i++) {
-            if (! $metaSupport) {
+        for ($i = 0; $i < $numcols; $i++) {
+            if (!$metaSupport) {
                 $cName = $cNames[$i];
                 $cType = $this->guessTypeFromValue($row[$cName]);
             } else {
@@ -678,18 +660,18 @@ class PdoDataSource extends DataSource
                 $cType = $this->guessType(Util::get($info, "native_type", "unknown"));
             }
             $columns[$cName] = array(
-                "type"=>$cType,
+                "type" => $cType,
             );
             switch ($cType) {
-            case "datetime":
-                $columns[$cName]["format"] = "Y-m-d H:i:s";
-                break;
-            case "date":
-                $columns[$cName]["format"] = "Y-m-d";
-                break;
-            case "time":
-                $columns[$cName]["format"] = "H:i:s";
-                break;
+                case "datetime":
+                    $columns[$cName]["format"] = "Y-m-d H:i:s";
+                    break;
+                case "date":
+                    $columns[$cName]["format"] = "Y-m-d";
+                    break;
+                case "time":
+                    $columns[$cName]["format"] = "H:i:s";
+                    break;
             }
         }
         return $columns;
@@ -697,8 +679,10 @@ class PdoDataSource extends DataSource
 
     public function fetchData($query, $queryParams = null)
     {
-        if (isset($queryParams) && 
-            (isset($queryParams['countTotal']) || isset($queryParams['countFilter']))) {
+        if (
+            isset($queryParams) &&
+            (isset($queryParams['countTotal']) || isset($queryParams['countFilter']))
+        ) {
             $driver = strtolower($this->connection->getAttribute(PDO::ATTR_DRIVER_NAME));
             switch ($driver) {
                 case 'mysql':
@@ -738,15 +722,16 @@ class PdoDataSource extends DataSource
             // $this->bindParams($stm, $this->sqlParams);
             $stm = $this->prepareAndBind($query, $this->sqlParams);
             $stm->execute();
-    
+
             $error = $stm->errorInfo();
             // if($error[2]!=null)
-            if ($error[0]!='00000') {
-                throw new \Exception("Query Error >> ".json_encode($error)." >> $query"
-                    . " || Sql params = " . json_encode($this->sqlParams)
+            if ($error[0] != '00000') {
+                throw new \Exception(
+                    "Query Error >> " . json_encode($error) . " >> $query"
+                        . " || Sql params = " . json_encode($this->sqlParams)
                 );
             }
-    
+
             $rows = [];
             while ($row = $stm->fetch(PDO::FETCH_ASSOC)) {
                 $rows[] = $row;
@@ -768,27 +753,27 @@ class PdoDataSource extends DataSource
      * @param mixed $sql 
      * @return boolean Whether the sql is succesfully executed 
      */
-    public function execute($sql, $params=null)
+    public function execute($sql, $params = null)
     {
-        if(is_array($params)) {
+        if (is_array($params)) {
             //Need prepare
             // $stm = $this->connection->prepare($sql);
             // $success = $stm->execute($params);
             $stm = $this->prepareAndBind($sql, $params);
             $success = $stm->execute();
-            if($success===false) {
+            if ($success === false) {
                 $this->errorInfo = $stm->errorInfo();
             } else {
                 $this->errorInfo = null;
-            } 
+            }
         } else {
             $success = $this->connection->exec($sql);
-            if($success===false) {
+            if ($success === false) {
                 $this->errorInfo = $this->connection->errorInfo();
             } else {
                 $this->errorInfo = null;
             }
         }
-        return $success!==false;
+        return $success !== false;
     }
 }

@@ -36,6 +36,7 @@ class KoolReport
     protected $templateEngine;
     protected $events;
     protected $reportSettings;
+    public $generatorUsed = false;
 
     /**
      * Get the version of KoolReport
@@ -278,6 +279,7 @@ class KoolReport
         if (gettype($name) == "string") {
             if (!isset($this->dataStores[$name])) {
                 $this->dataStores[$name] = new DataStore;
+                $this->dataStores[$name]->name = $name;
             }
             return $this->dataStores[$name];
         } else {
@@ -287,44 +289,14 @@ class KoolReport
         }
     }
 
-    public function dataStoreGenerator($name)
-    {
-        if (!isset($this->dataGenRow)) $this->dataGenRow = [];
-        if (!isset($this->dataStoresGenerator)) $this->dataStoresGenerator = [];
-        if (gettype($name) == "string") {
-            if (!isset($this->dataStoresGenerator[$name])) {
-                $this->dataStoresGenerator[$name] = new \koolreport\core\DataStoreGenerator;
-                $this->dataStoresGenerator[$name]->name = $name;
-            }
-            $this->dataGenRow[$name] = [];
-            return $this->dataStoresGenerator[$name];
-        } else {
-            //$name's type is different from string
-            //return everything for further process
-            return $name;
-        }
-    }
-
-    public function dataGenerator($name)
-    {
-        $dataGen = null;
-        if (isset($this->dataGens[$name])) $dataGen = $this->dataGens[$name];
-        return $dataGen;
-    }
-
     public function buildDataGenerator($genName)
     {
         // echo "KoolReport -> buildDataGenerator() genName = $genName <br>";
         $dataGens = [];
         foreach ($this->dataSources as $src) {
-                // echo "before a src->startGenerator<br>";
-                // var_dump($src);
-                // echo "dataSource->startGenerator<br>";
-                $dataGens[] = $src->startGenerator($genName);
-                // echo "after src->startGenerator<br>";
-                // exit;
+            $dataGen = $src->startGenerator($genName);
+            $dataGens[] = $dataGen;
         }
-        // echo "buildDataGenerator after foreach<br>";
         $combinedGen = $this->combineGeneratorsSequentially($dataGens);
         return $combinedGen;
     }
@@ -333,7 +305,7 @@ class KoolReport
         * Yield all values from $generator1, then all values from $generator2
         * Keys are preserved
         */
-    public function combineGeneratorsSequentially($generators)
+    protected function combineGeneratorsSequentially($generators)
     {
         foreach ($generators as $generator) {
             yield from $generator;
@@ -341,10 +313,10 @@ class KoolReport
     }
 
     /**
-    * Yield a value from $generator1, then a value from $generator2, and so on
-    * Keys are preserved
-    */
-    public function combine_alternatively($generator1, $generator2)
+     * Yield a value from $generator1, then a value from $generator2, and so on
+     * Keys are preserved
+     */
+    protected function combine_alternatively($generator1, $generator2)
     {
         while ($generator1->valid() || $generator2->valid()) {
             if ($generator1->valid()) {
@@ -362,22 +334,21 @@ class KoolReport
     {
         // echo "KoolReport -> runGenerator() <br>";
         foreach ($this->dataSources as $src) {
-            // echo "before a src->startGenerator<br>";
-            // var_dump($src);
-            // echo "dataSource->startMetaOnly<br>";
             $src->startMetaOnly();
-            // echo "after src->startGenerator<br>";
-            // exit;
         }
-        if (!isset($this->dataGens)) $this->dataGens = [];
         if (!isset($genName)) {
-            foreach ($this->dataStoresGenerator as $genName => $v) {
-                // echo "genName = $genName <br>";
-                $this->dataStoresGenerator[$genName]->rowGenerator = $this->buildDataGenerator($genName);
+            foreach ($this->dataStores as $genName => $v) {
+                $this->dataStores[$genName]->rowGenerator = $this->buildDataGenerator($genName);
             }
         } else {
-            $this->dataStoresGenerator[$genName]->rowGenerator = $this->buildDataGenerator($genName);
+            $this->dataStores[$genName]->rowGenerator = $this->buildDataGenerator($genName);
         }
+    }
+
+    public function useGenerator($generatorUsed)
+    {
+        $this->generatorUsed = $generatorUsed;
+        return $this;
     }
 
     /**
@@ -403,10 +374,13 @@ class KoolReport
     {
         if ($this->fireEvent("OnBeforeRun")) {
             if ($this->dataSources != null) {
-                foreach ($this->dataSources as $dataSource) {
-                    if (!$dataSource->isEnded()) {
-                        // echo "dataSource->start<br>";
-                        $dataSource->start();
+                if ($this->generatorUsed) {
+                    $this->runGenerator();
+                } else {
+                    foreach ($this->dataSources as $dataSource) {
+                        if (!$dataSource->isEnded()) {
+                            $dataSource->start();
+                        }
                     }
                 }
             }

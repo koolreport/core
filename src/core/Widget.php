@@ -441,6 +441,8 @@ class Widget
 
             if ($dataSource instanceof DataStore) {
                 $finalDataSource = $dataSource;
+                if (isset($finalDataSource->rowGenerator) && $finalDataSource->rowGenerator->valid())
+                    $finalDataSource->generateRows();
             } else if (($dataSource instanceof DataSource) || ($dataSource instanceof Process)) {
                 $finalDataSource = $this->onFurtherProcessRequest($dataSource)->pipe(new DataStore());
             } else {

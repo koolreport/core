@@ -476,12 +476,14 @@ class Utility
      * @return string the document root path
      */
     public static function getDocumentRoot()
-        {
+    {
         //The old method is to use the document_root from $_SERVER
         //Howerver in some hosting the document root is not the same
         //with the root folder of the website, so we add backup with
         //second way  to calculate the document root with script_name
         //and script_filename
+        
+        // if (isset($_SERVER["DOCUMENT_ROOT"])) return $_SERVER["DOCUMENT_ROOT"];
 
         $script_filename = str_replace(
             "\\",

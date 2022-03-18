@@ -554,7 +554,6 @@ class PdoDataSource extends DataSource
         }
 
         while ($row) {
-            // echo "pdodatasource start row = "; print_r($row); echo "<br><br>";
             $this->next($row, $this);
             $row = $this->stm->fetch(PDO::FETCH_ASSOC);
         }
@@ -591,21 +590,16 @@ class PdoDataSource extends DataSource
         } else {
             $row = $this->firstRow;
         }
-        // echo "firstRow = "; var_dump($row); echo "<br>";
 
         if (!isset($report->dataGenRow)) $report->dataGenRow = [];
         while ($row) {
-            // echo "pdodatasource startGenerator row = "; print_r($row); echo "<br><br>";
             $this->next($row, $this);
             foreach ($report->dataGenRow as $outGenName => $rows) {
-                // echo "outGenName = $outGenName<br>";
                 if ($outGenName !== $genName) {
                     $report->dataGenRow[$outGenName] = [];
                     continue;
                 }
-                // echo "genName = $genName<br>";
                 if (!empty($rows)) {
-                    // echo "yield rows = "; print_r($rows); echo "<br><br>";
                     foreach ($rows as $row) yield $genName => $row;
                     $report->dataGenRow[$genName] = [];
                 }
@@ -613,7 +607,6 @@ class PdoDataSource extends DataSource
             $row = $this->stm->fetch(PDO::FETCH_ASSOC);
         }
         $report->saveDataGenRow = null;
-        // echo "pdoDataSource endInput<br>";
         $this->endInput(null);
         $this->endOfStm = true;
     }

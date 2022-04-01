@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file contains process to filter rows based on condition.
  *
@@ -19,6 +20,7 @@
     array('time','<=','2010-12-31')),
 ))
  */
+
 namespace koolreport\processes;
 
 use \koolreport\core\Process;
@@ -60,109 +62,163 @@ class Filter extends Process
     public function isFiltered($condition, $value, $type)
     {
         $isFiltered = true;
-        switch ($condition[1]) {
-        case '=':
-        case '==':
-        case 'equal':
-            if ($type === 'string' && is_string($value) && is_string($condition[2])) {
-                $isFiltered = strcmp($value, $condition[2]) == 0;
-            } else {
-                $isFiltered = $value == $condition[2];
-            }
+        $operator = $condition[1];
+        $filterValue = $condition[2];
+        switch ($operator) {
+            case '=':
+            case '==':
+            case 'equal':
+                if ($type === 'string' && is_string($value) && is_string($filterValue)) {
+                    $isFiltered = strcmp($value, $filterValue) == 0;
+                } else {
+                    $isFiltered = $value == $filterValue;
+                }
 
-            break;
-        case '<>':
-        case '!=':
-        case 'notEqual':
-            if ($type === 'string' && is_string($value) && is_string($condition[2])) {
-                $isFiltered = strcmp($value, $condition[2]) != 0;
-            } else {
-                $isFiltered = $value != $condition[2];
-            }
+                break;
+            case '<>':
+            case '!=':
+            case 'notEqual':
+                if ($type === 'string' && is_string($value) && is_string($filterValue)) {
+                    $isFiltered = strcmp($value, $filterValue) != 0;
+                } else {
+                    $isFiltered = $value != $filterValue;
+                }
 
-            break;
-        case '>':
-        case 'gt':
-            if ($type === 'string' && is_string($value) && is_string($condition[2])) {
-                $isFiltered = strcmp($value, $condition[2]) > 0;
-            } else {
-                $isFiltered = $value > $condition[2];
-            }
+                break;
+            case '>':
+            case 'gt':
+                if ($type === 'string' && is_string($value) && is_string($filterValue)) {
+                    $isFiltered = strcmp($value, $filterValue) > 0;
+                } else {
+                    $isFiltered = $value > $filterValue;
+                }
 
-            break;
-        case '>=':
-            if ($type === 'string' && is_string($value) && is_string($condition[2])) {
-                $isFiltered = strcmp($value, $condition[2]) >= 0;
-            } else {
-                $isFiltered = $value >= $condition[2];
-            }
+                break;
+            case '>=':
+                if ($type === 'string' && is_string($value) && is_string($filterValue)) {
+                    $isFiltered = strcmp($value, $filterValue) >= 0;
+                } else {
+                    $isFiltered = $value >= $filterValue;
+                }
 
-            break;
-        case '<':
-        case 'lt':
-            if ($type === 'string' && is_string($value) && is_string($condition[2])) {
-                $isFiltered = strcmp($value, $condition[2]) < 0;
-            } else {
-                $isFiltered = $value < $condition[2];
-            }
+                break;
+            case '<':
+            case 'lt':
+                if ($type === 'string' && is_string($value) && is_string($filterValue)) {
+                    $isFiltered = strcmp($value, $filterValue) < 0;
+                } else {
+                    $isFiltered = $value < $filterValue;
+                }
 
-            break;
-        case '<=':
-            if ($type === 'string' && is_string($value) && is_string($condition[2])) {
-                $isFiltered = strcmp($value, $condition[2]) <= 0;
-            } else {
-                $isFiltered = $value <= $condition[2];
-            }
+                break;
+            case '<=':
+                if ($type === 'string' && is_string($value) && is_string($filterValue)) {
+                    $isFiltered = strcmp($value, $filterValue) <= 0;
+                } else {
+                    $isFiltered = $value <= $filterValue;
+                }
 
-            break;
-        case 'contain':
-        case 'contains':
-            $isFiltered = strpos(strtolower($value), strtolower($condition[2])) !== false;
-            break;
-        case 'notContain':
-        case 'notContains':
-            $isFiltered = strpos(strtolower($value), strtolower($condition[2])) === false;
-            break;
-        case 'startWith':
-        case 'startsWith':
-            $isFiltered = strpos(strtolower($value), strtolower($condition[2])) === 0;
-            break;
-        case 'notStartWith':
-        case 'notStartsWith':
-            $isFiltered = strpos(strtolower($value), strtolower($condition[2])) !== 0;
-            break;
-        case 'endWith':
-        case 'endsWith':
-            $isFiltered = strpos(strrev(strtolower($value)), strrev(strtolower($condition[2]))) === 0;
-            break;
-        case 'notEndWith':
-        case 'notEndsWith':
-            $isFiltered = strpos(strrev(strtolower($value)), strrev(strtolower($condition[2]))) !== 0;
-            break;
-        case 'between':
-            $isFiltered = $value > $condition[2] && $value < $condition[3];
-            break;
-        case 'notBetween':
-            $isFiltered = !($value > $condition[2] && $value < $condition[3]);
-            break;
-        case "in":
-            if (!is_array($condition[2])) {
-                $condition[2] = array($condition[2]);
-            }
-
-            $isFiltered = in_array($value, $condition[2]);
-            break;
-        case "notIn":
-            if (!is_array($condition[2])) {
-                $condition[2] = array($condition[2]);
-            }
-
-            $isFiltered = !in_array($value, $condition[2]);
-            break;
-        default:
-            break;
+                break;
+            case 'contain':
+            case 'contains':
+                $isFiltered = strpos(strtolower($value), strtolower($filterValue)) !== false;
+                break;
+            case 'notContain':
+            case 'notContains':
+                $isFiltered = strpos(strtolower($value), strtolower($filterValue)) === false;
+                break;
+            case 'startWith':
+            case 'startsWith':
+                $isFiltered = strpos(strtolower($value), strtolower($filterValue)) === 0;
+                break;
+            case 'notStartWith':
+            case 'notStartsWith':
+                $isFiltered = strpos(strtolower($value), strtolower($filterValue)) !== 0;
+                break;
+            case 'endWith':
+            case 'endsWith':
+                $isFiltered = strpos(strrev(strtolower($value)), strrev(strtolower($filterValue))) === 0;
+                break;
+            case 'notEndWith':
+            case 'notEndsWith':
+                $isFiltered = strpos(strrev(strtolower($value)), strrev(strtolower($filterValue))) !== 0;
+                break;
+            case 'between':
+                $filterValue2 = $condition[3];
+                $isFiltered = $value > $filterValue && $value < $filterValue2;
+                break;
+            case 'notBetween':
+                $filterValue2 = $condition[3];
+                $isFiltered = !($value > $filterValue && $value < $filterValue2);
+                break;
+            case "in":
+                if (!is_array($filterValue)) {
+                    $filterValue = array($filterValue);
+                }
+                $isFiltered = in_array($value, $filterValue);
+                break;
+            case "notIn":
+                if (!is_array($filterValue)) {
+                    $filterValue = array($filterValue);
+                }
+                $isFiltered = !in_array($value, $filterValue);
+                break;
+            case "like":
+                $isFiltered = $this->preg_sql_like($value, $filterValue);
+                break;
+            case "not like":
+                $isFiltered = !$this->preg_sql_like($value, $filterValue);
+                break;
+            default:
+                break;
         }
         return $isFiltered;
+    }
+
+    protected function preg_sql_like($input, $pattern, $escape = '\\')
+    {
+        // escape = \
+        // pattern_split_regex = /((?:\\)?(?:\\|%|_))/
+        // pattern = _%%ab\%%\_cd_%%
+        // parts = Array ( [0] => _ [1] => % [2] => % [3] => ab [4] => \% [5] => % [6] => \_ [7] => cd [8] => _ [9] => % [10] => % )
+        // regex = /^..*?ab%.*?_cd..*?$/i
+
+        // Split the pattern into special sequences and the rest
+        $pattern_split_regex = '/((?:' . preg_quote($escape, '/') . ')?(?:' . preg_quote($escape, '/') . '|%|_))/';
+        $parts = preg_split($pattern_split_regex, $pattern, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+
+        // Loop the split parts and convert/escape as necessary to build regex
+        $regex = '/^';
+        $lastWasPercent = FALSE;
+        foreach ($parts as $part) {
+            switch ($part) {
+                case $escape . $escape:
+                    $regex .= preg_quote($escape, '/');
+                    break;
+                case $escape . '%':
+                    $regex .= '%';
+                    break;
+                case $escape . '_':
+                    $regex .= '_';
+                    break;
+                case '%':
+                    if (!$lastWasPercent) {
+                        $regex .= '.*?';
+                    }
+                    break;
+                case '_':
+                    $regex .= '.';
+                    break;
+                default:
+                    $regex .= preg_quote($part, '/');
+                    break;
+            }
+            $lastWasPercent = $part === '%';
+        }
+        $regex .= '$/i';
+
+        // Look for a match and return bool
+        return (bool) preg_match($regex, $input);
     }
 
     /**
@@ -198,7 +254,6 @@ class Filter extends Process
                 if ($filter === 'or' && $i === 0) {
                     $isFiltered = false;
                 }
-
             }
         }
         if ($isFiltered) {

@@ -407,6 +407,11 @@ class PdoDataSource extends DataSource
     protected function buildMetaData()
     {
         // echo "pdodatasource buildMetaData<br>";
+        // $this->connection->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
+        // $this->connection->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, false);
+        $mysqlBuffer = Util::get($this->params, PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
+        $this->connection->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, $mysqlBuffer);
+
         $metaData = array("columns" => array());
 
         if (empty($this->sqlParams)) $this->sqlParams = [];
@@ -540,7 +545,8 @@ class PdoDataSource extends DataSource
     public function start()
     {
         // echo "pdodatasource start()<br>";
-        // $this->connection->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, false);
+        $mysqlBuffer = Util::get($this->params, PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
+        $this->connection->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, $mysqlBuffer);
 
         $this->buildMetaData();
         $this->sendMeta($this->builtMetaData, $this);
@@ -574,12 +580,15 @@ class PdoDataSource extends DataSource
     public function startGenerator($genName)
     {
         // echo "pdodatasource startGenerator<br>";
+        // $this->connection->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
+
         $this->startInput(null);
 
         $report = $this->getReport();
         $report->saveDataGenRow = $genName;
 
         if (isset($this->endOfStm) && $this->endOfStm === true) {
+            // $this->connection->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
             $this->stm->execute();
             $this->firstRow = $this->stm->fetch(PDO::FETCH_ASSOC);
             $this->endOfStm = false;

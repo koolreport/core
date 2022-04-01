@@ -131,7 +131,7 @@ class DataStore extends Node implements IteratorAggregate, ArrayAccess
     {
         $report = $this->report;
         if (
-            $report->generatorUsed
+            $report && $report->generatorUsed
             && isset($report->saveDataGenRow)
             && $report->saveDataGenRow === $this->name
         ) {

@@ -294,6 +294,7 @@ class KoolReport
         // echo "KoolReport -> buildDataGenerator() genName = $genName <br>";
         $dataGens = [];
         foreach ($this->dataSources as $src) {
+            // echo "src->startGenerator<br>";
             $dataGen = $src->startGenerator($genName);
             $dataGens[] = $dataGen;
         }
@@ -338,6 +339,7 @@ class KoolReport
         }
         if (!isset($genName)) {
             foreach ($this->dataStores as $genName => $v) {
+                // echo "genName = $genName<br>";
                 $this->dataStores[$genName]->rowGenerator = $this->buildDataGenerator($genName);
             }
         } else {
@@ -591,5 +593,10 @@ class KoolReport
                 echo $content;
             }
         }
+    }
+
+    public function getParams()
+    {
+        return $this->params;
     }
 }

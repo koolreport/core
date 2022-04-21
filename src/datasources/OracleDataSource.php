@@ -115,13 +115,14 @@ class OracleDataSource extends DataSource
         $password = Util::get($this->params, "password", "");
         $connString = Util::get($this->params, "connectionString", ""); //localhost:8080/XE
         $session_mode = Util::get($this->params, "session_mode", OCI_DEFAULT);
+        $charset = Util::get($this->params, "charset", ""); // use "UTF-8" if needed
 
         $key = md5($username.$password.$connString);
 
         if (isset(OracleDataSource::$connections[$key])) {
             $this->connection = OracleDataSource::$connections[$key];
         } else {
-            $conn = oci_connect($username, $password, $connString, "", $session_mode);
+            $conn = oci_connect($username, $password, $connString, $charset, $session_mode);
             if ($conn) {
                 $this->connection = $conn;
             } else {

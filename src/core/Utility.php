@@ -483,6 +483,8 @@ class Utility
         //with the root folder of the website, so we add backup with
         //second way  to calculate the document root with script_name
         //and script_filename
+        
+        // if (isset($_SERVER["DOCUMENT_ROOT"])) return $_SERVER["DOCUMENT_ROOT"];
 
         //In case of using virtual host, method of using difference between script_name and script_filename
         //might not work

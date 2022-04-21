@@ -71,6 +71,20 @@ class Map extends Process
         if (is_callable($func)) {
             $this->newMeta = $func($metaData);
         }
+        if (Util::get($this->params, 'sendMetaImmediately', false)) {
+            $this->sendMeta($this->newMeta);
+            $this->metaSent = true;
+        }
+    }
+
+    /**
+     * This method will be called when source nodes sending start input signal
+     * 
+     * @return null
+     */
+    protected function onInputStart()
+    {
+        $this->index = 0;
     }
 
     /**

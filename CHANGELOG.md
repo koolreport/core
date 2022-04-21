@@ -4,6 +4,8 @@
 
 1. Added: `AssetManager` ability to load resources with absolute paths.
 2. Improved: `PDODataSource`, `MySQLDataSource`, `PostgreSQLDataSource`, `SQLSRVDataSource`, `OracleDataSource` to be able to bind params with any orders, duplicated names, array params for WHERE IN (only `PDODataSource` supports this before).
+3. Add `useGenerator` method for report.
+4. Add `charset` and `session_mode` properties for OracleDataSource.
 
 ## Version 5.5.0
 

@@ -1,9 +1,10 @@
 # Change Log
 
-## Version 5.6.0-dev
+## Version 5.6.0
 
 1. Added: `AssetManager` ability to load resources with absolute paths.
 2. Improved: `PDODataSource`, `MySQLDataSource`, `PostgreSQLDataSource`, `SQLSRVDataSource`, `OracleDataSource` to be able to bind params with any orders, duplicated names, array params for WHERE IN (only `PDODataSource` supports this before).
+3. Added: SQL-like `like` and `not like` operator for `Filter` process.
 
 ## Version 5.5.0
 

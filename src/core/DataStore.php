@@ -1409,7 +1409,8 @@ class DataStore extends Node implements IteratorAggregate, ArrayAccess
      * 
      * @return null
      */
-    public function getIterator()
+    // #[\ReturnTypeWillChange]
+    public function getIterator(): \Traversable
     {
         return new \ArrayIterator($this->rows);
     }
@@ -1422,7 +1423,8 @@ class DataStore extends Node implements IteratorAggregate, ArrayAccess
      * 
      * @return null
      */
-    public function offsetSet($index, $row)
+    // #[\ReturnTypeWillChange]
+    public function offsetSet($index, $row): void
     {
         if (is_null($index)) {
             $this->rows[] = $row;
@@ -1438,7 +1440,8 @@ class DataStore extends Node implements IteratorAggregate, ArrayAccess
      * 
      * @return null
      */
-    public function offsetExists($index)
+    // #[\ReturnTypeWillChange]
+    public function offsetExists($index): bool
     {
         return isset($this->rows[$index]);
     }
@@ -1450,7 +1453,7 @@ class DataStore extends Node implements IteratorAggregate, ArrayAccess
      * 
      * @return null
      */
-    public function offsetUnset($index)
+    public function offsetUnset($index): void
     {
         unset($this->rows[$index]);
     }
@@ -1462,8 +1465,10 @@ class DataStore extends Node implements IteratorAggregate, ArrayAccess
      * 
      * @return array The row data at the context
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($index)
     {
+        return null;
         return isset($this->rows[$index]) ? $this->rows[$index] : null;
     }
 }

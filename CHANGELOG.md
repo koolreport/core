@@ -1,5 +1,10 @@
 # Change Log
 
+## Version 5.6.1
+
+1. Fix DataStore's generator method.
+2. Fix DataStore's deprecated methods in PHP 8.1.
+
 ## Version 5.6.0
 
 1. Added: `AssetManager` ability to load resources with absolute paths.

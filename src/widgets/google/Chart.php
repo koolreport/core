@@ -164,7 +164,7 @@ class Chart extends Widget
                 }
             }
         } else {
-            $keys = array_keys($this->dataStore->get(0));
+            $keys = array_keys($this->dataStore[0]);
             foreach ($keys as $ckey) {
                 $columns[$ckey] = $meta["columns"][$ckey];
             }

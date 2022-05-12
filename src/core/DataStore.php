@@ -1468,7 +1468,6 @@ class DataStore extends Node implements IteratorAggregate, ArrayAccess
     #[\ReturnTypeWillChange]
     public function offsetGet($index)
     {
-        return null;
         return isset($this->rows[$index]) ? $this->rows[$index] : null;
     }
 }

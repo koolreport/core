@@ -268,11 +268,6 @@ class PdoDataSource extends DataSource
             $pos = -1;
             while (true) {
                 $pos = strpos($query, $paName, $pos + 1);
-                // echo "query = $query<br>";
-                // echo "paName = $paName<br>";
-                // echo "count = $count<br>";
-                // echo "pos = "; var_dump($pos); echo "<br>";
-                // echo "<br>";
                 if ($pos === false) {
                     break;
                 } else {
@@ -305,7 +300,7 @@ class PdoDataSource extends DataSource
             // echo "paValue=$paValue <br>";
             $stm->bindValue($paName, $paValue, $paramType);
         }
-
+        
         return $stm;
     }
 
@@ -504,7 +499,7 @@ class PdoDataSource extends DataSource
 
         $this->firstRow = null;
         if (!$metaSupport) {
-            $this->firstRow = $stm->fetch(PDO::FETCH_ASSOC);
+            $this->firstRow = $this->stm->fetch(PDO::FETCH_ASSOC);
             $cNames = empty($row) ? array() : array_keys($row);
             $numcols = count($cNames);
         } else {

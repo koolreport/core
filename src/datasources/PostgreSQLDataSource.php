@@ -317,10 +317,13 @@ class PostgreSQLDataSource extends DataSource
         foreach ($paNames as $paName) {
             $paValue = $params[$paName];
             if (gettype($paValue)==="array") {
+                $numValues = strlen((string)count($paValue));
                 $paramList = [];
                 foreach ($paValue as $i=>$value) {
-                    // $paramList[] = ":pdoParam$paramNum";
-                    $paArrElName = $paName . "_arr_$i";
+                    $order = $i + 1;
+                    // Pad order to keep all array param name length equal
+                    $order = str_pad($order, $numValues, "0", STR_PAD_LEFT);
+                    $paArrElName = $paName . "_arr_$order";
                     $paramList[] = $paArrElName;
                     $params[$paArrElName] = $value;
                 }
@@ -339,8 +342,8 @@ class PostgreSQLDataSource extends DataSource
         // echo "query = $query<br><br>";
 
         $newParams = [];
-        $poses = [];
-        $hashedPaNames = [];
+        $positions = [];
+        $originalQuery = $query;
         foreach ($paNames as $paName) {
             $count = 1;
             $pos = -1;
@@ -351,34 +354,39 @@ class PostgreSQLDataSource extends DataSource
                 } else {
                     $newPaName = $count > 1 ? $paName . "_" . $count : $paName;
                     $newParams[$newPaName] = $params[$paName];
-                    $poses[$newPaName] = $pos;
-                    // $hashedPaName = $newPaName;
-                    $hashedPaName = md5($newPaName);
-                    $hashedPaNames[$newPaName] = $hashedPaName;
-                    $query = substr_replace($query, $hashedPaName, $pos, strlen($paName));
+                    $positions[$newPaName] = $pos;
+                    $query = substr_replace($query, str_repeat("?", strlen($paName)), $pos, strlen($paName));
                 }
                 $count++;
             }
         }
         // Sort new params by their positions, smallest one first
+        $sortedPosNewParams = $newParams;
         uksort(
-            $newParams, 
-            function ($k1, $k2) use ($poses) {
-                return $poses[$k1] - $poses[$k2];
+            $sortedPosNewParams, 
+            function ($k1, $k2) use ($positions) {
+                return $positions[$k1] - $positions[$k2];
             }
         );
 
+        $sortedPosParamNames = array_keys($sortedPosNewParams);
+        $sortedPosParamNameIndexes = array_flip($sortedPosParamNames);
+        $sortedLenParamNames = array_keys($sortedPosNewParams);
+        usort(
+            $sortedLenParamNames,
+            function ($k1, $k2) {
+                return strlen($k2) - strlen($k1);
+            }
+        );
+        $query = $originalQuery;
         $count = 1;
-        foreach ($newParams as $newPaName => $value) {
-            $hashedPaName = $hashedPaNames[$newPaName];
-            $query = str_replace($hashedPaName, "$" . $count, $query);
-            $count++;
+        foreach ($sortedLenParamNames as $paName) {
+            $query = str_replace($paName, "$" . ($sortedPosParamNameIndexes[$paName] + 1), $query);
         }
-
         // echo "query = $query<br><br>";
-        // echo "newParams = "; print_r($newParams); echo "<br>";
+        // echo "sortedPosNewParams = "; print_r($sortedPosNewParams); echo "<br>";
 
-        $result = pg_query_params($this->connection, $query, array_values($newParams));
+        $result = pg_query_params($this->connection, $query, array_values($sortedPosNewParams));
         if (!$result) {
             throw new \Exception(
                 "PostgreSQL error: " . pg_last_error($this->connection)

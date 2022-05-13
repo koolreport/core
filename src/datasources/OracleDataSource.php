@@ -255,10 +255,13 @@ class OracleDataSource extends DataSource
         foreach ($paNames as $paName) {
             $paValue = $params[$paName];
             if (gettype($paValue)==="array") {
+                $numValues = strlen((string)count($paValue));
                 $paramList = [];
                 foreach ($paValue as $i=>$value) {
-                    // $paramList[] = ":pdoParam$paramNum";
-                    $paArrElName = $paName . "_arr_$i";
+                    $order = $i + 1;
+                    // Pad order to keep all array param name length equal
+                    $order = str_pad($order, $numValues, "0", STR_PAD_LEFT);
+                    $paArrElName = $paName . "_arr_$order";
                     $paramList[] = $paArrElName;
                     $params[$paArrElName] = $value;
                 }
@@ -277,7 +280,6 @@ class OracleDataSource extends DataSource
         // echo "query = $query<br><br>";
 
         $newParams = [];
-        $poses = [];
         $hashedPaNames = [];
         foreach ($paNames as $paName) {
             $count = 1;
@@ -289,7 +291,6 @@ class OracleDataSource extends DataSource
                 } else {
                     $newPaName = $count > 1 ? $paName . "_" . $count : $paName;
                     $newParams[$newPaName] = $params[$paName];
-                    $poses[$newPaName] = $pos;
                     // $hashedPaName = $newPaName;
                     $hashedPaName = md5($newPaName);
                     $hashedPaNames[$newPaName] = $hashedPaName;

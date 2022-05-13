@@ -345,10 +345,13 @@ class SQLSRVDataSource extends DataSource
         foreach ($paNames as $paName) {
             $paValue = $params[$paName];
             if (gettype($paValue)==="array") {
+                $numValues = strlen((string)count($paValue));
                 $paramList = [];
                 foreach ($paValue as $i=>$value) {
-                    // $paramList[] = ":pdoParam$paramNum";
-                    $paArrElName = $paName . "_arr_$i";
+                    $order = $i + 1;
+                    // Pad order to keep all array param name length equal
+                    $order = str_pad($order, $numValues, "0", STR_PAD_LEFT);
+                    $paArrElName = $paName . "_arr_$order";
                     $paramList[] = $paArrElName;
                     $params[$paArrElName] = $value;
                 }
@@ -367,7 +370,8 @@ class SQLSRVDataSource extends DataSource
         // echo "query = $query<br><br>";
 
         $newParams = [];
-        $poses = [];
+        $positions = [];
+        $originalQuery = $query;
         foreach ($paNames as $paName) {
             $count = 1;
             $pos = -1;
@@ -378,24 +382,40 @@ class SQLSRVDataSource extends DataSource
                 } else {
                     $newPaName = $count > 1 ? $paName . "_" . $count : $paName;
                     $newParams[$newPaName] = $params[$paName];
-                    $poses[$newPaName] = $pos;
-                    $query = substr_replace($query, "?", $pos, strlen($paName));
+                    $positions[$newPaName] = $pos;
+                    // $query = substr_replace($query, "?", $pos, strlen($paName));
+                    $query = substr_replace($query, str_repeat("?", strlen($paName)), $pos, strlen($paName));
                 }
                 $count++;
             }
         }
-        // Sort new params by their positions, smallest one first
-        uksort(
-            $newParams, 
-            function ($k1, $k2) use ($poses) {
-                return $poses[$k1] - $poses[$k2];
+        $sortedLenPaNames = array_keys($newParams);
+        usort(
+            $sortedLenPaNames,
+            function ($k1, $k2) {
+                return strlen($k2) - strlen($k1);
             }
         );
-
+        // echo "positions = " . print_r($positions, true) . "<br><br>";
+        // echo "sortedLenPaNames = " . print_r($sortedLenPaNames, true) . "<br><br>";
         // echo "query = $query<br><br>";
-        // echo "newParams = "; print_r($newParams); echo "<br>";
+        $query = $originalQuery;
+        foreach ($sortedLenPaNames as $paName) {
+            $query = str_replace($paName, "?", $query);
+        }
+        // echo "query = $query<br><br>";
 
-        $stmt = sqlsrv_query($this->connection, $query, array_values($newParams));
+        // Sort new params by their positions, smallest one first
+        $sortedPosParams = $newParams;
+        uksort(
+            $sortedPosParams,
+            function ($k1, $k2) use ($positions) {
+                return $positions[$k1] - $positions[$k2];
+            }
+        );
+        // echo "sortedPosParams = " . print_r($sortedPosParams, true) . "<br><br>";
+
+        $stmt = sqlsrv_query($this->connection, $query, array_values($sortedPosParams));
         if( $stmt === false ) {
             throw new \Exception(
                 "Sqlsrv error: " . json_encode(sqlsrv_errors()) 

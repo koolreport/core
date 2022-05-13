@@ -333,20 +333,19 @@ class MySQLDataSource extends DataSource
 
     protected function prepareAndBind($query, $params = [])
     {
-        $sortedPaNames = array_keys($params);
+        $sortedLenPaNames = array_keys($params);
         // Sort param names, longest name first,
         // so that longer ones are replaced before shorter ones in query
         // to avoid case when a shorter name is a substring of a longer name
         usort(
-            $sortedPaNames,
+            $sortedLenPaNames,
             function ($k1, $k2) {
                 return strlen($k2) - strlen($k1);
             }
         );
-        // echo "sortedPaNames = "; print_r($sortedPaNames); echo "<br>";
 
-        // Spreadh array parameters
-        foreach ($sortedPaNames as $paName) {
+        // Spread array parameters
+        foreach ($sortedLenPaNames as $paName) {
             $paValue = $params[$paName];
             if (gettype($paValue) === "array") {
                 $numValues = strlen((string)count($paValue));
@@ -362,21 +361,18 @@ class MySQLDataSource extends DataSource
                 $query = str_replace($paName, implode(",", $paramList), $query);
             }
         }
-
-        // echo "query = $query<br><br>";
-        // echo "params = " . print_r($params, true) . "<br><br>";
         
-        $sortedPaNames = array_keys($params);
+        $sortedLenPaNames = array_keys($params);
         usort(
-            $sortedPaNames,
+            $sortedLenPaNames,
             function ($k1, $k2) {
                 return strlen($k2) - strlen($k1);
             }
         );
         $newParams = [];
-        $poses = [];
+        $positions = [];
         $originalQuery = $query;
-        foreach ($sortedPaNames as $paName) {
+        foreach ($sortedLenPaNames as $paName) {
             $count = 1;
             $pos = -1;
             while (true) {
@@ -386,24 +382,32 @@ class MySQLDataSource extends DataSource
                 } else {
                     $newPaName = $count > 1 ? $paName . "_" . $count : $paName;
                     $newParams[$newPaName] = $params[$paName];
-                    $poses[$newPaName] = $pos;
+                    $positions[$newPaName] = $pos;
                     $query = substr_replace($query, str_repeat("?", strlen($paName)), $pos, strlen($paName));
                 }
                 $count++;
             }
         }
-        // $query = preg_replace("/\?+/", "?", $query);
-        $sortedPaNames = array_keys($newParams);
+        $sortedLenPaNames = array_keys($newParams);
         usort(
-            $sortedPaNames,
+            $sortedLenPaNames,
             function ($k1, $k2) {
                 return strlen($k2) - strlen($k1);
             }
         );
         $query = $originalQuery;
-        foreach ($sortedPaNames as $paName) {
+        foreach ($sortedLenPaNames as $paName) {
             $query = str_replace($paName, "?", $query);
         }
+
+        // Sort new params by their positions, leftist one first
+        $sortedPosNewParams = $newParams;
+        uksort(
+            $sortedPosNewParams,
+            function ($k1, $k2) use ($positions) {
+                return $positions[$k1] - $positions[$k2];
+            }
+        );
 
         $stmt = $this->connection->prepare($query);
         if ($stmt === false) {
@@ -412,20 +416,8 @@ class MySQLDataSource extends DataSource
             );
         }
 
-        // Sort new params by their positions, smallest one first
-        $sortedNewParams = $newParams;
-        uksort(
-            $sortedNewParams,
-            function ($k1, $k2) use ($poses) {
-                return $poses[$k1] - $poses[$k2];
-            }
-        );
-        // echo "poses = " . print_r($poses, true) . "<br><br>";
-        // echo "query = $query<br><br>";
-        // echo "sortedNewParams = " . print_r($sortedNewParams, true) . "<br><br>";
-
         $typeStr = "";
-        foreach ($sortedNewParams as $v) {
+        foreach ($sortedPosNewParams as $v) {
             $typeStr .= is_double($v) ? "d" : (is_int($v) ? "i" : "s");
         }
         if (!empty($typeStr)) {

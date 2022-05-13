@@ -333,46 +333,50 @@ class MySQLDataSource extends DataSource
 
     protected function prepareAndBind($query, $params = [])
     {
-        $paNames = array_keys($params);
+        $sortedPaNames = array_keys($params);
         // Sort param names, longest name first,
         // so that longer ones are replaced before shorter ones in query
         // to avoid case when a shorter name is a substring of a longer name
         usort(
-            $paNames,
+            $sortedPaNames,
             function ($k1, $k2) {
                 return strlen($k2) - strlen($k1);
             }
         );
-        // echo "paNames = "; print_r($paNames); echo "<br>";
+        // echo "sortedPaNames = "; print_r($sortedPaNames); echo "<br>";
 
         // Spreadh array parameters
-        foreach ($paNames as $paName) {
+        foreach ($sortedPaNames as $paName) {
             $paValue = $params[$paName];
-            if (gettype($paValue)==="array") {
+            if (gettype($paValue) === "array") {
+                $numValues = strlen((string)count($paValue));
                 $paramList = [];
-                foreach ($paValue as $i=>$value) {
-                    // $paramList[] = ":pdoParam$paramNum";
-                    $paArrElName = $paName . "_arr_$i";
+                foreach ($paValue as $i => $value) {
+                    $order = $i + 1;
+                    // Pad order to keep all array param name length equal
+                    $order = str_pad($order, $numValues, "0", STR_PAD_LEFT);
+                    $paArrElName = $paName . "_arr_$order";
                     $paramList[] = $paArrElName;
                     $params[$paArrElName] = $value;
                 }
                 $query = str_replace($paName, implode(",", $paramList), $query);
-            } 
+            }
         }
 
-        $paNames = array_keys($params);
+        // echo "query = $query<br><br>";
+        // echo "params = " . print_r($params, true) . "<br><br>";
+        
+        $sortedPaNames = array_keys($params);
         usort(
-            $paNames,
+            $sortedPaNames,
             function ($k1, $k2) {
                 return strlen($k2) - strlen($k1);
             }
         );
-        // echo "paNames = "; print_r($paNames); echo "<br>";
-        // echo "query = $query<br><br>";
-
         $newParams = [];
         $poses = [];
-        foreach ($paNames as $paName) {
+        $originalQuery = $query;
+        foreach ($sortedPaNames as $paName) {
             $count = 1;
             $pos = -1;
             while (true) {
@@ -383,20 +387,23 @@ class MySQLDataSource extends DataSource
                     $newPaName = $count > 1 ? $paName . "_" . $count : $paName;
                     $newParams[$newPaName] = $params[$paName];
                     $poses[$newPaName] = $pos;
-                    $query = substr_replace($query, "?", $pos, strlen($paName));
+                    $query = substr_replace($query, str_repeat("?", strlen($paName)), $pos, strlen($paName));
                 }
                 $count++;
             }
         }
-        // Sort new params by their positions, smallest one first
-        uksort(
-            $newParams, 
-            function ($k1, $k2) use ($poses) {
-                return $poses[$k1] - $poses[$k2];
+        // $query = preg_replace("/\?+/", "?", $query);
+        $sortedPaNames = array_keys($newParams);
+        usort(
+            $sortedPaNames,
+            function ($k1, $k2) {
+                return strlen($k2) - strlen($k1);
             }
         );
-        // echo "query = $query<br><br>";
-        // echo "newParams = "; print_r($newParams); echo "<br><br>";
+        $query = $originalQuery;
+        foreach ($sortedPaNames as $paName) {
+            $query = str_replace($paName, "?", $query);
+        }
 
         $stmt = $this->connection->prepare($query);
         if ($stmt === false) {
@@ -405,8 +412,20 @@ class MySQLDataSource extends DataSource
             );
         }
 
+        // Sort new params by their positions, smallest one first
+        $sortedNewParams = $newParams;
+        uksort(
+            $sortedNewParams,
+            function ($k1, $k2) use ($poses) {
+                return $poses[$k1] - $poses[$k2];
+            }
+        );
+        // echo "poses = " . print_r($poses, true) . "<br><br>";
+        // echo "query = $query<br><br>";
+        // echo "sortedNewParams = " . print_r($sortedNewParams, true) . "<br><br>";
+
         $typeStr = "";
-        foreach ($newParams as $v) {
+        foreach ($sortedNewParams as $v) {
             $typeStr .= is_double($v) ? "d" : (is_int($v) ? "i" : "s");
         }
         if (!empty($typeStr)) {
@@ -426,8 +445,8 @@ class MySQLDataSource extends DataSource
             if ($bindParamResult === false) {
                 throw new \Exception(
                     'bind_param() failed: ' . htmlspecialchars($stmt->error)
-                    . " || Sql query = $query"
-                    . " || Params = $refArr"
+                        . " || Sql query = $query"
+                        . " || Params = $refArr"
                 );
             }
         }

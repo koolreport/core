@@ -1,5 +1,10 @@
 # Change Log
 
+## Version 5.6.2
+
+1. Fix: MySQL, PostgreSQL, SQLServer data sources when binding array with more than 10 values.
+2. Fix: bug with DataStore's offsetGet method.
+
 ## Version 5.6.1
 
 1. Fix DataStore's generator method.

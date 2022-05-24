@@ -407,8 +407,10 @@ class PdoDataSource extends DataSource
         // echo "pdodatasource buildMetaData<br>";
         // $this->connection->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
         // $this->connection->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, false);
-        $mysqlBuffer = Util::get($this->params, PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
-        $this->connection->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, $mysqlBuffer);
+        if (isset($this->params[PDO::MYSQL_ATTR_USE_BUFFERED_QUERY])) {
+            $mysqlBuffer = $this->params[PDO::MYSQL_ATTR_USE_BUFFERED_QUERY];
+            $this->connection->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, $mysqlBuffer);
+        }
 
         $metaData = array("columns" => array());
 
@@ -543,8 +545,10 @@ class PdoDataSource extends DataSource
     public function start()
     {
         // echo "pdodatasource start()<br>";
-        $mysqlBuffer = Util::get($this->params, PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
-        $this->connection->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, $mysqlBuffer);
+        if (isset($this->params[PDO::MYSQL_ATTR_USE_BUFFERED_QUERY])) {
+            $mysqlBuffer = $this->params[PDO::MYSQL_ATTR_USE_BUFFERED_QUERY];
+            $this->connection->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, $mysqlBuffer);
+        }
 
         $this->buildMetaData();
         $this->sendMeta($this->builtMetaData, $this);

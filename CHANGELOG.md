@@ -1,5 +1,10 @@
 # Change Log
 
+## Version 5.7.0
+
+1. Improve Table's client function handleRemoveDuplicate for much faster rendering.
+2. Add closeCursor to statement in PdoDataSource.
+
 ## Version 5.6.2
 
 1. Fix: MySQL, PostgreSQL, SQLServer data sources when binding array with more than 10 values.

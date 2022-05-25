@@ -130,6 +130,11 @@ class PdoDataSource extends DataSource
         if ($charset) {
             $this->connection->exec("set names '$charset'");
         }
+
+        if (isset($this->params["MysqlBufferedQuery"])) {
+            $mysqlBuffer = $this->params["MysqlBufferedQuery"];
+            $this->connection->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, $mysqlBuffer);
+        }
     }
 
     /**
@@ -541,10 +546,6 @@ class PdoDataSource extends DataSource
     public function start()
     {
         // echo "pdodatasource start()<br>";
-        if (isset($this->params[PDO::MYSQL_ATTR_USE_BUFFERED_QUERY])) {
-            $mysqlBuffer = $this->params[PDO::MYSQL_ATTR_USE_BUFFERED_QUERY];
-            $this->connection->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, $mysqlBuffer);
-        }
 
         $this->buildMetaData();
         $this->sendMeta($this->builtMetaData, $this);

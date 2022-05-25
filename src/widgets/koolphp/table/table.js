@@ -156,7 +156,7 @@ KoolReport.koolphp.table.prototype = {
     handleRemoveDuplicate:function()
     {
         var cNamesOrOrders = this.options.removeDuplicate;
-        if(cNamesOrOrders==[]) return;
+        if(!Array.isArray(cNamesOrOrders) || cNamesOrOrders.length == 0) return;
         var startRowIndex = 0;
         var endRowIndex = 0;
         var _root = $('#'+this.name);

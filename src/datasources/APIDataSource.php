@@ -139,7 +139,7 @@ class APIDataSource extends DataSource
         if (is_array($data) && count($data)>0) {
             if (! $this->metaSent) {
                 $metaData = $this->metaData;
-                $row0 = $this->mapRow($data[0]);
+                $row0 = $this->mapRow(array_values($data)[0]);
                 foreach ($row0 as $key=>$value) {
                     $metaData["columns"][$key]=array(
                         "type"=>$this->guessType($value),

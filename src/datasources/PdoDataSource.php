@@ -424,6 +424,7 @@ class PdoDataSource extends DataSource
                 return;
             }
             $row = $stm->fetch();
+            $stm->closeCursor();
             $result = $row[0];
             $metaData['totalRecords'] = $result;
         }
@@ -440,6 +441,7 @@ class PdoDataSource extends DataSource
                 );
             }
             $row = $stm->fetch();
+            $stm->closeCursor();
             $result = $row[0];
             $metaData['filterRecords'] = $result;
         }
@@ -464,6 +466,7 @@ class PdoDataSource extends DataSource
                     );
                 }
                 $row = $stm->fetch();
+                $stm->closeCursor();
                 $result = $row[0];
                 Util::set($metaData, ['aggregates', $operator, $field], $result);
             }
@@ -559,7 +562,7 @@ class PdoDataSource extends DataSource
             $row = $this->stm->fetch(PDO::FETCH_ASSOC);
         }
         $this->endInput(null);
-        // $stm->closeCursor();
+        $this->stm->closeCursor();
         $this->endOfStm = true;
     }
 
@@ -583,7 +586,7 @@ class PdoDataSource extends DataSource
         if (isset($this->endOfStm) && $this->endOfStm === true) {
             $this->stm->execute();
             $this->firstRow = $this->stm->fetch(PDO::FETCH_ASSOC);
-            $this->endOfStm = false;
+            $this->endOfStm = false;            
         }
 
         if (!isset($this->firstRow)) {
@@ -610,6 +613,7 @@ class PdoDataSource extends DataSource
         $report->saveDataGenRow = null;
         $this->endInput(null);
         $this->endOfStm = true;
+        $this->stm->closeCursor();
     }
 
     public function fetchFields($query)
@@ -668,6 +672,7 @@ class PdoDataSource extends DataSource
                     break;
             }
         }
+        $stm->closeCursor();
         return $columns;
     }
 
@@ -733,7 +738,7 @@ class PdoDataSource extends DataSource
 
             $result[$key] = $rows;
         }
-
+        $stm->closeCursor();
         return $result;
     }
 
@@ -768,6 +773,7 @@ class PdoDataSource extends DataSource
                 $this->errorInfo = null;
             }
         }
+        $stm->closeCursor();
         return $success !== false;
     }
 }

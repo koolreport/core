@@ -502,14 +502,13 @@ class PdoDataSource extends DataSource
 
         $this->firstRow = null;
         if (!$metaSupport) {
-            $this->firstRow = $this->stm->fetch(PDO::FETCH_ASSOC);
+            $this->firstRow = $row = $this->stm->fetch(PDO::FETCH_ASSOC);
             $cNames = empty($row) ? array() : array_keys($row);
             $numcols = count($cNames);
         } else {
             $numcols = $this->stm->columnCount();
         }
 
-        // $metaData = array("columns"=>array());
         for ($i = 0; $i < $numcols; $i++) {
             if (!$metaSupport) {
                 $cName = $cNames[$i];

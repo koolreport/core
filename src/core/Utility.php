@@ -145,7 +145,7 @@ class Utility
             $prefix = Utility::get($format, "prefix", "");
             $suffix = Utility::get($format, "suffix", "");
             return $prefix
-                .number_format($value, $decimals, $dec_point, $thousand_sep)
+                .number_format((float)$value, $decimals, $dec_point, $thousand_sep)
                 .$suffix;
             break;
         case "string":

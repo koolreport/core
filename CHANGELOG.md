@@ -4,6 +4,7 @@
 
 1. Improve Table's client function handleRemoveDuplicate for much faster rendering.
 2. Add closeCursor to statement in PdoDataSource.
+3. Fix the string function with null parameter in PHP8.1
 
 ## Version 5.6.2
 

@@ -74,10 +74,10 @@ class ResourceManager
      */
     public function publishAssetFolder($fullLocalPath,$version="")
     {
-        $fullLocalPath = Utility::standardizePathSeparator($fullLocalPath);
-        $assets = Utility::get($this->report->getSettings(), "assets");
+        $fullLocalPath = (string)Utility::standardizePathSeparator($fullLocalPath);
+        $assets = (string)Utility::get($this->report->getSettings(), "assets");
         
-        $document_root = Utility::getDocumentRoot();
+        $document_root = (string)Utility::getDocumentRoot();
         $assetUrl = "";
 
         if (!$assets) {
@@ -109,8 +109,8 @@ class ResourceManager
         }
 
         if ($assets) {
-            $targetAssetPath =  Utility::get($assets, "path");
-            $targetAssetUrl = Utility::get($assets, "url");
+            $targetAssetPath = (string)Utility::get($assets, "path");
+            $targetAssetUrl = (string)Utility::get($assets, "url");
             if (!$targetAssetPath) {
                 throw new \Exception("Could not find path to report's assets folder");
             }

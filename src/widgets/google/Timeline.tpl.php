@@ -50,7 +50,7 @@ KoolReport.widget.init(<?php echo json_encode($this->getResources()); ?>,functio
                         break;
                         case "string":
                         default:
-                            echo str_replace("{value}",addslashes($row[$cKey]),"\"{value}\",");
+                            echo str_replace("{value}",addslashes((string)$row[$cKey]),"\"{value}\",");
                         break;
                     }    
                 }

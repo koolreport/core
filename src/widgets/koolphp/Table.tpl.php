@@ -45,7 +45,7 @@
                     }   
                     $footerText = Utility::get($meta["columns"][$cKey],"footerText");
                     if ($footerText!==null) {
-                        echo str_replace("@value", $footerValue, $footerText);
+                        echo str_replace("@value", (string)$footerValue, (string)$footerText);
                     } else {
                         echo $footerValue;
                     }

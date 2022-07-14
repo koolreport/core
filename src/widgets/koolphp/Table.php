@@ -186,7 +186,7 @@ class Table extends Widget
      */
     public static function formatValue($value, $format, $row = null, $cKey = null)
     {
-        $formatValue = Utility::get($format, "formatValue", null);
+        $formatValue = Utility::get($format, "formatValue", "");
 
         if (is_string($formatValue)) {
             eval('$fv="' . str_replace('@value', '$value', $formatValue) . '";');

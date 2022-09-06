@@ -59,6 +59,14 @@ class Theme
     }
 
     /**
+     * Start register resource of theme
+     * @return void 
+     */
+    public function apply()
+    {
+    }
+
+    /**
      * Derived by specific theme to provide them information
      * 
      * @return array Associated array contain name, version and base of the theme

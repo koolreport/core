@@ -243,7 +243,7 @@ class Utility
         $marks = Utility::markJsFunction($object);
         $text = json_encode($object, $option);
         foreach ($marks as $i=>$js) {
-            $text = str_replace("\"--js($i)\"", $js, $text);
+            $text = str_replace("\"--js($i)\"", (string)$js, (string)$text);
         }
         return $text;
     }
@@ -424,7 +424,7 @@ class Utility
     public static function strReplace($str, $params)
     {
         foreach ($params as $k=>$v) {
-            $str = str_replace($k, $v, $str);
+            $str = str_replace($k, $v, (string)$str);
         }
         return $str;
     }

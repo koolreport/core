@@ -132,7 +132,7 @@ class CalculatedColumn extends Process
                         $v = 0;
                     }
                     if (is_string($v) || is_numeric($v)) {
-                        $expression = str_replace("{".$k."}", $v, $expression);
+                        $expression = str_replace("{".$k."}", (string)$v, $expression);
                     }
                 }
 

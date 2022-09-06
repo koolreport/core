@@ -244,7 +244,7 @@ class MySQLDataSource extends DataSource
                 $value = implode(",", $value);
                 $query = str_replace($key, $value, $query);
             } else {
-                $query = str_replace($key, $this->escape($value), $query);
+                $query = str_replace($key, (string)$this->escape($value), $query);
             }
         }
         return $query;

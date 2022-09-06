@@ -19,8 +19,8 @@ if ($this->baseValue!==null) {
     $indicatorValue = $this->calculateIndicator($this->value, $this->baseValue, $this->indicator);
     $indicatorStyle .= (($indicatorStyle)?";":"").
                     (($indicatorValue<0)?$negativeStyle:$positiveStyle);
-    $indicatorTitle = str_replace("{baseValue}", $this->formatValue($this->baseValue, $this->valueFormat), $this->indicatorTitle);
-    $indicatorTitle = str_replace("{value}", $this->formatValue($this->value, $this->valueFormat), $indicatorTitle);
+    $indicatorTitle = str_replace("{baseValue}", (string)$this->formatValue($this->baseValue, $this->valueFormat), (string)$this->indicatorTitle);
+    $indicatorTitle = str_replace("{value}", (string)$this->formatValue($this->value, $this->valueFormat), (string)$indicatorTitle);
 }
 
 $href = $this->getHref();

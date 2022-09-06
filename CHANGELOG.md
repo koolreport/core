@@ -4,6 +4,7 @@
 
 1. Improve Table's client function handleRemoveDuplicate for much faster rendering.
 2. Add closeCursor to statement in PdoDataSource.
+3. Add `Shuffle` process to randomize data order.
 
 ## Version 5.6.2
 

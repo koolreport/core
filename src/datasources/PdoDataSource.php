@@ -203,7 +203,7 @@ class PdoDataSource extends DataSource
      *
      * @param array $sqlParams The parameters for query
      *
-     * @return OracleDataSource This datasource
+     * @return PdoDataSource This datasource
      */
     public function params($sqlParams)
     {
@@ -765,6 +765,7 @@ class PdoDataSource extends DataSource
             } else {
                 $this->errorInfo = null;
             }
+            $stm->closeCursor();
         } else {
             $success = $this->connection->exec($sql);
             if ($success === false) {
@@ -773,7 +774,6 @@ class PdoDataSource extends DataSource
                 $this->errorInfo = null;
             }
         }
-        $stm->closeCursor();
         return $success !== false;
     }
 }

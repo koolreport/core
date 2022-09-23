@@ -1,6 +1,6 @@
 # Change Log
 
-## Version 5.7.0-dev
+## Version 5.8.0
 
 1. Improve Table's client function handleRemoveDuplicate for much faster rendering.
 2. Add closeCursor to statement in PdoDataSource.

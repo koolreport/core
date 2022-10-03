@@ -75,7 +75,7 @@ class ResourceManager
     public function publishAssetFolder($fullLocalPath,$version="")
     {
         $fullLocalPath = (string)Utility::standardizePathSeparator($fullLocalPath);
-        $assets = (string)Utility::get($this->report->getSettings(), "assets");
+        $assets = Utility::get($this->report->getSettings(), "assets");
         
         $document_root = (string)Utility::getDocumentRoot();
         $assetUrl = "";

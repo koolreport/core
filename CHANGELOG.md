@@ -1,5 +1,8 @@
 # Change Log
 
+## Version 6.0.1
+1. Fix forced string cast of report's "assets" setting.
+
 ## Version 6.0.0
 
 1. Improve Table's client function handleRemoveDuplicate for much faster rendering.

@@ -80,6 +80,8 @@ class PostgreSQLDataSource extends DataSource
      * @var bool $countFilter Whether the filter should be counted
      */    
     protected $countFilter;
+
+    public $originalQuery;
     
     /**
      * DataSource initiation

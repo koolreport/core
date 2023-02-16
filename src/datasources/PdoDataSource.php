@@ -66,6 +66,8 @@ class PdoDataSource extends DataSource
      */
     protected $query;
 
+    public $originalQuery;
+    
     /**
      * The params of query
      *
@@ -95,6 +97,20 @@ class PdoDataSource extends DataSource
      * @var array
      */
     protected $errorInfo;
+
+    protected $stm;
+
+    protected $firstRow;
+
+    protected $builtMetaData;
+
+    protected $endOfStm;
+
+    protected $totalQuery;
+
+    protected $filterQuery;
+
+    protected $aggregates;
 
 
     /**

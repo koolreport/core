@@ -43,6 +43,10 @@ class DataStore extends Node implements IteratorAggregate, ArrayAccess
      */
     protected $index = -1;
 
+    public $name;
+
+    protected $report;
+
     /**
      * Constructor of DataStore
      * 

@@ -39,6 +39,7 @@ class Filter extends Process
 {
     protected $conditions;
     protected $logicalOperator;
+    protected $filters;
 
     /**
      * Process initiation

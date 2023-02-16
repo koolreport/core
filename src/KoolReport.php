@@ -37,6 +37,7 @@ class KoolReport
     protected $events;
     protected $reportSettings;
     public $generatorUsed = false;
+    public $dataStoresGenerator;
 
     /**
      * Get the version of KoolReport

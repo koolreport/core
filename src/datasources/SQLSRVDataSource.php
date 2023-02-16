@@ -89,6 +89,8 @@ class SQLSRVDataSource extends DataSource
      */    
     protected $countFilter = false;
 
+    public $originalQuery;
+
     /**
      * Datasource initiation
      * 

@@ -104,6 +104,8 @@ class OracleDataSource extends DataSource
      */
     protected $countFilter = false;
 
+    public $originalQuery;
+
     /**
      * Called for initiation
      * 

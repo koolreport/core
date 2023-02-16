@@ -83,6 +83,8 @@ class MySQLDataSource extends DataSource
 
     protected $queryParams = [];
 
+    public $originalQuery;
+
     /**
      * Init MySQLdataSource
      * 

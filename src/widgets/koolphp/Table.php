@@ -394,6 +394,7 @@ class Table extends Widget
                                 "start" => 1,
                             );
                         }
+                        if (!isset($meta["columns"][$cKey])) $meta["columns"][$cKey] = [];
                         $meta["columns"][$cKey] = array_merge($meta["columns"][$cKey], $cValue);
                         if (!in_array($cKey, $showColumnKeys)) {
                             array_push($showColumnKeys, $cKey);

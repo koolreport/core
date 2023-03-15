@@ -38,6 +38,8 @@ class KoolReport
     protected $reportSettings;
     public $generatorUsed = false;
     public $dataStoresGenerator;
+    public $viewDir;
+    public $renderingVariables;
 
     /**
      * Get the version of KoolReport
@@ -520,7 +522,7 @@ class KoolReport
     public function render($view = null, $return = false)
     {
 
-        $currentDir = dirname(Utility::getClassPath($this));
+        $currentDir = is_string($this->viewDir) ? $this->viewDir : dirname(Utility::getClassPath($this));
         if (!$this->templateEngine) {
             if ($view === null) {
                 $view = Utility::getClassName($this);
@@ -539,6 +541,9 @@ class KoolReport
 
         $content = "";
         if ($this->fireEvent("OnBeforeRender")) {
+
+            $renderingVariables = $this->renderingVariables;
+            if (!is_array($renderingVariables)) $renderingVariables = [];
             
             if (!isset($_POST["@subReport"])) {
                 //If this is subreport request, we dont want to render 
@@ -563,13 +568,19 @@ class KoolReport
             if ($this->templateEngine) {
                 $content = $this->templateEngine->render(
                     $view,
-                    array(
-                        "report"=>$this
+                    array_merge(
+                        array(
+                            "report"=>$this
+                        ), 
+                        $renderingVariables  
                     )
                 );
             } else {
                 ob_start();
                 $report = $this;
+                foreach ($renderingVariables as $varName => $varValue) {
+                    $$varName = $varValue;
+                }
                 include $currentDir . "/" . $view . ".view.php";
                 $content = ob_get_clean();    
             }

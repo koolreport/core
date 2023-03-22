@@ -131,6 +131,7 @@ KoolReport.google.chart.prototype = {
             this.addPointerCss();
         }
         this.draw();
+        this.fireEvent("init");
     },
     addPointerCss:function()
     {
@@ -143,6 +144,7 @@ KoolReport.google.chart.prototype = {
     },
     draw:function(data)
     {
+        this.fireEvent("drawing");
         if(data)
         {
             this.data = data;
@@ -173,6 +175,7 @@ KoolReport.google.chart.prototype = {
         {
             this.chart.draw(this.dataTable,this.options);
         }
+        this.fireEvent("drawed");
     },
     redraw:function()
     {

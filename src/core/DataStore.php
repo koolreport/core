@@ -165,7 +165,7 @@ class DataStore extends Node implements IteratorAggregate, ArrayAccess
      * 
      * @param array $metaData Associate array contaning meta data
      * 
-     * @return array Meta data in array form
+     * @return array|DataStore Meta data in array form or the DataStore object itself
      * 
      * @since 1.0.0
      */
@@ -187,7 +187,7 @@ class DataStore extends Node implements IteratorAggregate, ArrayAccess
      * 
      * @param array $rows Rows of data
      * 
-     * @return array Rows of data
+     * @return array|DataStore Rows of data or the DataStore object itself
      * 
      * @since 1.0.0
      */

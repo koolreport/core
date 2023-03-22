@@ -1,8 +1,10 @@
 # Change Log
 
-## Version 6.0.2-dev
-1. Fix dynamic properties in PHP 8.2
-2. Fix mull meta column key in core/Table
+## Version 6.1.0-dev
+1. Fix dynamic properties in PHP 8.2.
+2. Fix mull meta column key in core/Table widget.
+3. Add public `viewDir` property for KoolReport class to find view files from that directory.
+4. Add public `renderingVariables` property for KoolReport class to use in view files.
 
 ## Version 6.0.1
 1. Fix forced string cast of report's "assets" setting.

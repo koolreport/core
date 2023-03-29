@@ -1,6 +1,6 @@
 # Change Log
 
-## Version 6.1.0-dev
+## Version 6.1.0
 1. Fix dynamic properties in PHP 8.2.
 2. Fix mull meta column key in core/Table widget.
 3. Add event "init", "drawing" and "drawed" to google chart

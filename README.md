@@ -14,6 +14,7 @@
 
 # Changelog 
 
+* [Version 6.1.0 (Mar 31st, 2023)](https://www.koolreport.com/docs/koolreport/change_log/#version-6.1.0)
 * [Version 6.0.1 (Oct 03rd, 2022)](https://www.koolreport.com/docs/koolreport/change_log/#version-6.0.1)
 * [Version 6.0.0 (Sept 23rd, 2022)](https://www.koolreport.com/docs/koolreport/change_log/#version-6.0.0)
 * [Version 5.5.0 (Nov 15th, 2021)](https://www.koolreport.com/docs/koolreport/change_log/#version-5.5.0)

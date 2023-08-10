@@ -47,33 +47,34 @@ class Timeline extends Chart
      * 
      * @return string The client-side date format
      */
-    protected function newClientDate($value, $meta)
-    {
-        $format = Utility::get($meta, "format");
-        $type = Utility::get($meta, "type");
-        switch ($type) {
-        case "date":
-            $format = $format?$format:"Y-m-d";
-            $toFormat = "Y,(n-1),d";
-            break;
-        case "time":
-            $format = $format?$format:"H:i:s";
-            $toFormat = "0,0,0,H,i,s";
-            break;
-        case "datetime":
-        default:
-            $format = $format?$format:"Y-m-d H:i:s";
-            $toFormat = "Y,(n-1),d,H,i,s";
-            break;
-        }
-        //The (n-1) above is because in Javascript, month start from 0 to 11
-        $date = \DateTime::createFromFormat($format, $value);
+    // protected function newClientDate($value, $meta)
+    // {
+    //     $format = Utility::get($meta, "format");
+    //     $type = Utility::get($meta, "type");
+    //     switch ($type) {
+    //     case "date":
+    //         $format = $format?$format:"Y-m-d";
+    //         $toFormat = "Y,(n-1),d";
+    //         break;
+    //     case "time":
+    //         $format = $format?$format:"H:i:s";
+    //         $toFormat = "0,0,0,H,i,s";
+    //         break;
+    //     case "datetime":
+    //     default:
+    //         $format = $format?$format:"Y-m-d H:i:s";
+    //         $toFormat = "Y,(n-1),d,H,i,s";
+    //         break;
+    //     }
+    //     //The (n-1) above is because in Javascript, month start from 0 to 11
+    //     $date = \DateTime::createFromFormat($format, $value);
 
-        if ($date) {
-            return "new Date(" . \DateTime::createFromFormat($format, $value)->format($toFormat) . ")";
-        }
-        return "null";
-    }
+    //     if ($date) {
+    //         // return "new Date(" . \DateTime::createFromFormat($format, $value)->format($toFormat) . ")";
+    //         return "function() {return new Date(" . \DateTime::createFromFormat($format, $value)->format($toFormat) . ");}()";
+    //     }
+    //     return "null";
+    // }
 
     /**
      * Handle on render
@@ -105,7 +106,20 @@ class Timeline extends Chart
                     "language"=>$this->language,
                     "mapsApiKey"=>$this->mapsApiKey
                 )
-            )
+            ),
+            // "Chart",
+            // array(
+            //     "chartType" => $this->type,
+            //     "options" => $options,
+            //     "data" => $this->prepareData(),
+            //     "cKeys" => array_keys($columns),
+            //     "loader"=>array(
+            //         "package"=>$this->package,
+            //         "stability"=>$this->stability,
+            //         "language"=>$this->language,
+            //         "mapsApiKey"=>$this->mapsApiKey
+            //     )
+            // )
         );
     }
 }

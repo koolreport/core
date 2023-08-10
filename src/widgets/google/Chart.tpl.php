@@ -15,7 +15,7 @@ use \koolreport\core\Utility;
 <div id="<?php echo $this->name; ?>" style="<?php if ($this->width) echo "width:".$this->width.";"; ?><?php if ($this->height) echo "height:".$this->height.";"; ?>"></div>
 <script type="text/javascript">
     KoolReport.widget.init(<?php echo json_encode($this->getResources()); ?>,function(){
-        <?php echo $this->name; ?> = new KoolReport.google.chart("<?php echo $chartType; ?>","<?php echo $this->name; ?>",<?php echo json_encode($cKeys);?>,<?php echo json_encode($data);?>,<?php echo Utility::jsonEncode($options);?>,<?php echo json_encode($loader); ?>);
+        <?php echo $this->name; ?> = new KoolReport.google.chart("<?php echo $chartType; ?>","<?php echo $this->name; ?>",<?php echo json_encode($cKeys);?>,<?php echo Utility::jsonEncode($data);?>,<?php echo Utility::jsonEncode($options);?>,<?php echo json_encode($loader); ?>);
         <?php
         if ($this->pointerOnHover) {
             echo "$this->name.pointerOnHover=true;";    

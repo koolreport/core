@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file contains foundation class for KoolReport's widget
  *
@@ -11,6 +12,7 @@
  */
 
 namespace koolreport\core;
+
 use \koolreport\core\Utility;
 use \koolreport\core\DataStore;
 use \koolreport\core\Process;
@@ -34,8 +36,8 @@ class Widget
      * 
      * @var array $params Widget parameters
      */
-    protected $params=null;
-    
+    protected $params = null;
+
     /**
      * The widget name
      * 
@@ -100,7 +102,7 @@ class Widget
      * @var string $themeCssClass The cssClass attached to widget.
      */
     protected $themeCssClass;
-    
+
 
     /**
      * Whether rendering with loader
@@ -108,7 +110,7 @@ class Widget
      * @var bool $withoutLoader If true, widget will not render 
      *                          with KoolReport Loader
      */
-    protected $withoutLoader=false;
+    protected $withoutLoader = false;
 
     /**
      * Constructor of theme
@@ -116,8 +118,8 @@ class Widget
      * @param array $params The setting parameters for widget
      * 
      * @return null
-     */  
-    public function __construct($params=null)
+     */
+    public function __construct($params = null)
     {
         $this->params = $params;
         $this->name = Utility::get($this->params, "name");
@@ -125,24 +127,25 @@ class Widget
         $this->themeBase = Utility::get($this->params, "themeBase");
         $this->themeCssClass = Utility::get($this->params, "themeCssClass");
         $this->withoutLoader = Utility::get($this->params, "withoutLoader", false);
-        
+
         $this->report = Utility::get($this->params, "report");
 
-        if ($this->report===null 
-            && isset($GLOBALS["__ACTIVE_KOOLREPORT__"]) 
-            && $GLOBALS["__ACTIVE_KOOLREPORT__"]!==null
+        if (
+            $this->report === null
+            && isset($GLOBALS["__ACTIVE_KOOLREPORT__"])
+            && $GLOBALS["__ACTIVE_KOOLREPORT__"] !== null
         ) {
             $this->report = $GLOBALS["__ACTIVE_KOOLREPORT__"];
         }
-        
-        if ($this->report===null &&  $this->withoutLoader) {
+
+        if ($this->report === null &&  $this->withoutLoader) {
             $this->report = new \koolreport\KoolReport;
         }
 
-        if ($this->report===null) {
+        if ($this->report === null) {
             $this->report = new WidgetContainer;
         }
-        
+
         $theme = $this->getReport()->getTheme();
         if ($theme) {
             if (!$this->themeBase) {
@@ -179,18 +182,18 @@ class Widget
      * 
      * @return null
      */
-    protected function clientSideReady($name=null)
+    protected function clientSideReady($name = null)
     {
         //If no name specified then use default $this->name
         //If not then if $name=="", understand that there is no passing object
         //Otherwise try to pass the custom name
-        if ($name==null && $this->onReady!=null) {
-            echo "(".$this->onReady.")(".$this->name.");";
-        } else if ($this->onReady!=null) {
-            if ($name=="") {
-                echo "(".$this->onReady.")();";
+        if ($name == null && $this->onReady != null) {
+            echo "(" . $this->onReady . ")(" . $this->name . ");";
+        } else if ($this->onReady != null) {
+            if ($name == "") {
+                echo "(" . $this->onReady . ")();";
             } else {
-                echo "(".$this->onReady.")(".$name.");";
+                echo "(" . $this->onReady . ")(" . $name . ");";
             }
         }
     }
@@ -232,14 +235,14 @@ class Widget
      * 
      * @return array The list of resource in array
      */
-    protected function getResources($settings=null)
+    protected function getResources($settings = null)
     {
 
         $resources = array(
-            "js"=>array(),
-            "css"=>array()
+            "js" => array(),
+            "css" => array()
         );
-        if ($settings==null) {
+        if ($settings == null) {
             $settings = $this->resourceSettings();
         }
 
@@ -248,7 +251,7 @@ class Widget
             $this->getAssetManager()->publish($settings["folder"]);
             $css = Utility::get($settings, "css");
             $js = Utility::get($settings, "js");
-            
+
             if ($css) {
                 $this->convertHierachicalResources($css);
                 $resources["css"] = $css;
@@ -262,25 +265,25 @@ class Widget
 
         //Extra from theme
         $theme = $this->getReport()->getTheme();
-        
+
         if ($theme && $theme->doesSupport($this)) {
             $extra = $theme->getWidgetResourcesFor($this);
-            
+
             //Extra Js
-            if ($extra["replacingJs"]!=array()) {
+            if ($extra["replacingJs"] != array()) {
                 $resources["js"] = $extra["replacingJs"];
-            } else if ($resources["js"]==array()) {
+            } else if ($resources["js"] == array()) {
                 $resources["js"] = $extra["js"];
-            } else if ($extra["js"]!=array()) {
+            } else if ($extra["js"] != array()) {
                 $this->attachResourceToEnd($resources["js"], $extra["js"]);
             }
-            
+
             //Extra Css
-            if ($extra["replacingCss"]!=array()) {
+            if ($extra["replacingCss"] != array()) {
                 $resources["css"] = $extra["replacingCss"];
-            } else if ($resources["css"]==array()) {
+            } else if ($resources["css"] == array()) {
                 $resources["css"] = $extra["css"];
-            } else if ($extra["css"]!=array()) {
+            } else if ($extra["css"] != array()) {
                 $this->attachResourceToEnd($resources["css"], $extra["css"]);
             }
         }
@@ -290,52 +293,51 @@ class Widget
             $library = Utility::get($settings, "library");
             if ($library) {
                 $lib = array(
-                    "css"=>array(),
-                    "js"=>array(),
+                    "css" => array(),
+                    "js" => array(),
                 );
 
                 foreach ($library as $libName) {
-                    switch(strtolower($libName))
-                    {
-                    case "jquery":
-                        $publicAssetUrl = $this->getReport()
-                            ->getResourceManager()
-                            ->publishAssetFolder(
-                                realpath(dirname(__FILE__)."/../clients/jquery")
+                    switch (strtolower($libName)) {
+                        case "jquery":
+                            $publicAssetUrl = $this->getReport()
+                                ->getResourceManager()
+                                ->publishAssetFolder(
+                                    realpath(dirname(__FILE__) . "/../clients/jquery")
+                                );
+                            array_push($lib["js"], $publicAssetUrl . "/jquery.min.js");
+                            break;
+                        case "jqueryui":
+                            $publicAssetUrl = $this->getReport()
+                                ->getResourceManager()
+                                ->publishAssetFolder(
+                                    realpath(dirname(__FILE__) . "/../clients/jquery")
+                                );
+                            array_push($lib["js"], $publicAssetUrl . "/jquery-ui.min.js");
+                            break;
+                        case "raphael":
+                            $publicAssetUrl = $this->getReport()->getResourceManager()->publishAssetFolder(realpath(dirname(__FILE__) . "/../clients/raphael"));
+                            array_push($lib["js"], $publicAssetUrl . "/raphael.min.js");
+                            break;
+                        case "font-awesome":
+                            $publicAssetUrl = $this->getReport()->getResourceManager()->publishAssetFolder(realpath(dirname(__FILE__) . "/../clients/font-awesome"));
+                            array_push(
+                                $lib["css"],
+                                $publicAssetUrl . "/css/font-awesome.min.css"
                             );
-                        array_push($lib["js"], $publicAssetUrl."/jquery.min.js");
-                        break;
-                    case "jqueryui":
-                        $publicAssetUrl = $this->getReport()
-                            ->getResourceManager()
-                            ->publishAssetFolder(
-                                realpath(dirname(__FILE__)."/../clients/jquery")
-                            );
-                        array_push($lib["js"], $publicAssetUrl."/jquery-ui.min.js");
-                        break;
-                    case "raphael":
-                        $publicAssetUrl = $this->getReport()->getResourceManager()->publishAssetFolder(realpath(dirname(__FILE__)."/../clients/raphael"));    
-                        array_push($lib["js"], $publicAssetUrl."/raphael.min.js");
-                        break;
-                    case "font-awesome":
-                        $publicAssetUrl = $this->getReport()->getResourceManager()->publishAssetFolder(realpath(dirname(__FILE__)."/../clients/font-awesome"));    
-                        array_push(
-                            $lib["css"],
-                            $publicAssetUrl."/css/font-awesome.min.css"
-                        );
-                        break;
-                        break;
+                            break;
+                            break;
                     }
                 }
-                
-                
-                if ($lib["js"]!=array()) {
+
+
+                if ($lib["js"] != array()) {
                     $resources["js"] = array_merge(
                         $lib["js"],
                         array($resources["js"])
                     );
                 }
-                if ($lib["css"]!=array()) {
+                if ($lib["css"] != array()) {
                     $resources["css"] = array_merge(
                         $lib["css"],
                         array($resources["css"])
@@ -354,9 +356,9 @@ class Widget
      * 
      * @return bool Return true if resource has been attached
      */
-    protected function attachResourceToEnd(&$destination,$attachment)
+    protected function attachResourceToEnd(&$destination, $attachment)
     {
-        for ($i=count($destination)-1;$i>-1;$i--) {
+        for ($i = count($destination) - 1; $i > -1; $i--) {
             if (is_array($destination[$i])) {
                 if ($this->attachResourceToEnd($destination[$i], $attachment)) {
                     return true;
@@ -378,9 +380,9 @@ class Widget
     protected function convertHierachicalResources(&$resources)
     {
         foreach ($resources as &$resource) {
-            if (gettype($resource)=="string") {
+            if (gettype($resource) == "string") {
                 $resource = $this->getAssetManager()->getAssetUrl($resource);
-            } else if (gettype($resource)=="array") {
+            } else if (gettype($resource) == "array") {
                 $this->convertHierachicalResources($resource);
             }
         }
@@ -413,10 +415,10 @@ class Widget
      * 
      * @return null
      */
-    protected function useAutoName($prefix="widget")
+    protected function useAutoName($prefix = "widget")
     {
-        if ($this->name==null) {
-            $this->name = $prefix.Utility::getUniqueId();
+        if ($this->name == null) {
+            $this->name = $prefix . Utility::getUniqueId();
         }
     }
 
@@ -432,7 +434,7 @@ class Widget
     protected function standardizeDataSource($dataSource, $args)
     {
         $finalDataSource = null;
-        if ($dataSource!==null) {
+        if ($dataSource !== null) {
             if (is_callable($dataSource)) {
                 // If datasource is a function then call it and pass all the available
                 // parameters from useDataSource()
@@ -447,39 +449,37 @@ class Widget
                 $finalDataSource = $this->onFurtherProcessRequest($dataSource)->pipe(new DataStore());
             } else {
                 //Should be array or collection
-                if (count($dataSource)>0) {
+                if (count($dataSource) > 0) {
                     $finalDataSource = new DataStore();
                     $rowType = null; //"assoc","object"
-                    foreach ($dataSource as $i=>$row) {
-                        if ($i==1 && $rowType=="array") {
+                    foreach ($dataSource as $i => $row) {
+                        if ($i == 1 && $rowType == "array") {
                             $meta = $finalDataSource->meta();
                             $cKeys = array_keys($meta["columns"]);
-                            foreach ($row as $i=>$cValue) {
-                                $meta["columns"][$cKeys[$i]]["type"] = Utility::guessType($cValue);
+                            foreach ($row as $j => $cValue) {
+                                $meta["columns"][$cKeys[$j]]["type"] = Utility::guessType($cValue);
                             }
                             $finalDataSource->meta($meta);
-                            
                         }
-    
-                        if ($i==0) {
-                            $meta = array("columns"=>array());
-                            if (gettype($row)=="object") {
-                                
+
+                        if ($i == 0) {
+                            $meta = array("columns" => array());
+                            if (gettype($row) == "object") {
+
                                 $rowType = "object";
-                                foreach (get_object_vars($row) as $cKey=>$cValue) {
+                                foreach (get_object_vars($row) as $cKey => $cValue) {
                                     $meta["columns"][$cKey] = array(
-                                        "type"=>Utility::guessType($cValue),
+                                        "type" => Utility::guessType($cValue),
                                     );
                                 }
-                                    
-                            } else if (gettype($row)=="array" && Utility::isAssoc($row)) {
+                            } else if (gettype($row) == "array" && Utility::isAssoc($row)) {
                                 $rowType = "assoc";
-                                foreach ($row as $cKey=>$cValue) {
+                                foreach ($row as $cKey => $cValue) {
                                     $meta["columns"][$cKey] = array(
-                                        "type"=>Utility::guessType($cValue),
+                                        "type" => Utility::guessType($cValue),
                                     );
                                 }
-                            } else if (gettype($row)=="array") {
+                            } else if (gettype($row) == "array") {
                                 $rowType = "array";
                                 foreach ($row as $cValue) {
                                     $meta["columns"][$cValue] = array();
@@ -490,22 +490,20 @@ class Widget
                             }
                             $finalDataSource->meta($meta);
                         }
-
-                        switch($rowType)
-                        {
-                        case "object":
-                            $finalDataSource->push(get_object_vars($row));
-                            break;
-                        case "assoc":
-                            $finalDataSource->push($row);
-                            break;
-                        case "array":
-                            if ($i>0) {
-                                $finalDataSource->push(
-                                    array_combine($keys_for_array, $row)
-                                );
-                            }
-                            break;
+                        switch ($rowType) {
+                            case "object":
+                                $finalDataSource->push(get_object_vars($row));
+                                break;
+                            case "assoc":
+                                $finalDataSource->push($row);
+                                break;
+                            case "array":
+                                if ($i > 0) {
+                                    $finalDataSource->push(
+                                        array_combine($keys_for_array, $row)
+                                    );
+                                }
+                                break;
                         }
                     }
                 } else {
@@ -513,7 +511,7 @@ class Widget
                     $finalDataSource->data(array());
                     $finalDataSource->meta(
                         array(
-                            "columns"=>array(),
+                            "columns" => array(),
                         )
                     );
                 }
@@ -563,14 +561,14 @@ class Widget
     protected function useLanguage()
     {
         $this->language = Utility::get($this->params, "language");
-        if ($this->language!==null) {
-            if (gettype($this->language)=="string") {
+        if ($this->language !== null) {
+            if (gettype($this->language) == "string") {
                 $languageFile = $this->getWidgetFolder()
-                    ."/languages/"
-                    .Utility::getClassName($this)
-                    ."."
-                    .strtolower($this->language)
-                    .".json";
+                    . "/languages/"
+                    . Utility::getClassName($this)
+                    . "."
+                    . strtolower($this->language)
+                    . ".json";
                 if (is_file($languageFile)) {
                     $this->languageMap = json_decode(
                         file_get_contents($languageFile),
@@ -604,9 +602,8 @@ class Widget
      */
     protected function onInit()
     {
-        
     }
-    
+
     /**
      * Get the asset manager object for this widget
      * 
@@ -619,7 +616,7 @@ class Widget
         }
         return $this->assetManager;
     }
-    
+
     /**
      * Get the report that holds this widget
      * 
@@ -629,7 +626,7 @@ class Widget
     {
         return $this->report;
     }
-    
+
     /**
      * Get the full path to folder containing this widget
      * 
@@ -672,9 +669,9 @@ class Widget
     public function render()
     {
         if ($this->report->fireEvent("OnBeforeWidgetRender", $this)) {
-            $type=str_replace('\\', '/', get_class($this));
+            $type = str_replace('\\', '/', get_class($this));
             echo "<krwidget widget-name='$this->name' widget-type='$type'"
-                .($this->themeCssClass?" class='$this->themeCssClass'":"").">";
+                . ($this->themeCssClass ? " class='$this->themeCssClass'" : "") . ">";
             $this->onRender();
             echo "</krwidget>";
         }
@@ -705,12 +702,12 @@ class Widget
      * @return string It could return html of widget 
      *                if $return parameter is set to true
      */
-    protected function template($template=null,$variables=null,$return=false)
+    protected function template($template = null, $variables = null, $return = false)
     {
         if (!$template) {
             $template = Utility::getClassName($this);
-        } else if (gettype($template)=="array") {
-            if (gettype($variables)=="boolean") {
+        } else if (gettype($template) == "array") {
+            if (gettype($variables) == "boolean") {
                 $return = $variables;
             }
             $variables = $template;
@@ -720,22 +717,22 @@ class Widget
         $currentDir = $this->getWidgetFolder();
 
         $themeBase = $this->getThemeBase();
-        if ($themeBase && is_file($currentDir."/$template.$themeBase.tpl.php")) {
-            $template.=".$themeBase";
+        if ($themeBase && is_file($currentDir . "/$template.$themeBase.tpl.php")) {
+            $template .= ".$themeBase";
         }
 
         //Try the template with base, if found then use it
-        if (!is_file($currentDir."/$template.tpl.php")) {
+        if (!is_file($currentDir . "/$template.tpl.php")) {
             throw new \Exception("Could not find template [$template.tpl.php]");
         }
 
         ob_start();
         if ($variables) {
-            foreach ($variables as $key=>$value) {
+            foreach ($variables as $key => $value) {
                 $$key = $value;
             }
         }
-        include $currentDir."/$template.tpl.php";
+        include $currentDir . "/$template.tpl.php";
         $output = ob_get_clean();
         //$output = preg_replace('/\s+/S'," ", $output);
         if ($return) {
@@ -743,7 +740,6 @@ class Widget
         } else {
             echo $output;
         }
-        
     }
     /**
      * Create widget object
@@ -754,7 +750,7 @@ class Widget
      * 
      * @return string Return html string if $return is set to true
      */
-    static function create($params,$return=false)
+    static function create($params, $return = false)
     {
         $class = get_called_class();
         $component = new $class($params);
@@ -765,7 +761,7 @@ class Widget
         } else {
             $component->render();
         }
-    }    
+    }
     /**
      * Return html string of the widget
      * 

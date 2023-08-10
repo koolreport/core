@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is wrapper class for Google Chart
  *
@@ -173,6 +174,42 @@ class Chart extends Widget
     }
 
     /**
+     * Convert server-side date to client-side format
+     * 
+     * @param string $value The datetime
+     * @param array  $meta  The meta data
+     * 
+     * @return string The client-side date format
+     */
+    protected function newClientDate($value, $meta)
+    {
+        $format = Util::get($meta, "format");
+        $type = Util::get($meta, "type");
+        switch ($type) {
+            case "date":
+                $format = $format ? $format : "Y-m-d";
+                $toFormat = "Y,(n-1),d";
+                break;
+            case "time":
+                $format = $format ? $format : "H:i:s";
+                $toFormat = "0,0,0,H,i,s";
+                break;
+            case "datetime":
+            default:
+                $format = $format ? $format : "Y-m-d H:i:s";
+                $toFormat = "Y,(n-1),d,H,i,s";
+                break;
+        }
+        //The (n-1) above is because in Javascript, month start from 0 to 11
+        $date = \DateTime::createFromFormat($format, $value);
+
+        if ($date) {
+            return "function() {return new Date(" . \DateTime::createFromFormat($format, $value)->format($toFormat) . ");}()";
+        }
+        return "null";
+    }
+
+    /**
      * Prepare data
      *
      * @return null
@@ -217,6 +254,8 @@ class Chart extends Widget
                     $value = $value !== null ? floatval($value) : $value;
                 } else if ($cType === "string") {
                     $value = "$value";
+                } else if ($cType === "datetime" || $cType === "date" || $cType === "time") {
+                    $value = $this->newClientDate($value, $cSetting);
                 }
                 $fValue = $this->formatValue($value, $cSetting, $row);
 
@@ -230,8 +269,8 @@ class Chart extends Widget
                     array_push(
                         $gRow,
                         ($fValue === $value)
-                        ? $value
-                        : array("v" => $value, "f" => $fValue)
+                            ? $value
+                            : array("v" => $value, "f" => $fValue)
                     );
                 }
 
@@ -240,8 +279,8 @@ class Chart extends Widget
                         array_push(
                             $gRow,
                             (gettype($cSetting[$cRole]) == "object") ?
-                            $cSetting[$cRole]($row) :
-                            $cSetting[$cRole]
+                                $cSetting[$cRole]($row) :
+                                $cSetting[$cRole]
                         );
                     }
                 }
@@ -298,11 +337,11 @@ class Chart extends Widget
                     "options" => $options,
                     "data" => $this->prepareData(),
                     "cKeys" => array_keys($this->getColumnSettings()),
-                    "loader"=>array(
-                        "package"=>$this->package,
-                        "stability"=>$this->stability,
-                        "language"=>$this->language,
-                        "mapsApiKey"=>$this->mapsApiKey
+                    "loader" => array(
+                        "package" => $this->package,
+                        "stability" => $this->stability,
+                        "language" => $this->language,
+                        "mapsApiKey" => $this->mapsApiKey
                     )
                 )
             );

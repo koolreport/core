@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file contains the most common used functions for KoolReport.
  *
@@ -31,7 +32,7 @@ class Utility
      *                         unique name of widget
      */
     public static $_uniqueId;
-    
+
     /**
      * Return unique id each time is called
      *
@@ -40,7 +41,7 @@ class Utility
     public static function getUniqueId()
     {
         Utility::$_uniqueId++;
-        return uniqid().Utility::$_uniqueId;
+        return uniqid() . Utility::$_uniqueId;
     }
 
     /**
@@ -53,19 +54,19 @@ class Utility
     public static function guessType($value)
     {
         $map = array(
-            "float"=>"number",
-            "double"=>"number",
-            "int"=>"number",
-            "integer"=>"number",
-            "bool"=>"number",
-            "numeric"=>"number",
-            "string"=>"string",
-            "array"=>"array",
+            "float" => "number",
+            "double" => "number",
+            "int" => "number",
+            "integer" => "number",
+            "bool" => "number",
+            "numeric" => "number",
+            "string" => "string",
+            "array" => "array",
         );
 
         $type = strtolower(gettype($value));
-        foreach ($map as $key=>$value) {
-            if (strpos($type, $key)!==false) {
+        foreach ($map as $key => $value) {
+            if (strpos($type, $key) !== false) {
                 return $value;
             }
         }
@@ -107,83 +108,83 @@ class Utility
     public static function format($value, $format)
     {
         $f = Utility::get($format, "format", true);
-        if ($f===false) {
+        if ($f === false) {
             return $value;
         }
-        
+
         $type = Utility::get($format, "type", "unknown");
         switch ($type) {
-        case "number":
-            $decimals = Utility::get($format, "decimals", 0);
-            $dec_point = Utility::get(
-                $format,
-                "decPoint",
-                Utility::get(
+            case "number":
+                $decimals = Utility::get($format, "decimals", 0);
+                $dec_point = Utility::get(
                     $format,
-                    "decimalPoint",
+                    "decPoint",
                     Utility::get(
                         $format,
-                        "dec_point",
-                        "."
+                        "decimalPoint",
+                        Utility::get(
+                            $format,
+                            "dec_point",
+                            "."
+                        )
                     )
-                )
-            );
+                );
 
-            $thousand_sep = Utility::get(
-                $format,
-                "thousandSep",
-                Utility::get(
+                $thousand_sep = Utility::get(
                     $format,
-                    "thousandSeparator",
+                    "thousandSep",
                     Utility::get(
                         $format,
-                        "thousand_sep",
-                        ","
+                        "thousandSeparator",
+                        Utility::get(
+                            $format,
+                            "thousand_sep",
+                            ","
+                        )
                     )
-                )
-            );
-            $prefix = Utility::get($format, "prefix", "");
-            $suffix = Utility::get($format, "suffix", "");
-            return $prefix
-                .number_format((float)$value, $decimals, $dec_point, $thousand_sep)
-                .$suffix;
-            break;
-        case "string":
-            $prefix = Utility::get($format, "prefix", "");
-            $suffix = Utility::get($format, "suffix", "");
-            return $prefix.$value.$suffix;
-            break;
-        case "datetime":
-            $dateFormat = Utility::get($format, "format", "Y-m-d H:i:s");
-            // no break
-        case "date":
-            $dateFormat = isset($dateFormat)
-                ?$dateFormat
-                :Utility::get($format, "format", "Y-m-d");
+                );
+                $prefix = Utility::get($format, "prefix", "");
+                $suffix = Utility::get($format, "suffix", "");
+                return $prefix
+                    . number_format((float)$value, $decimals, $dec_point, $thousand_sep)
+                    . $suffix;
+                break;
+            case "string":
+                $prefix = Utility::get($format, "prefix", "");
+                $suffix = Utility::get($format, "suffix", "");
+                return $prefix . $value . $suffix;
+                break;
+            case "datetime":
+                $dateFormat = Utility::get($format, "format", "Y-m-d H:i:s");
                 // no break
-        case "time":
-            $dateFormat = isset($dateFormat)
-                ?$dateFormat
-                :Utility::get($format, "format", "H:i:s");
-            $displayFormat = Utility::get($format, "displayFormat");
-            if ($displayFormat && $value) {
-                if ($fvalue = \DateTime::createFromFormat($dateFormat, $value)) {
-                    return $fvalue->format($displayFormat);
+            case "date":
+                $dateFormat = isset($dateFormat)
+                    ? $dateFormat
+                    : Utility::get($format, "format", "Y-m-d");
+                // no break
+            case "time":
+                $dateFormat = isset($dateFormat)
+                    ? $dateFormat
+                    : Utility::get($format, "format", "H:i:s");
+                $displayFormat = Utility::get($format, "displayFormat");
+                if ($displayFormat && $value) {
+                    if ($fvalue = \DateTime::createFromFormat($dateFormat, $value)) {
+                        return $fvalue->format($displayFormat);
+                    }
                 }
-            }
-            break;
-        case "array":
-            return json_encode($value);
-            break;
+                break;
+            case "array":
+                return json_encode($value);
+                break;
         }
-        
-        if (gettype($value)==="array") {
+
+        if (gettype($value) === "array") {
             return json_encode($value);
         }
 
         return $value;
     }
-    
+
     /**
      * Get the short name of a class
      *
@@ -198,7 +199,7 @@ class Utility
         $reflection = new \ReflectionClass($obj);
         return $reflection->getShortName();
     }
-    
+
     /**
      * Traverse through the structure of object and find the js function
      *
@@ -207,24 +208,31 @@ class Utility
      *
      * @return array The new marks
      */
-    public static function markJsFunction(&$obj, &$marks=array())
+    public static function markJsFunction(&$obj, &$marks = array())
     {
-        foreach ($obj as $k=>&$v) {
+        foreach ($obj as $k => &$v) {
             switch (gettype($v)) {
-            case "object":
-            case "array":
-                Utility::markJsFunction($v, $marks);
-                break;
-            case "string":
-                $tsv = trim(strtolower($v));
-                if (strpos($tsv, "function")===0
-                    && (strrpos($tsv, "}")===strlen($tsv)-1
-                    || strrpos($tsv, "()")===strlen($tsv)-2)
-                ) {
-                    $marks[] = trim($v);
-                    $obj[$k] = "--js(".(count($marks)-1).")";
-                }
-                break;
+                case "object":
+                case "array":
+                    Utility::markJsFunction($v, $marks);
+                    break;
+                case "string":
+                    $tsv = trim(strtolower($v));
+                    $isJsFunction = false;
+                    if (
+                        strpos($tsv, "function") === 0
+                        && (strrpos($tsv, "}") === strlen($tsv) - 1
+                            || strrpos($tsv, "()") === strlen($tsv) - 2)
+                    ) $isJsFunction = true;
+                    if (
+                        strpos($tsv, "(") === 0
+                        && strpos($tsv, "=>") !== -1
+                    ) $isJsFunction = true;
+                    if ($isJsFunction) {
+                        $marks[] = trim($v);
+                        $obj[$k] = "--js(" . (count($marks) - 1) . ")";
+                    }
+                    break;
             }
         }
         return $marks;
@@ -238,16 +246,340 @@ class Utility
      *
      * @return string The json string of objects
      */
-    public static function jsonEncode($object, $option=0)
+    public static function jsonEncode($object, $option = 0)
     {
         $marks = Utility::markJsFunction($object);
         $text = json_encode($object, $option);
-        foreach ($marks as $i=>$js) {
+        foreach ($marks as $i => $js) {
             $text = str_replace("\"--js($i)\"", (string)$js, (string)$text);
         }
         return $text;
     }
-    
+
+    public static function jsObjToArray($jsonStr)
+    {
+        $controlChars = ["{", "}", "[", "]", ":", ","];
+        $blankChars = [" ", "\t", "\r", "\n"];
+
+        function subStringMatchesJsKeyWords($str, $pos)
+        {
+            $jsKeyWords = ["undefined", "null", "true", "false"];
+            for ($i = 0; $i < count($jsKeyWords); $i++) {
+                $word = $jsKeyWords[$i];
+                if (substr($str, $pos, strlen($word)) === $word) return [true, $word];
+            }
+            return [false, null];
+        }
+        function subStringMachesNumber($str, $pos)
+        {
+            $char = $str[$pos];
+            if ("0" <= $char && $char <= "9") return true;
+            if ($str[$pos] === "-") {
+                $nextChar = $str[$pos + 1] ?? null;
+                if ("0" <= $nextChar && $nextChar <= "9") return true;
+            }
+            return false;
+        }
+        function subStringMachesFunction($str, $pos)
+        {
+            $char = $str[$pos];
+            if ($char === "(" || substr($str, $pos, 8) === "function") return true;
+            return false;
+        }
+        function subStringMachesComment($str, $pos)
+        {
+            $char = $str[$pos];
+            if ($char === "/" && substr($str, $pos, 2) === "//") return [true, "//"];
+            if ($char === "/" && substr($str, $pos, 2) === "/*") return [true, "/*"];
+            return [false, null];
+        }
+        function skipComment($jsonStr, $i)
+        {
+            list($commentMatch, $commentSequence) = subStringMachesComment($jsonStr, $i);
+            if ($commentMatch) {
+                // echo "commentSequence = $commentSequence<br>";
+                if ($commentSequence === "//") {
+                    for ($j = $i; $j < strlen($jsonStr); $j++) {
+                        $curChar = $jsonStr[$j];
+                        if ($curChar === "\n" || $curChar === "\r") {
+                            $i = $j + 1;
+                            break;
+                        }
+                    }
+                } else if ($commentSequence === "/*") {
+                    for ($j = $i; $j < strlen($jsonStr); $j++) {
+                        $curChar = $jsonStr[$j];
+                        $curNextChar = $jsonStr[$j + 1] ?? null;
+                        // echo "curChar = $curChar || curNextChar = $curNextChar<br>";
+                        if ($curChar === "*" && $curNextChar === "/") {
+                            // echo "end of block comment<br>";
+                            $i = $j + 2;
+                            break;
+                        }
+                    }
+                }
+            }
+            return [$jsonStr[$i], $i];
+        }
+        $rightNextControlChar = function ($str, $pos) use ($controlChars, $blankChars) {
+            for ($i = $pos + 1; $i < strLen($str); $i++) {
+                list($char, $i) = skipComment($str, $i);
+                if (in_array($char, $controlChars)) return $str[$i];
+                if (!in_array($char, $blankChars)) return null;
+            }
+            return null;
+        };
+        $updateLastOpenBrackets = function ($char) use (&$lastOpenBrackets) {
+            if ($char === "[") {
+                $lastOpenBrackets[] = "[";
+            } else if ($char === "{") {
+                $lastOpenBrackets[] = "{";
+            } else if ($char === "]") {
+                if (end($lastOpenBrackets) !== "[") {
+                    echo "Issue: lastOpenBracket = " . end($lastOpenBrackets) . "<br><br>";
+                    throw new \Exception('Wrong syntax in JS object string: wrong matching []');
+                }
+                array_pop($lastOpenBrackets);
+            } else if ($char === "}") {
+                if (end($lastOpenBrackets) !== "{") {
+                    echo "Issue: lastOpenBracket = " . end($lastOpenBrackets) . "<br><br>";
+                    throw new \Exception('Wrong syntax in JS object string: wrong matching {}');
+                }
+                array_pop($lastOpenBrackets);
+            }
+        };
+
+        $lastControlChar = $nextControlChar = $lastChar = null;
+        $inValue = $inKey = false;
+        $keywordValue = $numericValue = $functionValue = $expressionValue = false;
+        $currentQuote = null;
+        $lastOpenBrackets = [];
+        $funcValueCurlyBrackets = $expressionBrackets = [];
+        $funcValueHadCurly = false;
+
+        $newStr = "";
+
+        for ($i = 0; $i < strlen($jsonStr); $i++) {
+            $char = $jsonStr[$i];
+            list($char, $i) = skipComment($jsonStr, $i);
+            // echo "$char";
+            // echo "char = $char * ";
+            // echo "inKey = $inKey ** inValue = $inValue<br>";
+            if ($inKey || $inValue) {
+                if ($functionValue) {
+                    if ($char === "{") {
+                        $funcValueCurlyBrackets[] = "{";
+                        $funcValueHadCurly = true;
+                        $newStr .= $char;
+                    } else if (!$funcValueHadCurly) {
+                        $newStr .= $char;
+                    } else if ($char === "}") {
+                        array_pop($funcValueCurlyBrackets);
+                        if (empty($funcValueCurlyBrackets)) {
+                            $newStr .= $char . '"';
+                            $inValue = $functionValue = $funcValueHadCurly = false;
+                        }
+                    } else if ($char === "\n" || $char === "\r") {
+                        $newStr .= " ";
+                    } else if ($char === '"' && $lastChar !== "\\") {
+                        $newStr .= "\\" . $char;
+                    } else {
+                        $newStr .= $char;
+                    }
+                } else if ($expressionValue) {
+                    if (empty($expressionBrackets) && ($char === "}" || $char === "]" || $char === ",")) {
+                        $newStr .= '; }" ' . $char;
+                        $inKey = $inValue = $expressionValue = false;
+                        // echo "<br>end of expression value <br>";
+                    } else if ($char === "{" || $char === "[") {
+                        $expressionBrackets[] = "[";
+                        $newStr .= $char;
+                    } else if ($char === "}" || $char === "}") {
+                        array_pop($expressionBrackets);
+                        $newStr .= $char;
+                    } else if ($char === "\n" || $char === "\r") {
+                        $newStr .= " ";
+                    } else if ($char === '"' && $lastChar !== "\\") {
+                        $newStr .= "\\" . $char;
+                    } else {
+                        $newStr .= $char;
+                    }
+
+                    $updateLastOpenBrackets($char);
+                    if ($char === ",") {
+                        $nextControlChar = $rightNextControlChar($jsonStr, $i);
+                        if ($nextControlChar === "}" || $nextControlChar === "]") {
+                            // echo "remove last comma before: newStr = $newStr<br>";
+                            $newStr = substr($newStr, 0, -1);
+                            // echo "remove last comma after: newStr = $newStr<br>";
+                        }
+                    }
+                } else if (in_array($char, $blankChars)) {
+                    if ($currentQuote === null) {
+                        if ($keywordValue) {
+                            if ($keywordValue === "undefined") {
+                                $newStr = substr($newStr, 0, -strlen("undefined")) . "null";
+                            }
+                            $keywordValue = false;
+                            $newStr .= $char;
+                        } else if ($numericValue) {
+                            $numericValue = false;
+                            $newStr .= $char;
+                        } else {
+                            $newStr .= '"' . $char;
+                        }
+                        $inKey = $inValue = false;
+                    } else {
+                        $newStr .= $char;
+                    }
+                } else {
+
+                    if ($currentQuote === "'" && $char === '"') {
+                        if ($lastChar !== "\\") {
+                            // echo "add escape slash<br>";
+                            $newStr .= "\\" . $char;
+                        } else {
+                            $newStr .= $char;
+                        }
+                    } else if ($currentQuote !== null) {
+                        if ($char === $currentQuote) {
+                            if ($lastChar !== "\\") {
+                                $newStr .= '"';
+                                $currentQuote = null;
+                                $inKey = $inValue = false;
+                            } else if ($lastChar === "\\") {
+                                if ($currentQuote === "'") {
+                                    $newStr = substr($newStr, 0, -1) . $char;
+                                } else {
+                                    $newStr .= $char;
+                                }
+                            }
+                        } else {
+                            $newStr .= $char;
+                            // echo "newStr = $newStr<br>";
+                        }
+                    } else if ($currentQuote === null) {
+                        if ($char === ":" || $char === "}" || $char === "]" || $char === ",") {
+                            if ($keywordValue) {
+                                if ($keywordValue === "undefined") {
+                                    $newStr = substr($newStr, 0, -strlen("undefined")) . "null";
+                                }
+                                $keywordValue = false;
+                                $newStr .= $char;
+                                // echo "newStr = $newStr<br>";
+                            } else if ($numericValue) {
+                                $newStr .= $char;
+                            } else {
+                                $newStr .= '"' . $char;
+                            }
+                            $inKey = $inValue = false;
+                        } else {
+                            $newStr .= $char;
+                            // echo "2 newStr = $newStr<br>";
+                        }
+
+                        if ($char === ",") {
+                            $nextControlChar = $rightNextControlChar($jsonStr, $i);
+                            if ($nextControlChar === "}" || $nextControlChar === "]") {
+                                // echo "remove last comma before: newStr = $newStr<br>";
+                                $newStr = substr($newStr, 0, -1);
+                                // echo "remove last comma after: newStr = $newStr<br>";
+                            }
+                        }
+                    }
+                    $updateLastOpenBrackets($char);
+                }
+            } else {
+                $keywordValue = $numericValue = $functionValue = $funcValueHadCurly = false;
+                if (in_array($char, $controlChars)) {
+                    if ($char === ",") {
+                        $nextControlChar = $rightNextControlChar($jsonStr, $i);
+                        if ($nextControlChar !== "}" && $nextControlChar !== "]") {
+                            $newStr .= $char;
+                        }
+                    } else {
+                        $newStr .= $char;
+                    }
+                    $updateLastOpenBrackets($char);
+                } else if (in_array($char, $blankChars)) {
+                    $newStr .= $char;
+                } else { // normal char
+                    if ($lastControlChar === "{") {
+                        // echo "1<br>";
+                        if (in_array($lastChar, $blankChars) || $lastChar === "{") {
+                            // echo "2<br>";
+                            $inKey = true;
+                            if ($char === "'" || $char === '"') {
+                                $currentQuote = $char;
+                                $newStr .= '"';
+                            } else {
+                                // echo "3<br>";
+                                $currentQuote = null;
+                                $newStr .= '"' . $char;
+                            }
+                        } else {
+                            $newStr .= $char;
+                        }
+                    }
+                    if ($lastControlChar === "[" || $lastControlChar === ":" || $lastControlChar === ",") {
+                        // echo "1<br>";
+                        if (in_array($lastChar, $blankChars) || $lastChar === $lastControlChar) {
+                            // echo "2<br>";
+                            if ($lastControlChar === "[" || $lastControlChar === ":") $inValue = true;
+                            else if (end($lastOpenBrackets) === "[") $inValue = true;
+                            else $inKey = true;
+
+                            if ($char === "'" || $char === '"') {
+                                $currentQuote = $char;
+                                $newStr .= '"';
+                            } else {
+                                $currentQuote = null;
+                                list($keywordMatch, $word) = subStringMatchesJsKeyWords($jsonStr, $i);
+                                $numericMatch = subStringMachesNumber($jsonStr, $i);
+                                $functionMatch = subStringMachesFunction($jsonStr, $i);
+                                if ($keywordMatch && $inValue) {
+                                    $keywordValue = $word;
+                                    $newStr .= $char;
+                                } else if ($numericMatch && $inValue) {
+                                    $numericValue = true;
+                                    $newStr .= $char;
+                                } else if ($functionMatch && $inValue) {
+                                    $functionValue = true;
+                                    $newStr .= '"' . $char;
+                                } else if ($inValue) {
+                                    $keywordValue = $numericValue = $functionValue = false;
+                                    $expressionValue = true;
+                                    $newStr .= '"function() { return ' . $char;
+                                } else {
+                                    $keywordValue = $numericValue = $functionValue = $expressionValue = false;
+                                    $newStr .= '"' . $char;
+                                }
+                            }
+                        } else {
+                            $newStr .= $char;
+                        }
+                    }
+                }
+            }
+            $lastChar = $char;
+            if (in_array($char, $controlChars)) $lastControlChar = $char;
+        }
+
+        // echo str_replace(" ", "&nbsp;", str_replace("\n", "<br>", $newStr));
+        // var_dump($jsonStr); echo "<br>";
+        // var_dump($newStr); echo "<br>";
+
+        $arr = json_decode($newStr, true);
+        // echo '<br>';
+        // echo 'json_decode last error number: ', json_last_error(), '<br>';
+        // echo 'json_decode last error message: ', json_last_error_msg(), '<br>';
+        if (json_last_error() !== 0) {
+            throw new \Exception('Wrong syntax in JS object string: ' . json_last_error_msg());
+        }
+
+        return $arr;
+    }
+
     /**
      * Get wether an array is an associate array
      *
@@ -257,13 +589,13 @@ class Utility
      */
     public static function isAssoc($arr)
     {
-        if (gettype($arr)!="array") {
+        if (gettype($arr) != "array") {
             return false;
         }
-        if ($arr===null || $arr===array()) {
+        if ($arr === null || $arr === array()) {
             return false;
         }
-        if (array_keys($arr)===range(0, count($arr)-1)) {
+        if (array_keys($arr) === range(0, count($arr) - 1)) {
             return false;
         }
         return true;
@@ -280,7 +612,7 @@ class Utility
      *
      * @return mixed Value at key path
      */
-    public static function get($arr, $keys, $default=null)
+    public static function get($arr, $keys, $default = null)
     {
         // if (! is_array($arr)) {
         //     return $default;
@@ -316,13 +648,13 @@ class Utility
             if (count($keys) === 1) {
                 return self::init($arr, $fKey, $default);
             }
-            if (! isset($arr[$fKey]) || ! is_array($arr[$fKey])) {
+            if (!isset($arr[$fKey]) || !is_array($arr[$fKey])) {
                 $arr[$fKey] = [];
             }
             $restKeys = array_slice($keys, 1);
             return self::init($arr[$fKey], $restKeys, $default);
         } else {
-            if (! isset($arr[$keys])) {
+            if (!isset($arr[$keys])) {
                 $arr[$keys] = $default;
             }
             return $arr[$keys];
@@ -348,7 +680,7 @@ class Utility
             if (count($keys) === 1) {
                 return self::set($arr, $fKey, $value);
             }
-            if (! isset($arr[$fKey]) || ! is_array($arr[$fKey])) {
+            if (!isset($arr[$fKey]) || !is_array($arr[$fKey])) {
                 $arr[$fKey] = [];
             }
             $restKeys = array_slice($keys, 1);
@@ -368,10 +700,10 @@ class Utility
      *
      * @return array Return array result
      */
-    public static function getArray($arr, $key, $default=array())
+    public static function getArray($arr, $key, $default = array())
     {
         $value = Utility::get($arr, $key);
-        return ($value!=null)?explode(',', $value):$default;
+        return ($value != null) ? explode(',', $value) : $default;
     }
 
     /**
@@ -386,7 +718,7 @@ class Utility
     {
         $keys = explode(",", $keys);
         $result = array();
-        foreach ($arr as $key=>$value) {
+        foreach ($arr as $key => $value) {
             if (in_array($key, $keys)) {
                 $result[$key] = $value;
             }
@@ -405,7 +737,7 @@ class Utility
     {
         $keys = explode(",", $keys);
         $result = array();
-        foreach ($arr as $key=>$value) {
+        foreach ($arr as $key => $value) {
             if (!in_array($key, $keys)) {
                 $result[$key] = $value;
             }
@@ -423,7 +755,7 @@ class Utility
      */
     public static function strReplace($str, $params)
     {
-        foreach ($params as $k=>$v) {
+        foreach ($params as $k => $v) {
             $str = str_replace($k, $v, (string)$str);
         }
         return $str;
@@ -467,7 +799,7 @@ class Utility
      */
     public static function strReplaceFirst($from, $to, $content)
     {
-        $from = '/'.preg_quote($from, '/').'/';
+        $from = '/' . preg_quote($from, '/') . '/';
         return preg_replace($from, $to, $content, 1);
     }
 
@@ -483,21 +815,21 @@ class Utility
         //with the root folder of the website, so we add backup with
         //second way  to calculate the document root with script_name
         //and script_filename
-        
+
         // if (isset($_SERVER["DOCUMENT_ROOT"])) return $_SERVER["DOCUMENT_ROOT"];
 
         //In case of using virtual host, method of using difference between script_name and script_filename
         //might not work
         // if (isset($_SERVER["DOCUMENT_ROOT"])) return $_SERVER["DOCUMENT_ROOT"];
-        
+
         $script_filename = str_replace(
             "\\",
             "/",
             realpath($_SERVER["SCRIPT_FILENAME"])
         );
         $script_name = str_replace("\\", "/", $_SERVER["SCRIPT_NAME"]);
-        $endPoint = strpos(strtolower($script_filename),strtolower($script_name));
-        $documentRoot = substr($script_filename,0,$endPoint);
+        $endPoint = strpos(strtolower($script_filename), strtolower($script_name));
+        $documentRoot = substr($script_filename, 0, $endPoint);
         return $documentRoot;
     }
 
@@ -513,7 +845,7 @@ class Utility
         //We use "/" for all system
         return str_replace("\\", "/", $path);
     }
-    
+
     /**
      * Get the dirname
      *
@@ -525,7 +857,7 @@ class Utility
     {
         return substr($path, 0, strrpos($path, '/'));
     }
-    
+
     /**
      * Merge array recursively
      *
@@ -537,9 +869,9 @@ class Utility
     public static function arrayMergeRecursive($array1, $array2)
     {
         $merged = $array1;
-    
-        if ($array2!=null) {
-            foreach ($array2 as $key => & $value) {
+
+        if ($array2 != null) {
+            foreach ($array2 as $key => &$value) {
                 if (is_array($value) && isset($merged[$key]) && is_array($merged[$key])) {
                     $merged[$key] = self::arrayMergeRecursive($merged[$key], $value);
                 } elseif (is_numeric($key)) {
@@ -553,6 +885,20 @@ class Utility
         }
 
         return $merged;
+    }
+
+    public static function arrayRemoveEmpty(&$haystack)
+    {
+        foreach ($haystack as $key => $value) {
+            if (is_array($value)) {
+                self::arrayRemoveEmpty($haystack[$key]);
+            }
+
+            if (is_array($haystack[$key]) && empty($haystack[$key]) || is_null($haystack[$key])) {
+                unset($haystack[$key]);
+            }
+        }
+        return $haystack;
     }
 
     /**
@@ -570,7 +916,7 @@ class Utility
         if (is_array($funcOrArray)) {
             return self::get($funcOrArray, $args, $defaultValue);
         } elseif (is_callable($funcOrArray)) {
-            if (! is_array($args)) {
+            if (!is_array($args)) {
                 $args = [$args];
             }
             return call_user_func_array($funcOrArray, $args);
@@ -599,5 +945,10 @@ class Utility
         } else {
             return self::format($value, $meta);
         }
+    }
+
+    public static function transpose($array)
+    {
+        return array_map(null, ...$array);
     }
 }

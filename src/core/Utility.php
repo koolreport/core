@@ -226,8 +226,10 @@ class Utility
                     ) $isJsFunction = true;
                     if (
                         strpos($tsv, "(") === 0
-                        && strpos($tsv, "=>") !== -1
-                    ) $isJsFunction = true;
+                        && strpos($tsv, "=>") !== false
+                    ) {
+                        $isJsFunction = true;
+                    }
                     if ($isJsFunction) {
                         $marks[] = trim($v);
                         $obj[$k] = "--js(" . (count($marks) - 1) . ")";

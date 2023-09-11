@@ -426,6 +426,10 @@ class PdoDataSource extends DataSource
     protected function buildMetaData()
     {
         // echo "pdodatasource buildMetaData<br>";
+
+        // $this->connection->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
+        // $this->connection->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_BOTH);
+
         $metaData = array("columns" => array());
 
         if (empty($this->sqlParams)) $this->sqlParams = [];
@@ -561,6 +565,9 @@ class PdoDataSource extends DataSource
     public function start()
     {
         // echo "pdodatasource start()<br>";
+
+        // $this->connection->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
+        // $this->connection->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_NUM);
 
         $this->buildMetaData();
         $this->sendMeta($this->builtMetaData, $this);

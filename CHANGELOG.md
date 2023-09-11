@@ -1,5 +1,9 @@
 # Change Log
 
+## Version 6.2.0
+1. Fix Utility's arrayToDatastore function when there's only one column.
+2. Update Google chart to use Date type in X axis for zoom option to work.
+
 ## Version 6.1.0
 1. Fix dynamic properties in PHP 8.2.
 2. Fix mull meta column key in core/Table widget.

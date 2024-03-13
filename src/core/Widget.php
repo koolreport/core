@@ -90,9 +90,9 @@ class Widget
     protected $onReady;
 
     /**
-     * The base of the theme such as "bs3" or "bs4".
+     * The base of the theme such as "bs3" or "bs4" or "bs5".
      * 
-     * @var string $themeBase The base of the theme such as "bs3" or "bs4".
+     * @var string $themeBase The base of the theme such as "bs3" or "bs4" or "bs5".
      */
     protected $themeBase;
 
@@ -639,7 +639,7 @@ class Widget
         );
     }
     /**
-     * Get what the theme is base on "bs4","bs3" or null
+     * Get what the theme is base on "bs5","bs4","bs3" or null
      * If there is themeBase set by the Widget, return it
      * if not then try to detect if theme is applied to report
      * If not, return null
@@ -719,7 +719,7 @@ class Widget
         $themeBase = $this->getThemeBase();
         if ($themeBase && is_file($currentDir . "/$template.$themeBase.tpl.php")) {
             $template .= ".$themeBase";
-        }
+        } 
 
         //Try the template with base, if found then use it
         if (!is_file($currentDir . "/$template.tpl.php")) {
@@ -776,5 +776,25 @@ class Widget
         ob_start();
         $component->render();
         return ob_get_clean();
+    }
+
+
+    /**
+     * Get the html template, registering js script, and inititalizing js script of the widget
+     * 
+     * @return string 
+     */
+    public static function separatedHtmlJs($params)
+    {
+        $htmlAndJs = self::html($params);
+        preg_match('/script.*KoolReport\.widget\.init.*script>/s',      
+            $htmlAndJs, $scriptMatch);
+        // echo "scriptMatch: "; print_r($scriptMatch[0]);
+        $js = "<" . $scriptMatch[0];
+        $html = str_replace($js, "", $htmlAndJs);
+        return [
+            'html' => $html,
+            'js' => $js,
+        ];
     }
 }

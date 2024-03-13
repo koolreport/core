@@ -96,13 +96,14 @@ class MySQLDataSource extends DataSource
         $username = Util::get($this->params, "username", "");
         $password = Util::get($this->params, "password", "");
         $dbname = Util::get($this->params, "dbname", "");
+        $port = Util::get($this->params, "port", 3306);
         $charset = Util::get($this->params, "charset", null);
 
         $key = md5($host . $username . $password . $dbname);
         if (isset(MySQLDataSource::$connections[$key])) {
             $this->connection = MySQLDataSource::$connections[$key];
         } else {
-            $this->connection = new \mysqli($host, $username, $password, $dbname);
+            $this->connection = new \mysqli($host, $username, $password, $dbname, $port);
             /* check connection */
             if ($this->connection->connect_errno) {
                 throw new \Exception(
@@ -335,6 +336,7 @@ class MySQLDataSource extends DataSource
 
     protected function prepareAndBind($query, $params = [])
     {
+        if (!is_array($params)) $params = [];
         $sortedLenPaNames = array_keys($params);
         // Sort param names, longest name first,
         // so that longer ones are replaced before shorter ones in query

@@ -18,6 +18,10 @@
     array('name','contain','Tuan'),
     'and',
     array('time','<=','2010-12-31')),
+    "(",
+    ...
+    ")",
+    function($row) { return true; },
 ))
  */
 
@@ -60,7 +64,7 @@ class Filter extends Process
      * 
      * @return bool Whether result is filtered
      */
-    public function isFiltered($condition, $value, $type)
+    public function isFilteredSingle($condition, $value, $type)
     {
         $isFiltered = true;
         $operator = $condition[1];
@@ -152,6 +156,14 @@ class Filter extends Process
                 $filterValue2 = $condition[3];
                 $isFiltered = !($value > $filterValue && $value < $filterValue2);
                 break;
+            case 'betweenInclusive':
+                $filterValue2 = $condition[3];
+                $isFiltered = $value >= $filterValue && $value <= $filterValue2;
+                break;
+            case 'notBetweenInclusive':
+                $filterValue2 = $condition[3];
+                $isFiltered = !($value >= $filterValue && $value <= $filterValue2);
+                break;
             case "in":
                 if (!is_array($filterValue)) {
                     $filterValue = array($filterValue);
@@ -222,43 +234,80 @@ class Filter extends Process
         return (bool) preg_match($regex, $input);
     }
 
-    /**
-     * Handle on data input
-     * 
-     * @param array $data The input data row 
-     * 
-     * @return null
-     */
-    protected function onInput($data)
+    protected function getLogicResult($logicalOperator, $a, $b) 
+    {
+        if ($logicalOperator === 'and') {
+            $result = $a && $b;
+        } else if ($logicalOperator === 'or') {
+            $result = $a || $b;                
+        } else if ($logicalOperator === 'xor') {
+            $result = $a xor $b;                
+        }
+        return $result;
+    }
+
+    protected function isFilteredMulti($row, $filters)
     {
         $columnsMeta = $this->metaData['columns'];
-        $filters = $this->filters;
         $logicalOperator = 'and';
         $isFiltered = true;
-        foreach ($filters as $i => $filter) {
+        for ($i = 0; $i  < count($filters); $i++) {
+            // echo "i: $i<br>";
+            $filter = $filters[$i];
             if (is_array($filter)) {
                 $field = $filter[0];
                 $type = $columnsMeta[$field]['type'];
-                if (!isset($data[$field])) {
+                if (!isset($row[$field])) {
                     continue;
                 }
 
-                $filterResult = $this->isFiltered($filter, $data[$field], $type);
-                if ($logicalOperator === 'and') {
-                    $isFiltered = $isFiltered && $filterResult;
-                }
-                if ($logicalOperator === 'or') {
-                    $isFiltered = $isFiltered || $filterResult;
-                }
+                $filterSingle = $this->isFilteredSingle($filter, $row[$field], $type);
+                $isFiltered = $this->getLogicResult($logicalOperator, $isFiltered, $filterSingle);
             } else if ($filter === 'and' || $filter === 'or') {
                 $logicalOperator = $filter;
                 if ($filter === 'or' && $i === 0) {
                     $isFiltered = false;
                 }
+            } else if ($filter === '(') {
+                $firstOpenBracketPos = $i;
+                $lastCloseBracketPos = -1;
+                for ($j = count($filters) - 1; $j > $i; $j--) {
+                    if ($filters[$j] === ")") {
+                        $lastCloseBracketPos = $j;
+                        break;
+                    }
+                }
+                if ($lastCloseBracketPos <= $firstOpenBracketPos) {
+                    throw new \Exception("Filters do not have matching brackets");
+                }
+                $subFilters = array_slice($filters, $i + 1, $lastCloseBracketPos - $i - 1);
+                // echo "subFilters: "; print_r($subFilters); echo "<br>";
+                // echo "enter sub filters<br>";
+                $subIsFiltered = $this->isFilteredMulti($row, $subFilters);
+                // echo "exit sub filters<br>";
+                $isFiltered = $this->getLogicResult($logicalOperator, $isFiltered, $subIsFiltered);
+                $i = $lastCloseBracketPos;
+            } else if (is_callable($filter)) {
+                $subIsFiltered = $filter($row);
+                $isFiltered = $this->getLogicResult($logicalOperator, $isFiltered, $subIsFiltered);
             }
         }
+        return $isFiltered;
+    }
+
+    /**
+     * Handle on data input
+     * 
+     * @param array $row The input data row 
+     * 
+     * @return null
+     */
+    protected function onInput($row)
+    {
+        // echo "row: "; print_r($row); echo "<br>";
+        $isFiltered = $this->isFilteredMulti($row, $this->filters);
         if ($isFiltered) {
-            $this->next($data);
+            $this->next($row);
         }
     }
 }

@@ -79,6 +79,10 @@ class CSVDataSource extends DataSource
     protected function onInit()
     {
         $this->filePath = Utility::get($this->params, "filePath");
+        if ((fopen($this->filePath, "r")) !== false) {
+        } else {
+            throw new \Exception('Failed to open file: ' . $this->filePath);
+        }
         $fieldSeparator = Utility::get($this->params, "fieldSeparator", ",");
         $this->fieldSeparator = Utility::get($this->params, "fieldDelimiter", $fieldSeparator);
         $this->charset = Utility::get($this->params, "charset");
@@ -135,7 +139,7 @@ class CSVDataSource extends DataSource
             $row = array_map(
                 function ($item) {
                     return ($this->charset=="utf8" && is_string($item))
-                        ?utf8_encode($item):$item;
+                        ? mb_convert_encoding($item, "UTF-8", mb_detect_encoding($item)) : $item;
                 },
                 $row
             );
@@ -176,7 +180,7 @@ class CSVDataSource extends DataSource
                 $this->next(array_combine($columnNames, $row), $this);
             }
         } else {
-            throw new \Exception('Failed to open ' . $this->filePath);
+            throw new \Exception('Failed to open file: ' . $this->filePath);
         }
         $this->endInput(null);
     }

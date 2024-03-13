@@ -1,5 +1,15 @@
 # Change Log
 
+## Version 6.5.0-dev
+1. Add checking filePath openable on init in CSVDataSource.
+2. Add separated port setting to MySQLDataSource.
+0. Support for separating widget's html and init client script so that developers could manage client scripts for their own likes
+1. Support Bootstrap 5
+2. Add Brackets for Filter process 
+3. Add function to Filter process, add xor logic 
+5. Add RowNum process, similarly to CalculatedColumn but simpler 
+6. Add "betweenInclusive" and "notBetweenInclusive" for Filter process 
+
 ## Version 6.2.0
 1. Fix Utility's arrayToDatastore function when there's only one column.
 2. Update Google chart to use Date type in X axis for zoom option to work.

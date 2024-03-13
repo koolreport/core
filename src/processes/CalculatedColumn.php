@@ -127,6 +127,7 @@ class CalculatedColumn extends Process
                 $expression = $cValue["exp"];
                 foreach ($data as $k=>$v) {
                     //This to avoid null in numeric resulting in empty filled cause error
+                    Utility::init($this->metaData["columns"], $k, []);
                     $type = Utility::get($this->metaData["columns"][$k], "type", "unknown");
                     if ($type==="number" && $v===null) {
                         $v = 0;

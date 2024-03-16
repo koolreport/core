@@ -120,7 +120,14 @@ class PdoDataSource extends DataSource
      */
     protected function onInit()
     {
-        // $this->connection = Util::get($this->params,"connection",null);
+        /* If a PDO object is passed, then we should just store that and move on
+         * We should assume it is being reused from somewhere in the calling code,
+         * and is all setup ready to go. */
+        $this->connection = Util::get($this->params,"connection",null);
+        if ($this->connection !== null) {
+            return;
+        }
+
         $connectionString = Util::get($this->params, "connectionString", "");
         $username = Util::get($this->params, "username", "");
         $password = Util::get($this->params, "password", "");

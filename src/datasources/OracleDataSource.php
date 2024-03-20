@@ -113,6 +113,7 @@ class OracleDataSource extends DataSource
      */
     protected function onInit()
     {
+        $connection = Util::get($this->params, "connection");
         $username = Util::get($this->params, "username", "");
         $password = Util::get($this->params, "password", "");
         $connString = Util::get($this->params, "connectionString", ""); //localhost:8080/XE
@@ -121,7 +122,9 @@ class OracleDataSource extends DataSource
 
         $key = md5($username.$password.$connString);
 
-        if (isset(OracleDataSource::$connections[$key])) {
+        if (is_object($connection)) {
+            $this->connection = $connection;
+        } else if (isset(OracleDataSource::$connections[$key])) {
             $this->connection = OracleDataSource::$connections[$key];
         } else {
             $conn = oci_connect($username, $password, $connString, $charset, $session_mode);

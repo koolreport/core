@@ -120,27 +120,29 @@ class PdoDataSource extends DataSource
      */
     protected function onInit()
     {
-        // $this->connection = Util::get($this->params,"connection",null);
+        $connection = Util::get($this->params, "connection");
         $connectionString = Util::get($this->params, "connectionString", "");
         $username = Util::get($this->params, "username", "");
         $password = Util::get($this->params, "password", "");
         $charset = Util::get($this->params, "charset");
-        $options = Util::get($this->params, "options");
+        $options = Util::get($this->params, "options");        
 
         $key = md5($connectionString . $username . $password);
         if (PdoDataSource::$connections == null) {
             PdoDataSource::$connections = array();
         }
-        if (isset(PdoDataSource::$connections[$key])) {
+
+        if (is_object($connection) && get_class($connection) === \PDO::class) {
+            $this->connection = $connection;
+        } else if (isset(PdoDataSource::$connections[$key])) {
             $this->connection = PdoDataSource::$connections[$key];
         } else {
-            $this->connection = new PDO(
+            $this->connection = new \PDO(
                 $connectionString,
                 $username,
                 $password,
                 $options
             );
-
             PdoDataSource::$connections[$key] = $this->connection;
         }
         if ($charset) {

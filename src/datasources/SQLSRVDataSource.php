@@ -98,6 +98,7 @@ class SQLSRVDataSource extends DataSource
      */
     protected function onInit()
     {
+        $connection = Util::get($this->params, "connection");
         $host = Util::get($this->params, "host", ""); //"serverName\\sqlexpress, 1542"
         $username = Util::get($this->params, "username", "");
         $password = Util::get($this->params, "password", "");
@@ -113,7 +114,9 @@ class SQLSRVDataSource extends DataSource
         );
 
         $key = md5($host.$username.$password.$dbname);
-        if (isset(SQLSRVDataSource::$connections[$key])) {
+        if (is_object($connection)) {
+            $this->connection = $connection;
+        } else if (isset(SQLSRVDataSource::$connections[$key])) {
             $this->connection = SQLSRVDataSource::$connections[$key];
         } else {
             $conn = sqlsrv_connect($host, $connectionInfo);

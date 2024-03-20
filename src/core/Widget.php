@@ -784,7 +784,7 @@ class Widget
      * 
      * @return string 
      */
-    public static function separatedHtmlJs($params)
+    public static function htmlJs($params)
     {
         $htmlAndJs = self::html($params);
         preg_match('/script.*KoolReport\.widget\.init.*script>/s',      

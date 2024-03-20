@@ -32,9 +32,22 @@ use \koolreport\core\Utility as Util;
  * @license   MIT License https://www.koolreport.com/license#mit-license
  * @link      https://www.koolphp.net
  */
-class RowNum extends Process
+class RowNumColumn extends Process
 {
     protected $order = 0;
+
+    public function __construct($params = null, $firstRowNumber = 0)
+    {
+        parent::__construct($params);
+        $this->order = $firstRowNumber;
+    }
+
+    protected function onInit()
+    {
+        if (is_string($this->params)) {
+            $this->params = [ $this->params ];
+        }
+    }
 
     protected function onMetaReceived($metaData)
     {

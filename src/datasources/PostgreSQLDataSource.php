@@ -90,6 +90,7 @@ class PostgreSQLDataSource extends DataSource
      */
     protected function onInit()
     {
+        $connection = Util::get($this->params, "connection");
         $host = Util::get($this->params, "host", "");//host\instanceName
         $port = Util::get($this->params, "port", 5432);
         $username = Util::get($this->params, "username", "");
@@ -99,7 +100,9 @@ class PostgreSQLDataSource extends DataSource
         
         $key = md5($connString);
 
-        if (isset(PostgreSQLDataSource::$connections[$key])) {
+        if (is_object($connection)) {
+            $this->connection = $connection;
+        } else if (isset(PostgreSQLDataSource::$connections[$key])) {
             $this->connection = PostgreSQLDataSource::$connections[$key];
         } else {
             $conn = pg_connect($connString);

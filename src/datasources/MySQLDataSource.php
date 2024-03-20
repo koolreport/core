@@ -92,6 +92,7 @@ class MySQLDataSource extends DataSource
      */
     protected function onInit()
     {
+        $connection = Util::get($this->params, "connection");
         $host = Util::get($this->params, "host", ""); //localhost:3306
         $username = Util::get($this->params, "username", "");
         $password = Util::get($this->params, "password", "");
@@ -100,7 +101,10 @@ class MySQLDataSource extends DataSource
         $charset = Util::get($this->params, "charset", null);
 
         $key = md5($host . $username . $password . $dbname);
-        if (isset(MySQLDataSource::$connections[$key])) {
+        if (is_object($connection) && get_class($connection) === \mysqli::class) {
+            // echo "use existed connection<br>";
+            $this->connection = $connection;
+        } else if (isset(MySQLDataSource::$connections[$key])) {
             $this->connection = MySQLDataSource::$connections[$key];
         } else {
             $this->connection = new \mysqli($host, $username, $password, $dbname, $port);

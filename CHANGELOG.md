@@ -7,7 +7,7 @@
 4. Support Bootstrap 5
 5. Add Brackets for Filter process 
 6. Add function to Filter process, add xor logic 
-7. Add RowNum process, similarly to CalculatedColumn but simpler 
+7. Add RowNumColumn process, similar to CalculatedColumn's rownum but simpler 
 8. Add "betweenInclusive" and "notBetweenInclusive" for Filter process 
 9. Add using existed connection option for PDO, MySQL, PostgreSQL, SQL Server, and Oracle datasources
 

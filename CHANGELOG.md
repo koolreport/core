@@ -10,6 +10,7 @@
 7. Add RowNumColumn process, similar to CalculatedColumn's rownum but simpler 
 8. Add "betweenInclusive" and "notBetweenInclusive" for Filter process 
 9. Add using existed connection option for PDO, MySQL, PostgreSQL, SQL Server, and Oracle datasources
+10. Fix Table's eval bug when column formatValue is a Math formula string
 
 ## Version 6.2.0
 1. Fix Utility's arrayToDatastore function when there's only one column.

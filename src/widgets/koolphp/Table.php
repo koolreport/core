@@ -187,10 +187,10 @@ class Table extends Widget
     public static function formatValue($value, $format, $row = null, $cKey = null)
     {
         $formatValue = Utility::get($format, "formatValue");
-
         if (is_string($formatValue)) {
-            eval('$fv="' . str_replace('@value', '$value', $formatValue) . '";');
-            return $fv;
+            $fv = $formatValue;
+            eval('$fv=' . str_replace('@value', $value, $formatValue) . ';');
+            return Utility::format($fv, $format);
         } else if (is_callable($formatValue)) {
             return $formatValue($value, $row, $cKey);
         } else {
@@ -203,7 +203,7 @@ class Table extends Widget
      * 
      * @param array $meta           The metadata
      * @param array $groupModel     The group model
-     * @param array $store          The store
+     * @param object $store          The store
      * @param array $result         The previous result
      * @param array $level          The level
      * @param array $start          The starting position

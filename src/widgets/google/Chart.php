@@ -304,8 +304,9 @@ class Chart extends Widget
         $formatValue = Util::get($format, "formatValue", null);
 
         if (is_string($formatValue)) {
-            eval('$fv="' . str_replace('@value', '$value', $formatValue) . '";');
-            return $fv;
+            $fv = $formatValue;
+            eval('$fv=' . str_replace('@value', '$value', $formatValue) . ';');
+            return Util::format($fv, $format);
         } else if (is_callable($formatValue)) {
             return $formatValue($value, $row);
         } else {

@@ -246,7 +246,7 @@ class Filter extends Process
         return $result;
     }
 
-    protected function isFilteredMulti($row, $filters)
+    public function isFilteredMulti($row, $filters)
     {
         $columnsMeta = $this->metaData['columns'];
         $logicalOperator = 'and';

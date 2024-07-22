@@ -1,5 +1,11 @@
 # Change Log
 
+
+## Version 6.6.0-dev
+1. Add "like", "not like", "betweenInclusive", "notBetweenInclusive" operators to DataStore's filter method
+2. Fix MySQLDataSource parameter binding in some cases
+
+
 ## Version 6.5.0
 1. Add checking filePath openable on init in CSVDataSource.
 2. Add separated port setting to MySQLDataSource.

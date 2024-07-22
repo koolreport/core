@@ -415,6 +415,16 @@ class DataStore extends Node implements IteratorAggregate, ArrayAccess
                         array_push($result, $row);
                     }
                     break;
+                case 'betweenInclusive':
+                    if ($value <= $columnValue && $columnValue <= $optional_value) {
+                        array_push($result, $row);
+                    }
+                    break;
+                case 'notBetweenInclusive':
+                    if (!($value <= $columnValue && $columnValue <= $optional_value)) {
+                        array_push($result, $row);
+                    }
+                    break;
                 case "in":
                     if (!is_array($value)) {
                         $value = array($value);
@@ -455,6 +465,16 @@ class DataStore extends Node implements IteratorAggregate, ArrayAccess
                         array_push($result, $row);
                     }
                     break;
+                case "like":
+                    if ($this->preg_sql_like($columnValue, $value)) {
+                        array_push($result, $row);
+                    }
+                    break;
+                case "not like":
+                    if (!$this->preg_sql_like($columnValue, $value)) {
+                        array_push($result, $row);
+                    }
+                    break;
                 default:
                     throw new \Exception("Unknown operator [$operator]");
                     return $this;
@@ -462,6 +482,52 @@ class DataStore extends Node implements IteratorAggregate, ArrayAccess
             }
         }
         return new DataStore($result, $this->metaData);
+    }
+
+    protected function preg_sql_like($input, $pattern, $escape = '\\')
+    {
+        // escape = \
+        // pattern_split_regex = /((?:\\)?(?:\\|%|_))/
+        // pattern = _%%ab\%%\_cd_%%
+        // parts = Array ( [0] => _ [1] => % [2] => % [3] => ab [4] => \% [5] => % [6] => \_ [7] => cd [8] => _ [9] => % [10] => % )
+        // regex = /^..*?ab%.*?_cd..*?$/i
+
+        // Split the pattern into special sequences and the rest
+        $pattern_split_regex = '/((?:' . preg_quote($escape, '/') . ')?(?:' . preg_quote($escape, '/') . '|%|_))/';
+        $parts = preg_split($pattern_split_regex, $pattern, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+
+        // Loop the split parts and convert/escape as necessary to build regex
+        $regex = '/^';
+        $lastWasPercent = FALSE;
+        foreach ($parts as $part) {
+            switch ($part) {
+                case $escape . $escape:
+                    $regex .= preg_quote($escape, '/');
+                    break;
+                case $escape . '%':
+                    $regex .= '%';
+                    break;
+                case $escape . '_':
+                    $regex .= '_';
+                    break;
+                case '%':
+                    if (!$lastWasPercent) {
+                        $regex .= '.*?';
+                    }
+                    break;
+                case '_':
+                    $regex .= '.';
+                    break;
+                default:
+                    $regex .= preg_quote($part, '/');
+                    break;
+            }
+            $lastWasPercent = $part === '%';
+        }
+        $regex .= '$/i';
+
+        // Look for a match and return bool
+        return (bool) preg_match($regex, $input);
     }
 
     /**

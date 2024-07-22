@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file contains base class to pull data from an API
  *
@@ -11,11 +12,13 @@
  */
 
 namespace koolreport\datasources;
+
 use \koolreport\core\DataSource;
 use \koolreport\core\Utility as Util;
 
 class APIDataSource extends DataSource
 {
+    protected $metaSent = false;
     /**
      * Be called when APIDataSource is initiated
      * 
@@ -30,7 +33,7 @@ class APIDataSource extends DataSource
         $this->reqData = Util::get($this->params, 'reqData');
         $this->iteration = Util::get($this->params, 'iteration', []);
 
-        $this->metaData = array("columns"=>array());
+        $this->metaData = array("columns" => array());
         $this->metaSent = false;
     }
 
@@ -43,8 +46,8 @@ class APIDataSource extends DataSource
                 $options[CURLOPT_POST] = 1;
                 if ($data) $options[CURLOPT_POSTFIELDS] = $data;
                 break;
-            case "PUT": 
-                $options[CURLOPT_PUT] = 1; 
+            case "PUT":
+                $options[CURLOPT_PUT] = 1;
                 break;
             default:
                 if ($data) $url = sprintf("%s?%s", $url, http_build_query($data));
@@ -52,7 +55,7 @@ class APIDataSource extends DataSource
         // // Optional Authentication:
         // $options[CURLOPT_HTTPAUTH] = CURLAUTH_BASIC;
         // $options[CURLOPT_USERPWD] = "username:password";
-        if (! empty($headers)) $options[CURLOPT_HTTPHEADER] = $headers;
+        if (!empty($headers)) $options[CURLOPT_HTTPHEADER] = $headers;
         $options[CURLOPT_URL] = $url;
         $options[CURLOPT_RETURNTRANSFER] = 1;
         $newOptions = [];
@@ -86,13 +89,8 @@ class APIDataSource extends DataSource
     {
     }
 
-    protected function callAPI()
-    {
-        $result = $this->curl($this->method, $this->url, $this->curlOptions,
-            $this->reqHeaders, $this->reqData);
-        return $result;
-    }
-    
+
+
     /**
      * Guess type of a value
      * 
@@ -103,19 +101,19 @@ class APIDataSource extends DataSource
     protected function guessType($value)
     {
         $map = array(
-            "float"=>"number",
-            "double"=>"number",
-            "int"=>"number",
-            "integer"=>"number",
-            "bool"=>"number",
-            "numeric"=>"number",
-            "string"=>"string",
-            "array"=>"array",
+            "float" => "number",
+            "double" => "number",
+            "int" => "number",
+            "integer" => "number",
+            "bool" => "number",
+            "numeric" => "number",
+            "string" => "string",
+            "array" => "array",
         );
 
         $type = strtolower(gettype($value));
-        foreach ($map as $key=>$value) {
-            if (strpos($type, $key)!==false) {
+        foreach ($map as $key => $value) {
+            if (strpos($type, $key) !== false) {
                 return $value;
             }
         }
@@ -134,15 +132,21 @@ class APIDataSource extends DataSource
 
     protected function requestApiAndSend()
     {
-        $rawData = $this->callAPI();
+        $rawData = $this->curl(
+            $this->method,
+            $this->url,
+            $this->curlOptions,
+            $this->reqHeaders,
+            $this->reqData
+        );
         $data = $this->rawToArray($rawData);
-        if (is_array($data) && count($data)>0) {
-            if (! $this->metaSent) {
+        if (is_array($data) && count($data) > 0) {
+            if (!$this->metaSent) {
                 $metaData = $this->metaData;
                 $row0 = $this->mapRow(array_values($data)[0]);
-                foreach ($row0 as $key=>$value) {
-                    $metaData["columns"][$key]=array(
-                        "type"=>$this->guessType($value),
+                foreach ($row0 as $key => $value) {
+                    $metaData["columns"][$key] = array(
+                        "type" => $this->guessType($value),
                     );
                 }
                 $this->sendMeta($metaData, $this);
@@ -156,6 +160,35 @@ class APIDataSource extends DataSource
         }
     }
 
+    protected function params($params)
+    {
+        $this->params = $params;
+    }
+
+    protected function openApi()
+    {
+        $apiToken = "";
+        // get api token
+        // ...
+        return ["token" => $apiToken];
+    }
+
+    protected function queryApi($apiOpenResult = null, $step = 0)
+    {
+        $result = $this->curl(
+            $this->method,
+            $this->url,
+            $this->curlOptions,
+            $this->reqHeaders,
+            $this->reqData
+        );
+        return $result;
+    }
+
+    protected function closeApi($apiOpenResult)
+    {
+    }
+
     /**
      * Start piping data
      * 
@@ -163,14 +196,48 @@ class APIDataSource extends DataSource
      */
     public function start()
     {
-        if (count($this->iteration) > 0) {
-            foreach ($this->iteration as $rep) {
-                $this->rep = $rep;
-                $this->requestApiAndSend();
+        // if (count($this->iteration) > 0) {
+        //     foreach ($this->iteration as $rep) {
+        //         $this->rep = $rep;
+        //         $this->requestApiAndSend();
+        //     }
+        // } else {
+        //     $this->requestApiAndSend();
+        // }
+        // $this->endInput(null);
+
+        $apiOpenResult = $this->openApi();
+
+        $step = 0;
+        while (true) {
+            $data = $this->queryApi($apiOpenResult, $step);
+            if (empty($data)) break;
+
+            $step++;
+            // Send meta and data
+            // ...
+            if (is_array($data) && count($data) > 0) {
+                if (!$this->metaSent) {
+                    $metaData = $this->metaData;
+                    $row0 = $this->mapRow(array_values($data)[0]);
+                    foreach ($row0 as $key => $value) {
+                        $metaData["columns"][$key] = array(
+                            "type" => $this->guessType($value),
+                        );
+                    }
+                    $this->sendMeta($metaData, $this);
+                    $this->metaSent = true;
+                    $this->startInput(null);
+                }
+                foreach ($data as $row) {
+                    $row = $this->mapRow($row);
+                    $this->next($row);
+                }
             }
-        } else {
-            $this->requestApiAndSend();
         }
+
+        $this->closeApi($apiOpenResult);
+
         $this->endInput(null);
     }
 }

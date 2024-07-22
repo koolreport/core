@@ -284,7 +284,7 @@ class MySQLDataSource extends DataSource
      * 
      * @return string The escaped string
      */
-    protected function escapeStr($str)
+    public function escapeStr($str)
     {
         return $this->connection->real_escape_string($str);
     }
@@ -432,7 +432,8 @@ class MySQLDataSource extends DataSource
             // echo "typeStr=$typeStr<br>"; 
             // echo "[typeStr] + params="; print_r([$typeStr] + $params); echo "<br>";
             // echo "...array_values(params) = "; print_r(...array_values($params)); echo "<br>";
-            $arr = [$typeStr] + $newParams;
+            // $arr = [$typeStr] + $newParams;
+            $arr = [$typeStr] + $sortedPosNewParams;
             $refArr = [];
             foreach ($arr as $k => $v) {
                 $refArr[] = &$arr[$k];

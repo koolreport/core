@@ -786,8 +786,17 @@ class Utility
     public static function prettyPrint($arr)
     {
         echo '<pre>';
-        echo json_encode($arr, JSON_PRETTY_PRINT), PHP_EOL;
+        echo json_encode($arr, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES), PHP_EOL;
         echo '</pre>';
+    }
+
+    public static function prettyPrint2($arr)
+    {
+        $arr2 = [];
+        foreach ($arr as $i => $row) {
+            $arr2[$i] = str_replace('"', "'", json_encode($row, JSON_UNESCAPED_SLASHES));
+        }
+        self::prettyPrint($arr2);
     }
 
     /**
@@ -952,5 +961,67 @@ class Utility
     public static function transpose($array)
     {
         return array_map(null, ...$array);
+    }
+
+    public static function array_is_list(array $arr)
+    {
+        // if (count($arr) === 0) return true;
+        // $keys = array_keys($arr[0]);
+        // foreach ($keys as $i => $key) {
+        //     if ($i !== $key) return false;
+        // }
+        // return true;
+        if ($arr === []) {
+            return true;
+        }
+        return array_keys($arr) === range(0, count($arr) - 1);
+    }
+
+    public static function array_is_2D_list($arr2D)
+    {
+        if ($arr2D === []) {
+            return true;
+        }
+        foreach ($arr2D as $arr) {
+            if (!self::array_is_list($arr)) return false;
+        }
+        return true;
+    }
+
+    public static function tableToAssociate($data)
+    {        
+        $newData = [];
+        $columns = $data[0];
+        foreach ($data as $i => $row) {
+            if ($i === 0) continue;
+            $newRow = [];
+            foreach ($row as $j => $value) {
+                $newRow[$columns[$j]] = $value;
+            }
+            $newData[] = $newRow;
+        }
+        return $newData;
+    }
+
+    public static function associateToTable($data)
+    {        
+        $newData = [
+            []
+        ];
+        foreach ($data as $row) {
+            $rowKeys = array_keys($row);
+            foreach ($rowKeys as $rowKey) {
+                if (!isset($newData[0][$rowKey])) $newData[0][$rowKey] = true;
+            }
+        }
+        $newData[0] = array_keys($newData[0]);
+        foreach ($data as $row) {
+            $newRow = [];
+            foreach ($newData[0] as $col) {
+                $newRow[$col] = array_key_exists($col, $row) ? $row[$col] : null;
+            }
+            $newData[] = array_values($newRow);
+        }
+        return $newData;
     }
 }

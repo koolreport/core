@@ -112,6 +112,8 @@ class Widget
      */
     protected $withoutLoader = false;
 
+    protected $jsonRender = false;
+
     /**
      * Constructor of theme
      * 
@@ -127,6 +129,7 @@ class Widget
         $this->themeBase = Utility::get($this->params, "themeBase");
         $this->themeCssClass = Utility::get($this->params, "themeCssClass");
         $this->withoutLoader = Utility::get($this->params, "withoutLoader", false);
+        $this->jsonRender = Utility::get($this->params, "jsonRender", false);
 
         $this->report = Utility::get($this->params, "report");
 
@@ -687,7 +690,9 @@ class Widget
      */
     protected function onRender()
     {
-        $this->template(Utility::getClassName($this));
+        $className = Utility::getClassName($this);
+        if ($this->jsonRender) $className .= "Json";
+        $this->template($className);
     }
 
     /**
@@ -796,5 +801,11 @@ class Widget
             'html' => $html,
             'js' => $js,
         ];
+    }
+
+    public function renderJson($jsonRender)
+    {
+        $this->jsonRender = $jsonRender;
+        return $this;
     }
 }

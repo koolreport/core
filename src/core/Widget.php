@@ -802,7 +802,12 @@ class Widget
         ];
     }
 
-    public function renderJson($jsonRender)
+    public function getJsonRender()
+    {
+        return $this->jsonRender;
+    }
+
+    public function setJsonRender($jsonRender = null)
     {
         $this->jsonRender = $jsonRender;
         return $this;

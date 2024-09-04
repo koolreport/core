@@ -38,7 +38,8 @@ use \koolreport\core\Utility;
                                             'options' => $options,
                                             'loader' => $loader,
                                             'pointerOnHover' => $this->pointerOnHover,
-                                            'clientEvents' => $this->clientEvents
+                                            'clientEvents' => $this->clientEvents,
+                                            'onReady' => $this->onReady,
                                         ]
                                     ]
                                 ]
@@ -51,7 +52,7 @@ use \koolreport\core\Utility;
         </json_script>
         <script>
             console.log('GoogleChart json render');
-            KoolReport.widget.executeJsonScript("#" + "<?php echo $this->name; ?>_json");
+            KoolReport.helper.executeJsonScript("#" + "<?php echo $this->name; ?>_json");
         </script>
     </div>
 <?php } else { ?>

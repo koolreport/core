@@ -179,6 +179,230 @@ KoolReport.widget = (KoolReport.widget) ? KoolReport.widget : {
     init: function (resources, cb) {
         KoolReport.load.resources(resources, cb);
     },
+    loadAndRunDataTables: function (jsonObject) {
+        console.log('loadAndRunDataTables');
+        // return;
+        KoolReport.widget.init(
+            jsonObject.resources,
+            function () {
+                var uniqueId = jsonObject.id
+                var dtOptions = jsonObject.options;
+                var fastRender = jsonObject.fastRender;
+                if (fastRender) {
+                    dtOptions.data = jsonObject.dataRows;
+                }
+                window[uniqueId + '_state'] = {};
+                KoolReport.helper.ConvertToClientFunction.call(dtOptions, dtOptions);
+                window[uniqueId] = $('#' + uniqueId).DataTable(dtOptions);
+                window[uniqueId + '_data'] = {
+                    id: jsonObject.id,
+                    searchOnEnter: jsonObject.earchOnEnter ? 1 : 0,
+                    searchMode: jsonObject.searchMode,
+                    serverSide: jsonObject.serverSide ? 1 : 0,
+                    serverSideInstantSearch: jsonObject.serverSideInstantSearch ? 1 : 0,
+                    overrideSearchInput: jsonObject.overrideSearchInput ? 1 : 0,
+                    rowDetailData: dtOptions.rowDetailData,
+                    showColumnKeys: jsonObject.$showColumnKeys,
+                    columns: jsonObject.columns,
+                    editUrl: jsonObject.editUrl,
+                    fastRender: fastRender,
+                    rowDetailIcon: jsonObject.rowDetailIcon ? 1 : 0,
+                    rowDetailSelector: jsonObject.rowDetailSelector,
+                    clientRowSpanColumns: jsonObject.clientRowSpanColumns,
+                    themeBase: jsonObject.themeBase,
+                    rawData: jsonObject.rawData,
+                };
+                window['KR' + uniqueId] = KoolReport.KRDataTables.create(window[uniqueId + '_data']);
+
+                KoolReport.helper.registerClientEvents(jsonObject);
+                KoolReport.helper.runOnReady(jsonObject);
+            }
+        );
+    },
+    runGoogleChart: function (jsonObject) {
+        console.log('runGoogleChart');
+        KoolReport.helper.ConvertToClientFunction.call(window[jsonObject.name], jsonObject);
+
+        window[jsonObject.name] = new KoolReport.google.chart(
+            jsonObject.chartType, jsonObject.name, jsonObject.cKeys, jsonObject.data, jsonObject.options, jsonObject.loader);
+
+        if (jsonObject.pointerOnHover) {
+            window[jsonObject.name].pointerOnHover = true;
+        }
+        
+        KoolReport.helper.registerClientEvents(jsonObject);
+        KoolReport.helper.runOnReady(jsonObject);
+    },
+    runD3Chart: function (jsonObject) {
+        window[jsonObject.name] = new KoolReport.d3.C3Chart(jsonObject.settings);
+        
+        KoolReport.helper.registerClientEvents(jsonObject);
+        KoolReport.helper.runOnReady(jsonObject);
+    },
+    runD3ChartWaterfall: function (jsonObject) {
+        window[jsonObject.name] = new KoolReport.d3.Waterfall(jsonObject.name, jsonObject.settings);
+        window[jsonObject.name].draw();
+        
+        KoolReport.helper.registerClientEvents(jsonObject);
+        KoolReport.helper.runOnReady(jsonObject);
+    },
+    runChartJS: function (jsonObject) {
+        console.log('KoolReport.js runChartJS');
+        window[jsonObject.name] = new ChartJS(jsonObject.name, jsonObject.settings);
+        
+        KoolReport.helper.registerClientEvents(jsonObject);
+        KoolReport.helper.runOnReady(jsonObject);
+    },
+    runApexCharts: function (jsonObject) {
+        // console.log('runApexCharts');
+        var name = jsonObject.settings.name;
+        window[name + '_settings'] = jsonObject.settings;
+        window[name] = KoolReport.ApexCharts.create(jsonObject.settings);
+        
+        KoolReport.helper.registerClientEvents(jsonObject);
+        KoolReport.helper.runOnReady(jsonObject);
+    },
+    loadAndRunApexCharts: function (jsonObject) {
+        // console.log('loadAndRunApexCharts');
+        KoolReport.widget.init(jsonObject.resources, function () {
+            var name = jsonObject.name;
+            window[name + '_settings'] = jsonObject.settings;
+            window[name] = KoolReport.ApexCharts.create(jsonObject.settings);
+            
+            KoolReport.helper.registerClientEvents(jsonObject);
+            KoolReport.helper.runOnReady(jsonObject);
+        })
+    },
+    loadAndRunDrillDown: function (jsonObject) {
+        console.log('loadAndRunDrillDown: ', jsonObject);
+        KoolReport.widget.init(jsonObject.resources, function () {
+            var name = jsonObject.name;
+            window[name] = new KoolReport.drilldown.DrillDown(name, jsonObject.options);
+
+            KoolReport.helper.registerClientEvents(jsonObject);
+            KoolReport.helper.runOnReady(jsonObject);
+        })
+    },
+    loadAndRunPivotTable: function (jsonObject) {
+        console.log('loadAndRunPivotTable: ', jsonObject);
+        KoolReport.widget.init(
+            jsonObject.resources,
+            function () {
+                var rowCollapseLevels = jsonObject.rowCollapseLevels;
+                rowCollapseLevels.sort(function (a, b) { return b - a; });
+                jsonObject.rowCollapseLevels = rowCollapseLevels;
+                var colCollapseLevels = jsonObject.colCollapseLevels;
+                colCollapseLevels.sort(function (a, b) { return b - a; });
+                jsonObject.colCollapseLevels = colCollapseLevels;
+                window[jsonObject.name] = KoolReport.PivotTable.create(jsonObject);
+
+                KoolReport.helper.runOnReady(jsonObject);
+            }
+        );
+    },
+    loadAndRunPivotMatrix: function (jsonObject) {
+        console.log('loadAndRunPivotMatrix: ', jsonObject);
+        KoolReport.widget.init(
+            jsonObject.resources,
+            function () {
+                window[jsonObject.name] = KoolReport.PivotMatrix.create(jsonObject);
+
+                KoolReport.helper.runOnReady(jsonObject);
+            }
+        );
+    },
+    loadAndRunVisualQuery: function (jsonObject) {
+        var name = jsonObject.name;
+        vqTheme = jsonObject.vqTheme;
+        KoolReport.widget.init(jsonObject.resources, function () {
+            window[name + '_data'] = {
+                name: name,
+                tableNames: jsonObject.tableNames,
+                tables: jsonObject.tables,
+                tableAliases: jsonObject.tableAliases,
+                tableLinks: jsonObject.tableLinks,
+                defaultValue: jsonObject.defaultValue,
+                value: jsonObject.value,
+                separator: jsonObject.separator,
+            }
+            window[name] = KoolReport.VisualQuery.create(window[name + '_data']);
+            
+            KoolReport.helper.runOnReady(jsonObject);
+
+            document.body.style.visibility = 'visible';
+            document.body.style.opacity = 1;
+        });
+    }
+};
+
+KoolReport.helper = (KoolReport.helper) ? KoolReport.helper : {
+    ConvertToClientFunction: function (obj) {
+        for (var p in obj) {
+            if (obj.hasOwnProperty(p)) {
+                var val = obj[p];
+                if (typeof val === 'string') {
+                    val = val.trim();
+                    // console.log('val: ', val);
+                    var regex = /([^\s]*)\((.*)\)$/;
+                    var found = val.match(regex);
+                    if (found) {
+                        // console.log('found: ', found);
+                        // var funcNames = val.slice(0, val.length - 2);
+                        var funcNames = found[1];
+                        var thisObj;
+                        try {
+                            thisObj = JSON.parse(found[2]);
+                        } catch (e) {
+                            console.log('client function\'s this obj is not JSON')
+                        }
+                        funcNames = funcNames.split(".");
+                        // console.log('funcNames: ', funcNames);
+                        var func = window;
+                        funcNames.forEach(function (funcName) {
+                            func = func[funcName];
+                        })
+                        if (typeof func === 'function') {
+                            // obj[p] = func.bind(this);
+                            obj[p] = func.bind(thisObj || this);
+                        }
+                    }
+                } else if (typeof val === 'object') {
+                    KoolReport.helper.ConvertToClientFunction.call(this, obj[p]);
+                }
+            }
+        }
+    },
+
+    registerClientEvents: function(jsonObject) {
+        var name = jsonObject.name;
+        var obj = { clientEvents: jsonObject.clientEvents };
+        KoolReport.helper.ConvertToClientFunction.call(null, obj);
+        var clientEvents = obj.clientEvents;
+        var registerFunc = window[name].registerEvent ? 'registerEvent' : 'on';
+        for (var event in clientEvents) {
+            var func = clientEvents[event];
+            if (typeof func === 'function') {
+                window[name][registerFunc](event, func);
+            }
+            if (typeof window[func] === 'function') {
+                window[name][registerFunc](event, window[func]);
+            }
+        }
+    },
+
+    runOnReady: function(jsonObject) {
+        var obj = { onReady: jsonObject.onReady };
+        KoolReport.helper.ConvertToClientFunction.call(null, obj);
+        // console.log('obj.onReady: ', obj.onReady);
+        var onReady = obj.onReady;
+        if (typeof onReady === 'function') {
+            onReady();
+        }
+        if (typeof window[onReady] === 'function') {
+            window[onReady]();
+        }
+    },
+
     html: function (selector, html) {
         console.log('KoolReport.widget.html func: ', selector);
         var el = document.querySelector(selector);
@@ -210,7 +434,7 @@ KoolReport.widget = (KoolReport.widget) ? KoolReport.widget : {
         //     });
         // })
     },
-    executeScript: function(selector) {
+    executeScript: function (selector) {
         console.log('KoolReport.widget.executeScript func: ', selector);
         var x = document.querySelector(selector).getElementsByTagName("script");
         for (var i = 0; i < x.length; i++) {
@@ -218,15 +442,15 @@ KoolReport.widget = (KoolReport.widget) ? KoolReport.widget : {
             eval(x[i].text);
         }
     },
-    executeJsonScript: function(selector) {
+    executeJsonScript: function (selector) {
         console.log('KoolReport.widget.executeJsonScript func: ', selector);
         var jsonScriptEls = Array.from(document.querySelector(selector).querySelectorAll("json_script"));
-        jsonScriptEls.forEach(function(jsonScriptEl) {
+        jsonScriptEls.forEach(function (jsonScriptEl) {
             var jsonScript = jsonScriptEl.innerHTML.trim();
             if (!jsonScript) return;
             var jsonScript = JSON.parse(jsonScript);
-            var functions = jsonToFunc(jsonScript);
-            functions.forEach(function(func) {
+            var functions = KoolReport.helper.JsonToFunc(jsonScript);
+            functions.forEach(function (func) {
                 if (func.isNew) {
                     var result = new func();
                 } else {
@@ -236,342 +460,107 @@ KoolReport.widget = (KoolReport.widget) ? KoolReport.widget : {
             })
         })
     },
-    executeJsonCommand: function(selector) {
+    executeJsonCommand: function (selector) {
         console.log('KoolReport.widget.executeJsonCommand func: ', selector);
         var jsonScriptEls = Array.from(document.querySelector(selector).querySelectorAll("json_command"));
-        jsonScriptEls.forEach(function(jsonScriptEl) {
+        jsonScriptEls.forEach(function (jsonScriptEl) {
             var jsonCommand = jsonScriptEl.innerHTML.trim();
             if (!jsonCommand) return;
             var jsonCommand = JSON.parse(jsonCommand);
-            var func = jsonItemToFunc(jsonCommand);
+            var func = KoolReport.helper.JsonItemToFunc(jsonCommand);
             func();
         })
     },
-    loadAndRunDataTables: function(jsonObject) {
-        console.log('loadAndRunDataTables');
-        // return;
-        KoolReport.widget.init(
-            jsonObject.resources,
-            function() {
-                var uniqueId = jsonObject.id
-                var dtOptions = jsonObject.options;
-                var fastRender = jsonObject.fastRender;
-                if (fastRender) {
-                    dtOptions.data = jsonObject.dataRows;
-                }
-                window[uniqueId + '_state'] = {};
-                KoolReportConvertToClientFunction.call(dtOptions, dtOptions);
-                window[uniqueId] = $('#' + uniqueId).DataTable(dtOptions);
-                window[uniqueId + '_data'] = {
-                    id: jsonObject.id,
-                    searchOnEnter: jsonObject.earchOnEnter ? 1 : 0,
-                    searchMode: jsonObject.searchMode,
-                    serverSide: jsonObject.serverSide ? 1 : 0,
-                    serverSideInstantSearch: jsonObject.serverSideInstantSearch ? 1 : 0,
-                    overrideSearchInput: jsonObject.overrideSearchInput ? 1 : 0,
-                    rowDetailData: dtOptions.rowDetailData,
-                    showColumnKeys: jsonObject.$showColumnKeys,
-                    columns: jsonObject.columns,
-                    editUrl: jsonObject.editUrl,
-                    fastRender: fastRender,
-                    rowDetailIcon: jsonObject.rowDetailIcon ? 1 : 0,
-                    rowDetailSelector: jsonObject.rowDetailSelector,
-                    clientRowSpanColumns: jsonObject.clientRowSpanColumns,
-                    themeBase: jsonObject.themeBase,
-                    rawData: jsonObject.rawData,
-                };
-                window['KR' + uniqueId] = KoolReport.KRDataTables.create(window[uniqueId + '_data']);     
-                
-                var clientEvents = jsonObject.clientEvents;
-                if (clientEvents) {
-                    for (var eventName in clientEvents) {
-                        var func = clientEvents[eventName];
-                        if (typeof window[func] === 'function') {
-                            dt.on(eventName, window[func]);
-                        }
+
+    JsonItemToFunc: function (jsonItem) {
+        if (jsonItem === null || !jsonItem["function"]) return jsonItem;
+        var func = jsonItem["function"];
+        var value = jsonItem["value"];
+        var args = jsonItem["arguments"] || [];
+        var returnName = jsonItem["return"];
+        var isNew = jsonItem["isNew"];
+        var f;
+        if (func === "{anonymous}") {
+            var json = jsonItem["json"];
+            f = function () {
+                // console.log('anonymous func evoke')
+                KoolReport.helper.JsonToFunc(json).forEach(function (funcItem) {
+                    // funcItem();
+                    if (funcItem.isNew) {
+                        var result = new funcItem();
+                    } else {
+                        var result = funcItem();
                     }
-                }
+                    if (funcItem.returnName) {
+                        var returnObj = window;
+                        var returnNameParts = funcItem.returnName.split(".");
+                        returnNameParts.forEach(function (returnNamePart) {
+                            returnObj[returnNamePart] = returnObj[returnNamePart] || {};
+                            return returnObj = returnObj[returnNamePart];
+                        })
+                        returnObj = result;
+                    }
+                });
+            };
+        } else if (func === "{anonymousCall}") {
+            var json = jsonItem["json"];
+            f = function () {
+                KoolReport.helper.JsonToFunc(json).forEach(function (funcItem) {
+                    funcItem();
+                });
+            }();
+        } else if (typeof func === 'string' && func) {
+            funcNames = func.split(".");
+            f = window;
+            funcNames.forEach(function (funcName) {
+                f = f[funcName];
+            })
+            args = KoolReport.helper.JsonToFunc(args);
+        } else if (typeof value !== 'undefined') {
+            if (returnName) {
+                var returnObj = window;
+                var returnNameParts = funcItem.returnName.split(".");
+                returnNameParts.forEach(function (returnNamePart) {
+                    returnObj[returnNamePart] = returnObj[returnNamePart] || {};
+                    return returnObj = returnObj[returnNamePart];
+                })
+                returnObj = value;
+            } else {
+                return value;
             }
-        );
+        }
+        // console.log('f: ', f);
+        // console.log('args: ', args);
+        var f = f ? f.bind(null, ...args) : null;
+        if (f && isNew) f.isNew = isNew;
+        if (f && returnName) f.returnName = returnName;
+        return f;
     },
-    runGoogleChart: function(jsonObject) {
-        console.log('runGoogleChart');
-        KoolReportConvertToClientFunction.call(window[jsonObject.name], jsonObject);
-        
-        window[jsonObject.name] = new KoolReport.google.chart(
-            jsonObject.chartType,jsonObject.name,jsonObject.cKeys,jsonObject.data,jsonObject.options,jsonObject.loader);        
 
-        if (jsonObject.pointerOnHover) {
-            window[jsonObject.name].pointerOnHover = true; 
+    JsonToFunc: function (json) {
+        if (!json.map) {
+            json = [json];
         }
-        for (var event in jsonObject.clientEvents) {
-            var func = jsonObject.clientEvents[event];
-            // console.log('func: ', func);
-            if (typeof func === 'function') {
-                window[jsonObject.name].registerEvent(event,func);
-            }
-            if (typeof window[func] === 'function') {
-                window[jsonObject.name].registerEvent(event,window[func]);
-            }
-        }
-    },
-    runD3Chart: function(jsonObject) {
-        window[jsonObject.name] = new KoolReport.d3.C3Chart(jsonObject.settings);
-        for (var event in jsonObject.clientEvents) {
-            var func = jsonObject.clientEvents[event];
-            window[jsonObject.name].registerEvent(event,func);
-        }
-    },
-    runD3ChartWaterfall: function(jsonObject) {
-        window[jsonObject.name] = new KoolReport.d3.Waterfall(jsonObject.name, jsonObject.settings);
-        window[jsonObject.name].draw();
-        for (var event in jsonObject.clientEvents) {
-            var func = jsonObject.clientEvents[event];
-            if (typeof func === 'function') {
-                window[jsonObject.name].registerEvent(event,func);
-            }
-            if (typeof window[func] === 'function') {
-                window[jsonObject.name].registerEvent(event,window[func]);
-            }
-        }
-    },
-    runChartJS: function(jsonObject) {
-        window[jsonObject.name] = new ChartJS(jsonObject.name, jsonObject.settings);
-        for (var event in jsonObject.clientEvents) {
-            var func = jsonObject.clientEvents[event];
-            if (typeof func === 'function') {
-                window[jsonObject.name].registerEvent(event,func);
-            }
-            if (typeof window[func] === 'function') {
-                window[jsonObject.name].registerEvent(event,window[func]);
-            }
-        }
-    },
-    runApexCharts: function(jsonObject) {
-        // console.log('runApexCharts');
-        var name = jsonObject.settings.name;
-        window[name + '_settings'] = jsonObject.settings;
-        window[name] = KoolReport.ApexCharts.create(jsonObject.settings);
-        for (var event in jsonObject.clientEvents) {
-            var func = jsonObject.clientEvents[event];
-            if (typeof func === 'function') {
-                window[jsonObject.name].registerEvent(event,func);
-            }
-            if (typeof window[func] === 'function') {
-                window[jsonObject.name].registerEvent(event,window[func]);
-            }
-        }
-    },
-    loadAndRunApexCharts: function(jsonObject) {
-        // console.log('loadAndRunApexCharts');
-        KoolReport.widget.init(jsonObject.resources, function() {
-            var name = jsonObject.settings.name;
-            window[name + '_settings'] = jsonObject.settings;
-            window[name] = KoolReport.ApexCharts.create(jsonObject.settings);
-            for (var event in jsonObject.clientEvents) {
-                var func = jsonObject.clientEvents[event];
-                if (typeof func === 'function') {
-                    window[jsonObject.name].registerEvent(event,func);
-                }
-                if (typeof window[func] === 'function') {
-                    window[jsonObject.name].registerEvent(event,window[func]);
-                }
-            }
+        return json.map(function (jsonItem) {
+            return KoolReport.helper.JsonItemToFunc(jsonItem);
         })
     },
-    loadAndRunDrillDown: function(jsonObject) {
-        console.log('loadAndRunDrillDown: ', jsonObject);
-        KoolReport.widget.init(jsonObject.resources, function() {
-            var name = jsonObject.name;
-            window[name] = new KoolReport.drilldown.DrillDown(name, jsonObject.options);
 
-            for (var event in jsonObject.clientEvents) {
-                var func = jsonObject.clientEvents[event];
-                if (typeof func === 'function') {
-                    window[jsonObject.name].registerEvent(event,func);
-                }
-                if (typeof window[func] === 'function') {
-                    window[jsonObject.name].registerEvent(event,window[func]);
-                }
-            }
-        })
-    },
-    loadAndRunPivotTable: function(jsonObject) {
-        console.log('loadAndRunPivotTable: ', jsonObject);
-        KoolReport.widget.init(
-            jsonObject.resources,
-            function() {
-                var rowCollapseLevels = jsonObject.rowCollapseLevels;
-                rowCollapseLevels.sort(function(a,b){ return b-a;});
-                jsonObject.rowCollapseLevels = rowCollapseLevels;
-                var colCollapseLevels = jsonObject.colCollapseLevels;
-                colCollapseLevels.sort(function(a,b){ return b-a;});
-                jsonObject.colCollapseLevels = colCollapseLevels;
-                window[jsonObject.name] = KoolReport.PivotTable.create(jsonObject);
-            }
-        );
-    },
-    loadAndRunPivotMatrix: function(jsonObject) {
-        console.log('loadAndRunPivotMatrix: ', jsonObject);
-        KoolReport.widget.init(
-            jsonObject.resources,
-            function() {
-                window[jsonObject.name] = KoolReport.PivotMatrix.create(jsonObject);
-            }
-        );
-    },
-    loadAndRunVisualQuery: function(jsonObject) {
-        var name = jsonObject.name;
-        vqTheme = jsonObject.vqTheme;
-        KoolReport.widget.init(jsonObject.resources, function() {
-            window[name + '_data'] = {
-                name: name,
-                tableNames: jsonObject.tableNames,
-                tables: jsonObject.tables,
-                tableAliases: jsonObject.tableAliases,
-                tableLinks: jsonObject.tableLinks,
-                defaultValue: jsonObject.defaultValue,
-                value: jsonObject.value,
-                separator: jsonObject.separator,
-            }
-            window[name] = KoolReport.VisualQuery.create(window[name + '_data']);
-
-            var obj = {onReady: jsonObject.onReady};
-            KoolReportConvertToClientFunction.call(null, obj);
-            // console.log('obj.onReady: ', obj.onReady);
-            if (typeof obj.onReady === 'function') {
-                obj.onReady(window[name]);
-            }
-
-            document.body.style.visibility = 'visible';
-            document.body.style.opacity = 1;
-        });
+    DrillDownNext: function (params) {
+        console.log('DrillDownNext');
+        if (this.type === 'googlechart') {
+            window[this.name].next(params.selectedRow);
+        } else if (this.type === 'koolphptable') {
+            window[this.name].next(params.rowData);
+        } else if (this.type === 'chartjs') {
+            window[this.name].next(params.selectedRow);
+        } else if (this.type === 'd3') {
+            window[this.name].next(params.selectedRow);
+        }
     }
 };
 
-function KoolReportConvertToClientFunction(obj) {
-    for (var p in obj) {
-        if (obj.hasOwnProperty(p)) {
-            var val = obj[p];
-            if (typeof val === 'string') {
-                val = val.trim();
-                // console.log('val: ', val);
-                var regex = /([^\s]*)\((.*)\)$/;
-                var found = val.match(regex);
-                if (found) {
-                    // console.log('found: ', found);
-                    // var funcNames = val.slice(0, val.length - 2);
-                    var funcNames = found[1];
-                    var thisObj;
-                    try {
-                        thisObj = JSON.parse(found[2]);
-                    } catch (e) {                       
-                        console.log('client function\'s this obj is not JSON')
-                    }
-                    funcNames = funcNames.split(".");
-                    // console.log('funcNames: ', funcNames);
-                    var func = window;
-                    funcNames.forEach(function(funcName) {
-                        func = func[funcName];
-                    })
-                    if (typeof func === 'function') {
-                        // obj[p] = func.bind(this);
-                        obj[p] = func.bind(thisObj || this);
-                    }
-                }
-            } else if (typeof val === 'object') {
-                KoolReportConvertToClientFunction.call(this, obj[p]);
-            }
-        }
-    }
-}
 
-function jsonItemToFunc(jsonItem) {
-    if (jsonItem === null || !jsonItem["function"]) return jsonItem;
-    var func = jsonItem["function"];
-    var value = jsonItem["value"];
-    var args = jsonItem["arguments"] || [];
-    var returnName = jsonItem["return"];
-    var isNew = jsonItem["isNew"];
-    var f;
-    if (func === "{anonymous}") {
-        var json = jsonItem["json"];
-        f = function() {
-            // console.log('anonymous func evoke')
-            jsonToFunc(json).forEach(function(funcItem) {
-                // funcItem();
-                if (funcItem.isNew) {
-                    var result = new funcItem();
-                } else {
-                    var result = funcItem();
-                }
-                if (funcItem.returnName) {
-                    var returnObj = window;
-                    var returnNameParts = funcItem.returnName.split(".");
-                    returnNameParts.forEach(function(returnNamePart) {
-                        returnObj[returnNamePart] = returnObj[returnNamePart] || {};
-                        return returnObj = returnObj[returnNamePart];
-                    })
-                    returnObj = result;
-                }
-            });
-        };            
-    } else if (func === "{anonymousCall}") {
-        var json = jsonItem["json"];
-        f = function() {
-            jsonToFunc(json).forEach(function(funcItem) {
-                funcItem();
-            });
-        }();            
-    } else if (typeof func === 'string' && func) {
-        funcNames = func.split(".");
-        f = window;
-        funcNames.forEach(function(funcName) {
-            f = f[funcName];
-        })
-        args = jsonToFunc(args);
-    } else if (typeof value !== 'undefined') {
-        if (returnName) {
-            var returnObj = window;
-            var returnNameParts = funcItem.returnName.split(".");
-            returnNameParts.forEach(function(returnNamePart) {
-                returnObj[returnNamePart] = returnObj[returnNamePart] || {};
-                return returnObj = returnObj[returnNamePart];
-            })
-            returnObj = value;
-        } else {
-            return value;
-        }
-    }
-    // console.log('f: ', f);
-    // console.log('args: ', args);
-    var f = f ? f.bind(null, ...args) : null;
-    if (f && isNew) f.isNew = isNew;
-    if (f && returnName) f.returnName = returnName;
-    return f;
-}
-
-function jsonToFunc(json) {
-    if (!json.map) {
-        json = [json];
-    }
-    return json.map(function(jsonItem) {
-        return jsonItemToFunc(jsonItem);
-    })
-}
-
-function DrillDownNext(params){
-    console.log('DrillDownNext');
-    if (this.type === 'googlechart') {
-        window[this.name].next(params.selectedRow);
-    } else if (this.type === 'koolphptable') {
-        window[this.name].next(params.rowData);
-    } else if (this.type === 'chartjs') {
-        window[this.name].next(params.selectedRow);
-    } else if (this.type === 'd3') {
-        window[this.name].next(params.selectedRow);
-    }
-}
 
 
 

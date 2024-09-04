@@ -1,9 +1,10 @@
 # Change Log
 
 
-## Version 6.6.0-dev
+## Version 6.6.0
 1. Add "like", "not like", "betweenInclusive", "notBetweenInclusive" operators to DataStore's filter method
 2. Fix MySQLDataSource parameter binding in some cases
+3. Add `jsonRender` property to comply with CSP's unsafe-eval
 
 
 ## Version 6.5.0

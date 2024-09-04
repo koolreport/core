@@ -331,8 +331,11 @@ class Chart extends Widget
                 $options["colors"] = $this->colorScheme;
             }
             //Render
+            $viewTemplate = "Chart";
+            // $viewTemplate = $this->jsonRender ? "ChartJson" : "Chart";
+            // echo "viewTemplate: $viewTemplate<br>";
             $this->template(
-                "Chart",
+                $viewTemplate,
                 array(
                     "chartType" => $this->type,
                     "options" => $options,

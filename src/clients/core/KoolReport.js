@@ -353,7 +353,7 @@ KoolReport.helper = (KoolReport.helper) ? KoolReport.helper : {
                         try {
                             thisObj = JSON.parse(found[2]);
                         } catch (e) {
-                            console.log('client function\'s this obj is not JSON')
+                            // console.log('client function\'s this obj is not JSON')
                         }
                         funcNames = funcNames.split(".");
                         // console.log('funcNames: ', funcNames);
@@ -547,15 +547,15 @@ KoolReport.helper = (KoolReport.helper) ? KoolReport.helper : {
     },
 
     DrillDownNext: function (params) {
-        console.log('DrillDownNext');
+        // console.log('DrillDownNext: ', params);
         if (this.type === 'googlechart') {
-            window[this.name].next(params.selectedRow);
+            window[this.name].next(params.selectedRow, params);
         } else if (this.type === 'koolphptable') {
-            window[this.name].next(params.rowData);
+            window[this.name].next(params.rowData, params);
         } else if (this.type === 'chartjs') {
-            window[this.name].next(params.selectedRow);
+            window[this.name].next(params.selectedRow, params);
         } else if (this.type === 'd3') {
-            window[this.name].next(params.selectedRow);
+            window[this.name].next(params.selectedRow, params);
         }
     }
 };

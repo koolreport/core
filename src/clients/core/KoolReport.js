@@ -180,7 +180,7 @@ KoolReport.widget = (KoolReport.widget) ? KoolReport.widget : {
         KoolReport.load.resources(resources, cb);
     },
     loadAndRunDataTables: function (jsonObject) {
-        console.log('loadAndRunDataTables');
+        // console.log('loadAndRunDataTables');
         // return;
         KoolReport.widget.init(
             jsonObject.resources,
@@ -220,7 +220,7 @@ KoolReport.widget = (KoolReport.widget) ? KoolReport.widget : {
         );
     },
     runGoogleChart: function (jsonObject) {
-        console.log('runGoogleChart');
+        // console.log('runGoogleChart');
         KoolReport.helper.ConvertToClientFunction.call(window[jsonObject.name], jsonObject);
 
         window[jsonObject.name] = new KoolReport.google.chart(
@@ -247,7 +247,7 @@ KoolReport.widget = (KoolReport.widget) ? KoolReport.widget : {
         KoolReport.helper.runOnReady(jsonObject);
     },
     runChartJS: function (jsonObject) {
-        console.log('KoolReport.js runChartJS');
+        // console.log('KoolReport.js runChartJS');
         window[jsonObject.name] = new ChartJS(jsonObject.name, jsonObject.settings);
         
         KoolReport.helper.registerClientEvents(jsonObject);
@@ -274,7 +274,7 @@ KoolReport.widget = (KoolReport.widget) ? KoolReport.widget : {
         })
     },
     loadAndRunDrillDown: function (jsonObject) {
-        console.log('loadAndRunDrillDown: ', jsonObject);
+        // console.log('loadAndRunDrillDown: ', jsonObject);
         KoolReport.widget.init(jsonObject.resources, function () {
             var name = jsonObject.name;
             window[name] = new KoolReport.drilldown.DrillDown(name, jsonObject.options);
@@ -284,7 +284,7 @@ KoolReport.widget = (KoolReport.widget) ? KoolReport.widget : {
         })
     },
     loadAndRunPivotTable: function (jsonObject) {
-        console.log('loadAndRunPivotTable: ', jsonObject);
+        // console.log('loadAndRunPivotTable: ', jsonObject);
         KoolReport.widget.init(
             jsonObject.resources,
             function () {
@@ -301,7 +301,7 @@ KoolReport.widget = (KoolReport.widget) ? KoolReport.widget : {
         );
     },
     loadAndRunPivotMatrix: function (jsonObject) {
-        console.log('loadAndRunPivotMatrix: ', jsonObject);
+        // console.log('loadAndRunPivotMatrix: ', jsonObject);
         KoolReport.widget.init(
             jsonObject.resources,
             function () {
@@ -404,7 +404,7 @@ KoolReport.helper = (KoolReport.helper) ? KoolReport.helper : {
     },
 
     html: function (selector, html) {
-        console.log('KoolReport.widget.html func: ', selector);
+        // console.log('KoolReport.widget.html func: ', selector);
         var el = document.querySelector(selector);
         el.innerHTML = html;
 
@@ -435,7 +435,7 @@ KoolReport.helper = (KoolReport.helper) ? KoolReport.helper : {
         // })
     },
     executeScript: function (selector) {
-        console.log('KoolReport.widget.executeScript func: ', selector);
+        // console.log('KoolReport.widget.executeScript func: ', selector);
         var x = document.querySelector(selector).getElementsByTagName("script");
         for (var i = 0; i < x.length; i++) {
             console.log('execute script: ', x[i].outerHTML);
@@ -443,7 +443,7 @@ KoolReport.helper = (KoolReport.helper) ? KoolReport.helper : {
         }
     },
     executeJsonScript: function (selector) {
-        console.log('KoolReport.widget.executeJsonScript func: ', selector);
+        // console.log('KoolReport.widget.executeJsonScript func: ', selector);
         var jsonScriptEls = Array.from(document.querySelector(selector).querySelectorAll("json_script"));
         jsonScriptEls.forEach(function (jsonScriptEl) {
             var jsonScript = jsonScriptEl.innerHTML.trim();
@@ -461,7 +461,7 @@ KoolReport.helper = (KoolReport.helper) ? KoolReport.helper : {
         })
     },
     executeJsonCommand: function (selector) {
-        console.log('KoolReport.widget.executeJsonCommand func: ', selector);
+        // console.log('KoolReport.widget.executeJsonCommand func: ', selector);
         var jsonScriptEls = Array.from(document.querySelector(selector).querySelectorAll("json_command"));
         jsonScriptEls.forEach(function (jsonScriptEl) {
             var jsonCommand = jsonScriptEl.innerHTML.trim();

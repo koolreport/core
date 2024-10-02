@@ -1,5 +1,8 @@
 # Change Log
 
+## Version 6.6.1
+1. Fix KoolReport.js for chart export to work
+
 ## Version 6.6.0
 1. Add "like", "not like", "betweenInclusive", "notBetweenInclusive" operators to DataStore's filter method
 2. Fix MySQLDataSource parameter binding in some cases

@@ -531,7 +531,10 @@ KoolReport.helper = (KoolReport.helper) ? KoolReport.helper : {
         }
         // console.log('f: ', f);
         // console.log('args: ', args);
-        var f = f ? f.bind(null, ...args) : null;
+
+        // var f = f ? f.bind(null, ...args) : null;
+        var f = f ? f.bind.apply(f, [null].concat(args)) : null;
+        
         if (f && isNew) f.isNew = isNew;
         if (f && returnName) f.returnName = returnName;
         return f;

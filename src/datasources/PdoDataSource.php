@@ -744,6 +744,8 @@ class PdoDataSource extends DataSource
             // $query = $this->prepareParams($query, $this->sqlParams);
             // $stm = $this->connection->prepare($query);
             // $this->bindParams($stm, $this->sqlParams);
+            // echo "query: $query<br>";
+            // echo "this->sqlParams: "; print_r($this->sqlParams); echo "<br>";
             $stm = $this->prepareAndBind($query, $this->sqlParams);
             $stm->execute();
 

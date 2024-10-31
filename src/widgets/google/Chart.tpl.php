@@ -51,7 +51,7 @@ use \koolreport\core\Utility;
             ?>
         </json_script>
         <script>
-            console.log('GoogleChart json render');
+            // console.log('GoogleChart json render');
             KoolReport.helper.executeJsonScript("#" + "<?php echo $this->name; ?>_json");
         </script>
     </div>

@@ -1,5 +1,8 @@
 # Change Log
 
+## Version 6.6.2
+1. Fix KoolReport.js
+
 ## Version 6.6.1
 1. Fix KoolReport.js for chart export to work
 

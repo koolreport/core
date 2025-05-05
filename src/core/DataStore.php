@@ -1373,12 +1373,17 @@ class DataStore extends Node implements IteratorAggregate, ArrayAccess
         return $dstore;
     }
 
+    public function innerJoin($secondStore, $matching)
+    {
+        return $this->join($secondStore, $matching);
+    }
+
     /**
      * Left join with another datastore on matching keys
      * 
      * Examples
      * 
-     * $store1->join($store2,array("id"=>"userId"));
+     * $store1->leftJoin($store2,array("id"=>"userId"));
      * 
      * @param DataStore $secondStore Second datastore
      * @param array     $matching    Matching keys
@@ -1429,6 +1434,143 @@ class DataStore extends Node implements IteratorAggregate, ArrayAccess
         );
         $dstore->meta(array("columns" => $columnMeta));
         return $dstore;
+    }
+
+    /**
+     * Right join with another datastore on matching keys
+     * 
+     * Examples
+     * 
+     * $store1->rightJoin($store2,array("id"=>"userId"));
+     * 
+     * @param DataStore $secondStore Second datastore
+     * @param array     $matching    Matching keys
+     * 
+     * @return DataStore New datastore containing results.
+     */
+    public function rightJoin($secondStore, $matching)
+    {
+        $dstore = new DataStore;
+        // join with other datasource to produce new one with above condition
+        $firstKeys = array_keys($matching);
+        $secondKeys = array_values($matching);
+
+
+        $firstMaps = $this->_mapKeyIndex($this->rows, $firstKeys);
+        $secondMaps = $this->_mapKeyIndex($secondStore->all(), $secondKeys);
+
+        $firstNullRow = array();
+        foreach ($this->first() as $k => $v) {
+            $firstNullRow[$k] = null;
+        }
+
+        foreach ($secondMaps as $key => $indices) {
+            foreach ($indices as $i) {
+                if (isset($firstMaps[$key])) {
+                    foreach ($firstMaps[$key] as $j) {
+                        $dstore->push(
+                            array_merge(
+                                $this->get($j),
+                                $secondStore->get($i)
+                            )
+                        );
+                    }
+                } else {
+                    $dstore->push(
+                        array_merge(
+                            $firstNullRow,
+                            $secondStore->get($i)
+                        )
+                    );
+                }
+            }
+        }
+
+        $columnMeta = array_merge(
+            $this->metaData["columns"],
+            $secondStore->meta()["columns"]
+        );
+        $dstore->meta(array("columns" => $columnMeta));
+        return $dstore;
+    }
+
+    /**
+     * Outer join with another datastore on matching keys
+     * 
+     * Examples
+     * 
+     * $store1->outerJoin($store2,array("id"=>"userId"));
+     * 
+     * @param DataStore $secondStore Second datastore
+     * @param array     $matching    Matching keys
+     * 
+     * @return DataStore New datastore containing results.
+     */
+    public function outerJoin($secondStore, $matching)
+    {
+        $dstore = new DataStore;
+        // join with other datasource to produce new one with above condition
+        $firstKeys = array_keys($matching);
+        $secondKeys = array_values($matching);
+
+        $firstMaps = $this->_mapKeyIndex($this->rows, $firstKeys);
+        $secondMaps = $this->_mapKeyIndex($secondStore->all(), $secondKeys);
+
+        $firstNullRow = array();
+        foreach ($this->first() as $k => $v) {
+            $firstNullRow[$k] = null;
+        }
+        $secondNullRow = array();
+        foreach ($secondStore->first() as $k => $v) {
+            $secondNullRow[$k] = null;
+        }
+
+        foreach ($firstMaps as $key => $indices) {
+            foreach ($indices as $i) {
+                if (isset($secondMaps[$key])) {
+                    foreach ($secondMaps[$key] as $j) {
+                        $dstore->push(
+                            array_merge(
+                                $this->rows[$i],
+                                $secondStore->get($j)
+                            )
+                        );
+                    }
+                } else {
+                    $dstore->push(
+                        array_merge(
+                            $this->rows[$i],
+                            $secondNullRow
+                        )
+                    );
+                }
+            }
+        }
+
+        foreach ($secondMaps as $key => $indices) {
+            foreach ($indices as $i) {
+                if (!isset($firstMaps[$key])) {
+                    $dstore->push(
+                        array_merge(
+                            $firstNullRow,
+                            $secondStore->get($i)
+                        )
+                    );
+                }
+            }
+        }
+
+        $columnMeta = array_merge(
+            $this->metaData["columns"],
+            $secondStore->meta()["columns"]
+        );
+        $dstore->meta(array("columns" => $columnMeta));
+        return $dstore;
+    }
+
+    public function fullJoin($secondStore, $matching)
+    {
+        return $this->outerJoin($secondStore, $matching);
     }
 
     /**

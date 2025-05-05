@@ -32,6 +32,8 @@ use \koolreport\core\Process;
 class Join extends Process
 {
     protected $container;
+    protected $firstSideKeys = [];
+    protected $secondSideKeys = [];
 
     /**
      * The constructor
@@ -87,6 +89,12 @@ class Join extends Process
                 }
                 break;
             }
+        }
+        if ($source === $this->container[0]["source"]) {
+            $this->firstSideKeys = array_merge($this->firstSideKeys, array_keys($row));
+        }
+        if ($source === $this->container[1]["source"]) {
+            $this->secondSideKeys = array_merge($this->secondSideKeys, array_keys($row));
         }
     }
 

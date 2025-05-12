@@ -29,51 +29,6 @@ use \koolreport\core\Process;
  * @license   MIT License https://www.koolreport.com/license#mit-license
  * @link      https://www.koolphp.net
  */
-class OuterJoin extends Join
-{
-    /**
-     * Handle on input end
-     * 
-     * @return null
-     */
-    protected function onInputEnd()
-    {
-        $containerBak = $this->container;
-        foreach ($this->container[0]["data"] as $key => $rows) {
-            if (isset($this->container[1]["data"][$key])) {
-                foreach ($rows as $first) {
-                    foreach ($this->container[1]["data"][$key] as $second) {
-                        $this->next(array_merge($first, $second));
-                    }
-                }
-                unset($this->container[1]["data"][$key]);
-            } else {
-                foreach ($rows as $first) {
-                    foreach ($rows as $first) {
-                        $mergedRow = $first;
-                        foreach ($this->secondSideKeys as $k) {
-                            if (!isset($mergedRow[$k])) $mergedRow[$k] = null;
-                        }
-                        $this->next($mergedRow);
-                    }
-                }
-            }
-            unset($this->container[0]["data"][$key]);
-        }
-
-        $this->container = $containerBak;
-        foreach ($this->container[1]["data"] as $key => $rows) {
-            if (!isset($this->container[0]["data"][$key])) {
-                foreach ($rows as $second) {
-                    foreach ($this->firstSideKeys as $k) {
-                        $mergedRow[$k] = null;
-                    }
-                    $mergedRow = array_merge($mergedRow, $second);
-                    $this->next($mergedRow);
-                }
-            }
-            unset($this->container[1]["data"][$key]);
-        }
-    }
-
+class OuterJoin extends FullJoin
+{    
 }

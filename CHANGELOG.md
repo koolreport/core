@@ -1,7 +1,10 @@
 # Change Log
 
-## Version 6.6.2
+## Version 6.6.5
 1. Fix KoolReport.js
+2. Add multiple join processes: `LeftJoin`, `RightJoin`, `FullJoin`
+3. Add multiple DataStore's join methods: `rightJoin()`, `fullJoin()`
+4. Fix Table widget's emptyValue for numeric columns
 
 ## Version 6.6.1
 1. Fix KoolReport.js for chart export to work

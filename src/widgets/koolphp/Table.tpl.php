@@ -135,7 +135,7 @@
                     }
                     ?>
                         <td rv="<?php echo (in_array(gettype($value),array("array")))?"":htmlspecialchars($value);?>" <?php echo ($tdStyle)?"style='$tdStyle'":""; ?> <?php if($tdClass){echo " class='".((gettype($tdClass)=="string")?$tdClass:$tdClass($row,$cKey))."'";} ?>>
-                            <?php echo Table::formatValue($value, $meta["columns"][$cKey], $row, $cKey);?>
+                            <?php echo isset($row[$cKey]) ? Table::formatValue($value, $meta["columns"][$cKey], $row, $cKey) : $this->emptyValue;?>
                         </td>
                     <?php
                 }

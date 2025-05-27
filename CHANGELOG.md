@@ -1,5 +1,8 @@
 # Change Log
 
+## Version 6.6.6-dev
+1. Fix Google PieChart datetime column
+
 ## Version 6.6.5
 1. Fix KoolReport.js
 2. Add multiple join processes: `LeftJoin`, `RightJoin`, `FullJoin`

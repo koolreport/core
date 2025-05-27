@@ -255,7 +255,9 @@ class Chart extends Widget
                 } else if ($cType === "string") {
                     $value = "$value";
                 } else if ($cType === "datetime" || $cType === "date" || $cType === "time") {
-                    $value = $this->newClientDate($value, $cSetting);
+                    if ($this->type !== 'PieChart') {
+                        $value = $this->newClientDate($value, $cSetting);
+                    }
                 }
                 $fValue = $this->formatValue($value, $cSetting, $row);
 
@@ -273,14 +275,14 @@ class Chart extends Widget
                             : array("v" => $value, "f" => $fValue)
                     );
                 }
-
+                
                 foreach ($columnExtraRoles as $cRole) {
                     if (isset($cSetting[$cRole])) {
                         array_push(
                             $gRow,
                             (gettype($cSetting[$cRole]) == "object") ?
-                                $cSetting[$cRole]($row) :
-                                $cSetting[$cRole]
+                            $cSetting[$cRole]($row) :
+                            $cSetting[$cRole]
                         );
                     }
                 }

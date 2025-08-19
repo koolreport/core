@@ -133,8 +133,9 @@ class CSVDataSource extends DataSource
             
         $data = array();
         $enclosure = '"';
+        $escape = '\\';
         if (($handle = fopen($this->filePath, "r")) !== false) {
-            $row = fgetcsv($handle, 0, $this->fieldSeparator, $enclosure);
+            $row = fgetcsv($handle, 0, $this->fieldSeparator, $enclosure, $escape);
             //Convert to UTF8 if assign charset to utf8
             $row = array_map(
                 function ($item) {
@@ -169,7 +170,7 @@ class CSVDataSource extends DataSource
                     $this->next(array_combine($columnNames, $row), $this);
                 }
             }
-            while (($row = fgetcsv($handle, 0, $this->fieldSeparator)) !== false) {
+            while (($row = fgetcsv($handle, 0, $this->fieldSeparator, $enclosure, $escape)) !== false) {
                 $row = array_map(
                     function ($item) {
                         return ($this->charset=="utf8" && is_string($item))

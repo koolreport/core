@@ -4,6 +4,7 @@
 1. Fix Google PieChart datetime column
 2. Undo Table widget's emptyValue for `formatValue` to always work
 3. Fix CSVDataSource to work with PHP 8.4
+4. Add `enclosure` and `escape` options for CSVDataSource
 
 ## Version 6.6.5
 1. Fix KoolReport.js

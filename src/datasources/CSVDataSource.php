@@ -131,9 +131,8 @@ class CSVDataSource extends DataSource
         // fgetcsv($fileHandle)
         // $offset = ftell($fileHandle);
             
-        $data = array();
-        $enclosure = '"';
-        $escape = '\\';
+        $enclosure = Utility::get($this->params, "enclosure", '"');
+        $escape = Utility::get($this->params, "escape", '\\');
         if (($handle = fopen($this->filePath, "r")) !== false) {
             $row = fgetcsv($handle, 0, $this->fieldSeparator, $enclosure, $escape);
             //Convert to UTF8 if assign charset to utf8

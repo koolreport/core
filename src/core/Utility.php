@@ -693,6 +693,28 @@ class Utility
         }
     }
 
+    public static function add(&$arr, $keys, $value = null)
+    {
+        if (is_array($keys)) {
+            if (count($keys) === 0) {
+                return $value;
+            }
+            $fKey = $keys[0];
+            if (count($keys) === 1) {
+                return self::add($arr, $fKey, $value);
+            }
+            if (!isset($arr[$fKey]) || !is_array($arr[$fKey])) {
+                $arr[$fKey] = [];
+            }
+            $restKeys = array_slice($keys, 1);
+            return self::add($arr[$fKey], $restKeys, $value);
+        } else {
+            if (!isset($arr[$keys])) $arr[$keys] = [];
+            $arr[$keys][] = $value;
+            return $arr[$keys];
+        }
+    }
+
     /**
      * Get array if the value inside an array is a string
      *
@@ -989,7 +1011,7 @@ class Utility
     }
 
     public static function tableToAssociate($data)
-    {        
+    {
         $newData = [];
         $columns = $data[0];
         foreach ($data as $i => $row) {
@@ -1004,7 +1026,7 @@ class Utility
     }
 
     public static function associateToTable($data)
-    {        
+    {
         $newData = [
             []
         ];

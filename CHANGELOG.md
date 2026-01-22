@@ -1,5 +1,9 @@
 # Change Log
 
+## Version 6.6.7
+1. Add helper function Utility::add()
+
+
 ## Version 6.6.6
 1. Fix Google PieChart datetime column
 2. Undo Table widget's emptyValue for `formatValue` to always work

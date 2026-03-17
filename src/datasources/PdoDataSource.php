@@ -132,7 +132,7 @@ class PdoDataSource extends DataSource
             PdoDataSource::$connections = array();
         }
 
-        if (is_object($connection) && get_class($connection) === \PDO::class) {
+        if ($connection instanceof \PDO) {
             $this->connection = $connection;
         } else if (isset(PdoDataSource::$connections[$key])) {
             $this->connection = PdoDataSource::$connections[$key];

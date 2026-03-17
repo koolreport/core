@@ -1,6 +1,6 @@
 {
     "name": "koolreport/core",
-    "version":"6.6.7",
+    "version":"6.6.8",
     "description": "An Open Source PHP Reporting Framework for easier and faster report delivery.",
     "keywords": ["php reporting framework","php reporting tools","data processing","data visualization","charts and graphs"],
     "homepage": "https://www.koolreport.com",

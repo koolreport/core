@@ -1,5 +1,8 @@
 # Change Log
 
+## Version 6.6.8
+1. Fix PDODataSource in PHP 8.4 when using existing specific PDO connection
+
 ## Version 6.6.7
 1. Add helper function Utility::add()
 

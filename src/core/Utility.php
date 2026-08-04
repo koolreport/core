@@ -201,7 +201,39 @@ class Utility
     }
 
     /**
+     * Strip the raw-JavaScript prefix from a string value
+     *
+     * Both `js:` and `javascript:` are accepted and mean the same thing. A
+     * value carrying either is JavaScript by declaration, whatever shape it
+     * takes: a classic `function (...) {...}`, an arrow function, or a bare
+     * identifier naming a function defined elsewhere on the page.
+     *
+     * @param mixed $value The value to inspect
+     *
+     * @return string|null The value without its prefix, or null when the value
+     *                     is not a string or carries neither prefix
+     */
+    public static function stripJsPrefix($value)
+    {
+        if (!is_string($value)) {
+            return null;
+        }
+        foreach (array("javascript:", "js:") as $prefix) {
+            if (strpos($value, $prefix) === 0) {
+                return trim(substr($value, strlen($prefix)));
+            }
+        }
+        return null;
+    }
+
+    /**
      * Traverse through the structure of object and find the js function
+     *
+     * A value carrying an explicit `js:` or `javascript:` prefix is taken at
+     * its word and emitted as JavaScript. Everything else falls through to a
+     * shape-matching guess, which recognises `function (...) {...}` and
+     * parenthesised arrow functions. Prefer the prefix: the guess cannot tell
+     * a function from a data value that happens to look like one.
      *
      * @param object $obj   The object
      * @param array  $marks The mark
@@ -217,6 +249,12 @@ class Utility
                     Utility::markJsFunction($v, $marks);
                     break;
                 case "string":
+                    $declared = Utility::stripJsPrefix($v);
+                    if ($declared !== null) {
+                        $marks[] = $declared;
+                        $obj[$k] = "--js(" . (count($marks) - 1) . ")";
+                        break;
+                    }
                     $tsv = trim(strtolower($v));
                     $isJsFunction = false;
                     if (
@@ -1045,5 +1083,165 @@ class Utility
             $newData[] = array_values($newRow);
         }
         return $newData;
+    }
+
+    /**
+     * Merge multiple datasets (indexed tables) on common columns.
+     * Each dataset is an indexed array with header row: [[col1,col2,...],[val1,val2,...],...].
+     * Returns merged dataset with outer-join semantics.
+     */
+    public static function mergeDatasets()
+    {
+        $indexToAssociate = function ($dataset) {
+            $assocDataset = [];
+            $keys = $dataset[0];
+            for ($i = 1; $i < count($dataset); $i++) {
+                $assocDataset[] = array_combine($keys, $dataset[$i]);
+            }
+            return $assocDataset;
+        };
+        $assocciateToIndex = function ($dataset) {
+            $indexDataset = [];
+            $keys = [];
+            for ($i = 0; $i < count($dataset); $i++) {
+                if ($i === 0) {
+                    $indexDataset[] = $keys = array_keys($dataset[$i]);
+                    $indexDataset[] = array_values($dataset[$i]);
+                } else {
+                    $row = [];
+                    foreach ($keys as $key) $row[] = $dataset[$i][$key];
+                    $indexDataset[] = $row;
+                }
+            }
+            return $indexDataset;
+        };
+        $isCommonElement = function ($commonColumns, $arr1, $arr2) {
+            $hasDifferentColumn = false;
+            foreach ($arr2 as $k => $v) {
+                if (!array_key_exists($k, $arr1)) {
+                    $hasDifferentColumn = true;
+                    break;
+                }
+            }
+            if (!$hasDifferentColumn) return false;
+            foreach ($commonColumns as $commonColumn) {
+                if ($arr1[$commonColumn] === $arr2[$commonColumn]) return true;
+            }
+            return false;
+        };
+        $mergeNotNullElements = function ($arr1, $arr2) {
+            $arr = $arr1;
+            foreach ($arr2 as $k => $v) {
+                $arr[$k] = $v;
+            }
+            return $arr;
+        };
+        $numargs = func_num_args();
+        $arg_list = func_get_args();
+        $mergedDataset = [];
+        $allColumns = $commonColumns = [];
+        for ($i = 0; $i < $numargs; $i++) {
+            $dataset = $arg_list[$i];
+            $columns = $dataset[0];
+            if (empty($commonColumns)) $commonColumns = $columns;
+            else $commonColumns = array_intersect($commonColumns, $columns);
+        }
+        for ($i = 0; $i < $numargs; $i++) {
+            $dataset = $indexToAssociate($arg_list[$i]);
+            foreach ($dataset as $row) {
+                $isCommon = false;
+                foreach ($mergedDataset as $j => $mergedRow) {
+                    if ($isCommonElement($commonColumns, $mergedRow, $row)) {
+                        $newRow = $mergeNotNullElements($mergedRow, $row);
+                        $mergedDataset[$j] = $newRow;
+                        $allColumns = array_unique(array_merge($allColumns, array_keys($row)));
+                        $isCommon = true;
+                        break;
+                    }
+                }
+                if (!$isCommon) {
+                    $mergedDataset[] = $row;
+                    $allColumns = array_unique(array_merge($allColumns, array_keys($row)));
+                }
+            }
+        }
+        foreach ($mergedDataset as $i => $row) {
+            foreach ($allColumns as $column) {
+                if (!array_key_exists($column, $row)) {
+                    $mergedDataset[$i][$column] = null;
+                }
+            }
+        }
+        return $assocciateToIndex($mergedDataset);
+    }
+
+    /**
+     * Pivot a long-format table to wide format (rows-to-columns).
+     *
+     * @param array $data Indexed or associative table.
+     * @param array $options Keys: fixedColumns, rowColumns, valueColumns.
+     * @return array Pivoted table.
+     */
+    public static function rowsToColumns($data, $options)
+    {
+        if (self::array_is_2D_list($data)) {
+            $data = self::tableToAssociate($data);
+        }
+        $newData = [];
+        $fixedCols = $options['fixedColumns'];
+        $rowCols = $options['rowColumns'];
+        $valueCols = $options['valueColumns'];
+        foreach ($data as $row) {
+            $pivotValue = "";
+            foreach ($fixedCols as $pivotCol) {
+                $pivotValue .= "_" . $row[$pivotCol];
+            }
+            $pivotValue = trim($pivotValue, "_");
+            if (!isset($newData[$pivotValue])) {
+                $newData[$pivotValue] = [
+                    $pivotCol => $pivotValue
+                ];
+            }
+            $newRow = $newData[$pivotValue];
+            $rowColsValue = "";
+            foreach ($rowCols as $rowCol) {
+                $rowColsValue .= "_" . $row[$rowCol];
+            }
+            $rowColsValue = trim($rowColsValue, "_");
+            foreach ($valueCols as $valueCol) {
+                $newRow[$rowColsValue . "__" . $valueCol] = $row[$valueCol];
+            }
+            $newData[$pivotValue] = $newRow;
+        }
+        $newData = array_values($newData);
+        if (!self::array_is_2D_list($newData)) {
+            $newData = self::associateToTable($newData);
+        }
+        return $newData;
+    }
+
+    /**
+     * Flatten a pipe-delimited (or custom-delimiter) flat options array into a deep
+     * nested array. E.g. `["grid | row | opacity" => 0.5]` becomes
+     * `["grid" => ["row" => ["opacity" => 0.5]]]`. Recurses into nested values
+     * so partially flat keys at any depth are normalised.
+     *
+     * @param array  $flatArr   The flat (possibly mixed) options array.
+     * @param string $delimiter Key delimiter. Default "|".
+     * @return array Fully nested array.
+     */
+    public static function flatToDeepArray($flatArr, $delimiter = "|")
+    {
+        if (!is_array($flatArr)) return $flatArr;
+        $deepArr = [];
+        foreach ($flatArr as $key => $value) {
+            $splittedKeys = explode($delimiter, $key);
+            $splittedKeys = array_map(function ($k) {
+                return trim($k);
+            }, $splittedKeys);
+            $value = self::flatToDeepArray($value, $delimiter);
+            self::set($deepArr, $splittedKeys, $value);
+        }
+        return $deepArr;
     }
 }

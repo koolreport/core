@@ -33,8 +33,47 @@ use \koolreport\core\Widget;
  * @copyright 2017-2028 KoolPHP Inc
  * @license   MIT License https://www.koolreport.com/license#mit-license
  * @link      https://www.koolphp.net
+ * @generated-shape-start emit-shapes.php
+ * @method static mixed create(array{
+ *     clientEvents?: array,
+ *     columns?: array<string, array{cssStyle?: mixed, decimals?: mixed, displayFormat?: mixed, footer?: mixed, footerText?: mixed, format?: mixed, formatValue?: mixed, label?: mixed, prefix?: mixed, type?: mixed, width?: mixed}>,
+ *     cssClass?: array,
+ *     data?: mixed,
+ *     emptyValue?: int,
+ *     excludedColumns?: array,
+ *     groupCellsInColumns?: array,
+ *     grouping?: mixed,
+ *     headers?: array,
+ *     paging?: array,
+ *     removeDuplicate?: array,
+ *     responsive?: bool,
+ *     rowspan?: array,
+ *     showFooter?: mixed,
+ *     showHeader?: bool,
+ *     sorting?: array,
+ * } $params, bool $return = false)
+ *
+ * | option | type | default | description |
+ * |---|---|---|---|
+ * | `clientEvents` | array |  | Settings for table client events |
+ * | `columns` | array<string, array{cssStyle?: mixed, decimals?: mixed, displayFormat?: mixed, footer?: mixed, footerText?: mixed, format?: mixed, formatValue?: mixed, label?: mixed, prefix?: mixed, type?: mixed, width?: mixed}> | `array()` | List of columns to display and their settings |
+ * | `cssClass` | array | `array()` | Set css class for table, row and cell |
+ * | `data` | mixed |  |  |
+ * | `emptyValue` | int | `0` |  |
+ * | `excludedColumns` | array | `array()` |  |
+ * | `groupCellsInColumns` | array |  | An alias of `removeDuplicate` |
+ * | `grouping` | mixed |  |  |
+ * | `headers` | array | `array()` |  |
+ * | `paging` | array |  | Settings for table paging |
+ * | `removeDuplicate` | array | `array()` | List of column names or orders that you want to remove duplicate |
+ * | `responsive` | bool | `false` |  |
+ * | `rowspan` | array |  | An alias of `removeDuplicate` |
+ * | `showFooter` | mixed |  |  |
+ * | `showHeader` | bool | `true` |  |
+ * | `sorting` | array | `array()` |  |
+ * @generated-shape-end emit-shapes.php
  */
-class Table extends Widget
+class Table extends Widget implements TableOptions
 {
     protected $name;
     protected $columns;

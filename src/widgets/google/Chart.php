@@ -26,8 +26,41 @@ use \koolreport\core\Widget;
  * @copyright 2017-2028 KoolPHP Inc
  * @license   MIT License https://www.koolreport.com/license#mit-license
  * @link      https://www.koolphp.net
+ * @generated-shape-start emit-shapes.php
+ * @method static mixed create(array{
+ *     clientEvents?: array,
+ *     colorScheme?: array,
+ *     columns?: array,
+ *     data?: mixed,
+ *     height?: string,
+ *     language?: mixed,
+ *     mapsApiKey?: string,
+ *     options?: array,
+ *     pointerOnHover?: mixed,
+ *     stability?: mixed,
+ *     title?: string,
+ *     type?: mixed,
+ *     width?: string,
+ * } $params, bool $return = false)
+ *
+ * | option | type | default | description |
+ * |---|---|---|---|
+ * | `clientEvents` | array | `array()` |  |
+ * | `colorScheme` | array |  | List of colors applied to chart, for example: `"colorScheme"=>array("#000","#444","#888")` |
+ * | `columns` | array | `null` | List of columns and its settings |
+ * | `data` | mixed |  |  |
+ * | `height` | string | `400px` | Height of chart in `px` or `%` |
+ * | `language` | mixed |  |  |
+ * | `mapsApiKey` | string |  |  |
+ * | `options` | array | `array()` | This is the options for specific charts. It may vary from charts to charts so for more information, please look at example for specific chart below and its options. |
+ * | `pointerOnHover` | mixed |  |  |
+ * | `stability` | mixed |  |  |
+ * | `title` | string |  | Title of chart |
+ * | `type` | mixed |  |  |
+ * | `width` | string | `100%` | Width of chart in `px` or `%` |
+ * @generated-shape-end emit-shapes.php
  */
-class Chart extends Widget
+class Chart extends Widget implements ChartOptions
 {
     protected $chartId;
     protected $columns;

@@ -59,8 +59,33 @@ use \koolreport\core\Widget;
  * @copyright 2017-2028 KoolPHP Inc
  * @license   MIT License https://www.koolreport.com/license#mit-license
  * @link      https://www.koolphp.net
+ * @generated-shape-start emit-shapes.php
+ * @method static mixed create(array{
+ *     baseValue?: mixed,
+ *     cssClass?: array,
+ *     cssStyle?: array,
+ *     format?: array,
+ *     href?: mixed,
+ *     indicator?: string,
+ *     indicatorTitle?: string,
+ *     title?: mixed,
+ *     value?: mixed,
+ * } $params, bool $return = false)
+ *
+ * | option | type | default | description |
+ * |---|---|---|---|
+ * | `baseValue` | mixed |  |  |
+ * | `cssClass` | array | `array()` |  |
+ * | `cssStyle` | array | `array()` |  |
+ * | `format` | array | `array()` |  |
+ * | `href` | mixed |  |  |
+ * | `indicator` | string | `percent` |  |
+ * | `indicatorTitle` | string | `Compared to previous {baseValue}` |  |
+ * | `title` | mixed |  |  |
+ * | `value` | mixed |  |  |
+ * @generated-shape-end emit-shapes.php
  */
-class Card extends Widget
+class Card extends Widget implements CardOptions
 {
     protected $title;
     protected $value;

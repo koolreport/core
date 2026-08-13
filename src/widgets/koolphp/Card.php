@@ -52,26 +52,8 @@ use \koolreport\core\Widget;
 
 /**
  * This file contains Card widget
- *
- * @category  Core
- * @package   KoolReport
- * @author    KoolPHP Inc <support@koolphp.net>
- * @copyright 2017-2028 KoolPHP Inc
- * @license   MIT License https://www.koolreport.com/license#mit-license
- * @link      https://www.koolphp.net
- * @generated-shape-start emit-shapes.php
- * @method static mixed create(array{
- *     baseValue?: mixed,
- *     cssClass?: array,
- *     cssStyle?: array,
- *     format?: array,
- *     href?: mixed,
- *     indicator?: string,
- *     indicatorTitle?: string,
- *     title?: mixed,
- *     value?: mixed,
- * } $params, bool $return = false)
- *
+
+ * generated-shape-start emit-shapes.php
  * | option | type | default | description |
  * |---|---|---|---|
  * | `baseValue` | mixed |  |  |
@@ -83,7 +65,26 @@ use \koolreport\core\Widget;
  * | `indicatorTitle` | string | `Compared to previous {baseValue}` |  |
  * | `title` | mixed |  |  |
  * | `value` | mixed |  |  |
- * @generated-shape-end emit-shapes.php
+ * generated-shape-end emit-shapes.php
+ *
+ * @method static mixed create(array{
+ *     baseValue?: mixed,
+ *     cssClass?: array,
+ *     cssStyle?: array,
+ *     format?: array,
+ *     href?: mixed,
+ *     indicator?: string,
+ *     indicatorTitle?: string,
+ *     title?: mixed,
+ *     value?: mixed,
+ * } $params, bool $return = false)
+
+ * @category  Core
+ * @package   KoolReport
+ * @author    KoolPHP Inc <support@koolphp.net>
+ * @copyright 2017-2028 KoolPHP Inc
+ * @license   MIT License https://www.koolreport.com/license#mit-license
+ * @link      https://www.koolphp.net
  */
 class Card extends Widget implements CardOptions
 {

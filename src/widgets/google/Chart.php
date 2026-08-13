@@ -19,30 +19,8 @@ use \koolreport\core\Widget;
 
 /**
  * This file is wrapper class for Google Chart
- *
- * @category  Core
- * @package   KoolReport
- * @author    KoolPHP Inc <support@koolphp.net>
- * @copyright 2017-2028 KoolPHP Inc
- * @license   MIT License https://www.koolreport.com/license#mit-license
- * @link      https://www.koolphp.net
- * @generated-shape-start emit-shapes.php
- * @method static mixed create(array{
- *     clientEvents?: array,
- *     colorScheme?: array,
- *     columns?: array,
- *     data?: mixed,
- *     height?: string,
- *     language?: mixed,
- *     mapsApiKey?: string,
- *     options?: array,
- *     pointerOnHover?: mixed,
- *     stability?: mixed,
- *     title?: string,
- *     type?: mixed,
- *     width?: string,
- * } $params, bool $return = false)
- *
+
+ * generated-shape-start emit-shapes.php
  * | option | type | default | description |
  * |---|---|---|---|
  * | `clientEvents` | array | `array()` |  |
@@ -58,7 +36,30 @@ use \koolreport\core\Widget;
  * | `title` | string |  | Title of chart |
  * | `type` | mixed |  |  |
  * | `width` | string | `100%` | Width of chart in `px` or `%` |
- * @generated-shape-end emit-shapes.php
+ * generated-shape-end emit-shapes.php
+ *
+ * @method static mixed create(array{
+ *     clientEvents?: array,
+ *     colorScheme?: array,
+ *     columns?: array,
+ *     data?: mixed,
+ *     height?: string,
+ *     language?: mixed,
+ *     mapsApiKey?: string,
+ *     options?: array,
+ *     pointerOnHover?: mixed,
+ *     stability?: mixed,
+ *     title?: string,
+ *     type?: mixed,
+ *     width?: string,
+ * } $params, bool $return = false)
+
+ * @category  Core
+ * @package   KoolReport
+ * @author    KoolPHP Inc <support@koolphp.net>
+ * @copyright 2017-2028 KoolPHP Inc
+ * @license   MIT License https://www.koolreport.com/license#mit-license
+ * @link      https://www.koolphp.net
  */
 class Chart extends Widget implements ChartOptions
 {

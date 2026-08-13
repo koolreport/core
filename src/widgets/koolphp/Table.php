@@ -26,33 +26,8 @@ use \koolreport\core\Widget;
 
 /**
  * This file contains Table widget
- *
- * @category  Core
- * @package   KoolReport
- * @author    KoolPHP Inc <support@koolphp.net>
- * @copyright 2017-2028 KoolPHP Inc
- * @license   MIT License https://www.koolreport.com/license#mit-license
- * @link      https://www.koolphp.net
- * @generated-shape-start emit-shapes.php
- * @method static mixed create(array{
- *     clientEvents?: array,
- *     columns?: array<string, array{cssStyle?: mixed, decimals?: mixed, displayFormat?: mixed, footer?: mixed, footerText?: mixed, format?: mixed, formatValue?: mixed, label?: mixed, prefix?: mixed, type?: mixed, width?: mixed}>,
- *     cssClass?: array,
- *     data?: mixed,
- *     emptyValue?: int,
- *     excludedColumns?: array,
- *     groupCellsInColumns?: array,
- *     grouping?: mixed,
- *     headers?: array,
- *     paging?: array,
- *     removeDuplicate?: array,
- *     responsive?: bool,
- *     rowspan?: array,
- *     showFooter?: mixed,
- *     showHeader?: bool,
- *     sorting?: array,
- * } $params, bool $return = false)
- *
+
+ * generated-shape-start emit-shapes.php
  * | option | type | default | description |
  * |---|---|---|---|
  * | `clientEvents` | array |  | Settings for table client events |
@@ -71,7 +46,33 @@ use \koolreport\core\Widget;
  * | `showFooter` | mixed |  |  |
  * | `showHeader` | bool | `true` |  |
  * | `sorting` | array | `array()` |  |
- * @generated-shape-end emit-shapes.php
+ * generated-shape-end emit-shapes.php
+ *
+ * @method static mixed create(array{
+ *     clientEvents?: array,
+ *     columns?: array<string, array{cssStyle?: mixed, decimals?: mixed, displayFormat?: mixed, footer?: mixed, footerText?: mixed, format?: mixed, formatValue?: mixed, label?: mixed, prefix?: mixed, type?: mixed, width?: mixed}>,
+ *     cssClass?: array,
+ *     data?: mixed,
+ *     emptyValue?: int,
+ *     excludedColumns?: array,
+ *     groupCellsInColumns?: array,
+ *     grouping?: mixed,
+ *     headers?: array,
+ *     paging?: array,
+ *     removeDuplicate?: array,
+ *     responsive?: bool,
+ *     rowspan?: array,
+ *     showFooter?: mixed,
+ *     showHeader?: bool,
+ *     sorting?: array,
+ * } $params, bool $return = false)
+
+ * @category  Core
+ * @package   KoolReport
+ * @author    KoolPHP Inc <support@koolphp.net>
+ * @copyright 2017-2028 KoolPHP Inc
+ * @license   MIT License https://www.koolreport.com/license#mit-license
+ * @link      https://www.koolphp.net
  */
 class Table extends Widget implements TableOptions
 {

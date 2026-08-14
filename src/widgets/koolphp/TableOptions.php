@@ -44,14 +44,18 @@ interface TableOptions
     const CSS_CLASS = 'cssClass';
 
     /**
-     * @see https://www.koolreport.com/forum/topics
+     * The table's rows as a PHP array of associative rows. Column types are guessed from the first row. Prefer `dataSource`/`dataStore` for datastore-backed tables.
+     *
+     * @see https://www.koolreport.com/docs/koolphp/table/
      */
     const DATA = 'data';
 
     /**
+     * Value rendered in a cell whose data key is missing or `null`. Note: it does NOT replace empty strings or `0` values, only absent/null cells.
+     *
      * Default: 0
      *
-     * @see https://www.koolreport.com/forum/topics
+     * @see https://www.koolreport.com/docs/koolphp/table/
      */
     const EMPTY_VALUE = 'emptyValue';
 
@@ -63,7 +67,9 @@ interface TableOptions
     const EXCLUDED_COLUMNS = 'excludedColumns';
 
     /**
-     * @see https://www.koolreport.com/forum/topics
+     * Group rows by column value. A map of column key => config, or column key => column-name string (shorthand). Config keys: `top`, `bottom`, `calculate`, `css`, `cssClass`, `sort`.
+     *
+     * @see https://www.koolreport.com/docs/koolphp/table/
      */
     const GROUPING = 'grouping';
 
@@ -75,9 +81,11 @@ interface TableOptions
     const GROUP_CELLS_IN_COLUMNS = 'groupCellsInColumns';
 
     /**
+     * Extra header rows above the column labels. A list of rows; each row is a map of header text => attribute array (`["colSpan" => "2", "align" => "center"]`), with `label` as an optional override of the text.
+     *
      * Default: array()
      *
-     * @see https://www.koolreport.com/forum/topics
+     * @see https://www.koolreport.com/docs/koolphp/table/
      */
     const HEADERS = 'headers';
 
@@ -114,33 +122,39 @@ interface TableOptions
     const ROWSPAN = 'rowspan';
 
     /**
+     * Show a footer row with aggregated column values. `"top"` renders the footer above the body; any other truthy value (e.g. `true`, `"bottom"`) renders it below.
+     *
      * Commonly used values include: true, top.
      * The listed values cover every distinct behaviour.
      *
-     * @see https://www.koolreport.com/forum/topics
+     * @see https://www.koolreport.com/docs/koolphp/table/
      */
     const SHOW_FOOTER = 'showFooter';
 
     /**
+     * Render the `<thead>` (the `headers` group rows and the column-label row). Set `false` to suppress the header entirely.
+     *
      * Default: true
      *
      * Commonly used values include: false.
      *
-     * @see https://www.koolreport.com/forum/topics
+     * @see https://www.koolreport.com/docs/koolphp/table/
      */
     const SHOW_HEADER = 'showHeader';
 
     /**
+     * Sort the table by column. An associative map of column name => `"asc"`/`"desc"`, or column name => comparator callable.
+     *
      * Default: array()
      *
-     * @see https://www.koolreport.com/forum/topics
+     * @see https://www.koolreport.com/docs/koolphp/table/
      */
     const SORTING = 'sorting';
 
     /**
      * Commonly used values include: sum.
      *
-     * @see https://www.koolreport.com/forum/topics
+     * @see https://www.koolreport.com/docs/koolphp/table/
      */
     const CALCULATE_SUM = 'sum';
 
@@ -162,7 +176,7 @@ interface TableOptions
      * Commonly used values include: true, top.
      * The listed values cover every distinct behaviour.
      *
-     * @see https://www.koolreport.com/forum/topics
+     * @see https://www.koolreport.com/docs/koolphp/table/
      */
     const SHOW_FOOTER_TOP = 'top';
 
@@ -170,28 +184,28 @@ interface TableOptions
      * Commonly used values include: true, top.
      * The listed values cover every distinct behaviour.
      *
-     * @see https://www.koolreport.com/forum/topics
+     * @see https://www.koolreport.com/docs/koolphp/table/
      */
     const SHOW_FOOTER_TRUE = 'true';
 
     /**
      * Commonly used values include: false.
      *
-     * @see https://www.koolreport.com/forum/topics
+     * @see https://www.koolreport.com/docs/koolphp/table/
      */
     const SHOW_HEADER_FALSE = 'false';
 
     /**
      * Commonly used values include: asc, desc.
      *
-     * @see https://www.koolreport.com/forum/topics
+     * @see https://www.koolreport.com/docs/koolphp/table/
      */
     const SORTING_ASC = 'asc';
 
     /**
      * Commonly used values include: asc, desc.
      *
-     * @see https://www.koolreport.com/forum/topics
+     * @see https://www.koolreport.com/docs/koolphp/table/
      */
     const SORTING_DESC = 'desc';
 

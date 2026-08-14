@@ -33,30 +33,30 @@ use \koolreport\core\Widget;
  * | `clientEvents` | array |  | Settings for table client events |
  * | `columns` | array<string, array{cssStyle?: mixed, decimals?: mixed, displayFormat?: mixed, footer?: mixed, footerText?: mixed, format?: mixed, formatValue?: mixed, label?: mixed, prefix?: mixed, type?: mixed, width?: mixed}> | `array()` | List of columns to display and their settings |
  * | `cssClass` | array | `array()` | Set css class for table, row and cell |
- * | `data` | mixed |  |  |
- * | `emptyValue` | int | `0` |  |
+ * | `data` | array |  | The table's rows as a PHP array of associative rows. Column types are guessed from the first row. Prefer `dataSource`/`dataStore` for datastore-backed tables. |
+ * | `emptyValue` | mixed | `0` | Value rendered in a cell whose data key is missing or `null`. Note: it does NOT replace empty strings or `0` values, only absent/null cells. |
  * | `excludedColumns` | array | `array()` |  |
  * | `groupCellsInColumns` | array |  | An alias of `removeDuplicate` |
- * | `grouping` | mixed |  |  |
- * | `headers` | array | `array()` |  |
+ * | `grouping` | array |  | Group rows by column value. A map of column key => config, or column key => column-name string (shorthand). Config keys: `top`, `bottom`, `calculate`, `css`, `cssClass`, `sort`. |
+ * | `headers` | array | `array()` | Extra header rows above the column labels. A list of rows; each row is a map of header text => attribute array (`["colSpan" => "2", "align" => "center"]`), with `label` as an optional override of the text. |
  * | `paging` | array |  | Settings for table paging |
  * | `removeDuplicate` | array | `array()` | List of column names or orders that you want to remove duplicate |
  * | `responsive` | bool | `false` |  |
  * | `rowspan` | array |  | An alias of `removeDuplicate` |
- * | `showFooter` | mixed |  |  |
- * | `showHeader` | bool | `true` |  |
- * | `sorting` | array | `array()` |  |
+ * | `showFooter` | mixed |  | Show a footer row with aggregated column values. `"top"` renders the footer above the body; any other truthy value (e.g. `true`, `"bottom"`) renders it below. |
+ * | `showHeader` | bool | `true` | Render the `<thead>` (the `headers` group rows and the column-label row). Set `false` to suppress the header entirely. |
+ * | `sorting` | array | `array()` | Sort the table by column. An associative map of column name => `"asc"`/`"desc"`, or column name => comparator callable. |
  * generated-shape-end emit-shapes.php
  *
  * @method static mixed create(array{
  *     clientEvents?: array,
  *     columns?: array<string, array{cssStyle?: mixed, decimals?: mixed, displayFormat?: mixed, footer?: mixed, footerText?: mixed, format?: mixed, formatValue?: mixed, label?: mixed, prefix?: mixed, type?: mixed, width?: mixed}>,
  *     cssClass?: array,
- *     data?: mixed,
- *     emptyValue?: int,
+ *     data?: array,
+ *     emptyValue?: mixed,
  *     excludedColumns?: array,
  *     groupCellsInColumns?: array,
- *     grouping?: mixed,
+ *     grouping?: array,
  *     headers?: array,
  *     paging?: array,
  *     removeDuplicate?: array,

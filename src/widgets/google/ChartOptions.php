@@ -19,9 +19,11 @@ namespace koolreport\widgets\google;
 interface ChartOptions
 {
     /**
+     * Client-side event handlers. A map of event name => JavaScript function string. Handlers are invoked for the wrapper's own events: `itemSelect`, `rowSelect`, `columnSelect`, `select`, `init`, `drawing`, `drawed`.
+     *
      * Default: array()
      *
-     * @see https://www.koolreport.com/forum/topics
+     * @see https://www.koolreport.com/docs/google_charts/overview/
      */
     const CLIENT_EVENTS = 'clientEvents';
 
@@ -42,7 +44,9 @@ interface ChartOptions
     const COLUMNS = 'columns';
 
     /**
-     * @see https://www.koolreport.com/forum/topics
+     * The chart's data as a PHP array of associative rows. Column types are guessed from the first row. Prefer `dataSource`/`dataStore` for datastore-backed charts.
+     *
+     * @see https://www.koolreport.com/docs/google_charts/overview/
      */
     const DATA = 'data';
 
@@ -56,14 +60,18 @@ interface ChartOptions
     const HEIGHT = 'height';
 
     /**
-     * @see https://www.koolreport.com/forum/topics
+     * Locale passed to Google's `google.charts.load()` for chart UI text (tooltips, legends).
+     *
+     * @see https://www.koolreport.com/docs/google_charts/overview/
      */
     const LANGUAGE = 'language';
 
     /**
+     * Google Maps API key, required by map-based chart packages (GeoChart, Map) when Google must load the Maps API.
+     *
      * Default: 
      *
-     * @see https://www.koolreport.com/forum/topics
+     * @see https://www.koolreport.com/docs/google_charts/overview/
      */
     const MAPS_API_KEY = 'mapsApiKey';
 
@@ -77,12 +85,16 @@ interface ChartOptions
     const OPTIONS = 'options';
 
     /**
-     * @see https://www.koolreport.com/forum/topics
+     * Show a pointer (hand) cursor over chart elements on hover.
+     *
+     * @see https://www.koolreport.com/docs/google_charts/overview/
      */
     const POINTER_ON_HOVER = 'pointerOnHover';
 
     /**
-     * @see https://www.koolreport.com/forum/topics
+     * Version selector for Google's Charts loader. Commonly `current` or `latest`; an explicit version string is also accepted and forwarded verbatim.
+     *
+     * @see https://www.koolreport.com/docs/google_charts/overview/
      */
     const STABILITY = 'stability';
 
@@ -94,7 +106,9 @@ interface ChartOptions
     const TITLE = 'title';
 
     /**
-     * @see https://www.koolreport.com/forum/topics
+     * The Google visualization chart class name (e.g. `"ColumnChart"`, `"PieChart"`, `"GeoChart"`). Only honoured on the base `Chart` class; concrete classes set it from their class name.
+     *
+     * @see https://www.koolreport.com/docs/google_charts/overview/
      */
     const TYPE = 'type';
 

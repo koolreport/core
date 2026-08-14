@@ -60,9 +60,11 @@ interface TableOptions
     const EMPTY_VALUE = 'emptyValue';
 
     /**
+     * Column keys to hide from the table. A list of column names that are dropped from the rendered columns.
+     *
      * Default: array()
      *
-     * @see https://www.koolreport.com/forum/topics
+     * @see https://www.koolreport.com/docs/koolphp/table/
      */
     const EXCLUDED_COLUMNS = 'excludedColumns';
 
@@ -108,9 +110,11 @@ interface TableOptions
     const REMOVE_DUPLICATE = 'removeDuplicate';
 
     /**
+     * Wrap the table in a horizontally-scrollable container.
+     *
      * Default: false
      *
-     * @see https://www.koolreport.com/forum/topics
+     * @see https://www.koolreport.com/docs/koolphp/table/
      */
     const RESPONSIVE = 'responsive';
 

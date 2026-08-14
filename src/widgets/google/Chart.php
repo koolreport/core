@@ -23,18 +23,18 @@ use \koolreport\core\Widget;
  * generated-shape-start emit-shapes.php
  * | option | type | default | description |
  * |---|---|---|---|
- * | `clientEvents` | array | `array()` |  |
+ * | `clientEvents` | array | `array()` | Client-side event handlers. A map of event name => JavaScript function string. Handlers are invoked for the wrapper's own events: `itemSelect`, `rowSelect`, `columnSelect`, `select`, `init`, `drawing`, `drawed`. |
  * | `colorScheme` | array |  | List of colors applied to chart, for example: `"colorScheme"=>array("#000","#444","#888")` |
  * | `columns` | array | `null` | List of columns and its settings |
- * | `data` | mixed |  |  |
+ * | `data` | array |  | The chart's data as a PHP array of associative rows. Column types are guessed from the first row. Prefer `dataSource`/`dataStore` for datastore-backed charts. |
  * | `height` | string | `400px` | Height of chart in `px` or `%` |
- * | `language` | mixed |  |  |
- * | `mapsApiKey` | string |  |  |
+ * | `language` | string |  | Locale passed to Google's `google.charts.load()` for chart UI text (tooltips, legends). |
+ * | `mapsApiKey` | string |  | Google Maps API key, required by map-based chart packages (GeoChart, Map) when Google must load the Maps API. |
  * | `options` | array | `array()` | This is the options for specific charts. It may vary from charts to charts so for more information, please look at example for specific chart below and its options. |
- * | `pointerOnHover` | mixed |  |  |
- * | `stability` | mixed |  |  |
+ * | `pointerOnHover` | bool |  | Show a pointer (hand) cursor over chart elements on hover. |
+ * | `stability` | string |  | Version selector for Google's Charts loader. Commonly `current` or `latest`; an explicit version string is also accepted and forwarded verbatim. |
  * | `title` | string |  | Title of chart |
- * | `type` | mixed |  |  |
+ * | `type` | string |  | The Google visualization chart class name (e.g. `"ColumnChart"`, `"PieChart"`, `"GeoChart"`). Only honoured on the base `Chart` class; concrete classes set it from their class name. |
  * | `width` | string | `100%` | Width of chart in `px` or `%` |
  * generated-shape-end emit-shapes.php
  *
@@ -42,15 +42,15 @@ use \koolreport\core\Widget;
  *     clientEvents?: array,
  *     colorScheme?: array,
  *     columns?: array,
- *     data?: mixed,
+ *     data?: array,
  *     height?: string,
- *     language?: mixed,
+ *     language?: string,
  *     mapsApiKey?: string,
  *     options?: array,
- *     pointerOnHover?: mixed,
- *     stability?: mixed,
+ *     pointerOnHover?: bool,
+ *     stability?: string,
  *     title?: string,
- *     type?: mixed,
+ *     type?: string,
  *     width?: string,
  * } $params, bool $return = false)
 

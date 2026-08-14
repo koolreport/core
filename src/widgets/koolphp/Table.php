@@ -35,13 +35,13 @@ use \koolreport\core\Widget;
  * | `cssClass` | array | `array()` | Set css class for table, row and cell |
  * | `data` | array |  | The table's rows as a PHP array of associative rows. Column types are guessed from the first row. Prefer `dataSource`/`dataStore` for datastore-backed tables. |
  * | `emptyValue` | mixed | `0` | Value rendered in a cell whose data key is missing or `null`. Note: it does NOT replace empty strings or `0` values, only absent/null cells. |
- * | `excludedColumns` | array | `array()` |  |
+ * | `excludedColumns` | array | `array()` | Column keys to hide from the table. A list of column names that are dropped from the rendered columns. |
  * | `groupCellsInColumns` | array |  | An alias of `removeDuplicate` |
  * | `grouping` | array |  | Group rows by column value. A map of column key => config, or column key => column-name string (shorthand). Config keys: `top`, `bottom`, `calculate`, `css`, `cssClass`, `sort`. |
  * | `headers` | array | `array()` | Extra header rows above the column labels. A list of rows; each row is a map of header text => attribute array (`["colSpan" => "2", "align" => "center"]`), with `label` as an optional override of the text. |
  * | `paging` | array |  | Settings for table paging |
  * | `removeDuplicate` | array | `array()` | List of column names or orders that you want to remove duplicate |
- * | `responsive` | bool | `false` |  |
+ * | `responsive` | bool | `false` | Wrap the table in a horizontally-scrollable container. |
  * | `rowspan` | array |  | An alias of `removeDuplicate` |
  * | `showFooter` | mixed |  | Show a footer row with aggregated column values. `"top"` renders the footer above the body; any other truthy value (e.g. `true`, `"bottom"`) renders it below. |
  * | `showHeader` | bool | `true` | Render the `<thead>` (the `headers` group rows and the column-label row). Set `false` to suppress the header entirely. |

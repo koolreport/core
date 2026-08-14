@@ -14,11 +14,17 @@ $indicatorClass = Utility::get($this->cssClass, "indicator");
 $titleClass = Utility::get($this->cssClass, "title");
 $upIconClass = Utility::get($this->cssClass, "upIcon", "fa fa-caret-up");
 $downIconClass = Utility::get($this->cssClass, "downIcon", "fa fa-caret-down");
+$negativeClass = Utility::get($this->cssClass, "negative");
+$positiveClass = Utility::get($this->cssClass, "positive");
 
 if ($this->baseValue!==null) {
     $indicatorValue = $this->calculateIndicator($this->value, $this->baseValue, $this->indicator);
     $indicatorStyle .= (($indicatorStyle)?";":"").
                     (($indicatorValue<0)?$negativeStyle:$positiveStyle);
+    $signClass = ($indicatorValue<0)?$negativeClass:$positiveClass;
+    if ($signClass) {
+        $indicatorClass .= (($indicatorClass)?" ":"").$signClass;
+    }
     $indicatorTitle = str_replace("{baseValue}", (string)$this->formatValue($this->baseValue, $this->valueFormat), (string)$this->indicatorTitle);
     $indicatorTitle = str_replace("{value}", (string)$this->formatValue($this->value, $this->valueFormat), (string)$indicatorTitle);
 }

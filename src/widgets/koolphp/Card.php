@@ -60,7 +60,7 @@ use \koolreport\core\Widget;
  * | `cssClass` | array | `array()` | CSS classes for card elements. A map of element => class string; keys: `card`, `value`, `indicator`, `title`, `negative`, `positive`, plus `upIcon`/`downIcon` (default `fa fa-caret-up`/`fa fa-caret-down`). The `negative`/`positive` classes are added to the indicator when the trend is down/up. |
  * | `cssStyle` | array | `array()` | Inline CSS styles for card elements. A map of element => CSS declaration string; keys: `card`, `value`, `indicator`, `title`, `negative`, `positive`. The `negative`/`positive` styles are appended to the indicator's style when the trend is down/up. |
  * | `format` | array | `array()` | Number/string formatting for the value and the indicator. A map with `value` and `indicator` keys, each a format config (e.g. `["prefix" => "$"]`); the indicator defaults to `["decimals" => 2, "suffix" => "%"]`. |
- * | `href` | mixed |  | Make the card clickable. A URL, or a JavaScript function string (starting with `function`) invoked on click. |
+ * | `href` | string |  | Make the card clickable. A URL, or a JavaScript function string (starting with `function`) invoked on click. |
  * | `indicator` | string | `percent` | How to compute the trend indicator. Accepts `"percent"` (percentage change vs `baseValue`), `"different"` (absolute difference), or a callable `function($value, $baseValue)`. |
  * | `indicatorTitle` | string | `Compared to previous {baseValue}` | Tooltip title for the indicator. `{baseValue}` and `{value}` placeholders are replaced with the formatted values. |
  * | `title` | string |  | The card's title. Accepts a plain string, or a callable `function($value)` returning the title (called with the card's value). |
@@ -72,7 +72,7 @@ use \koolreport\core\Widget;
  *     cssClass?: array,
  *     cssStyle?: array,
  *     format?: array,
- *     href?: mixed,
+ *     href?: string,
  *     indicator?: string,
  *     indicatorTitle?: string,
  *     title?: string,

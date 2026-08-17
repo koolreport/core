@@ -19,57 +19,75 @@ namespace koolreport\widgets\koolphp;
 interface CardOptions
 {
     /**
-     * @see https://www.koolreport.com/forum/topics
+     * The reference value for the trend indicator (the percentage change from it is shown). Accepts a scalar, or a DataStore/DataSource/Process object (first cell used), like `value`.
+     *
+     * @see https://www.koolreport.com/docs/koolphp/card/
      */
     const BASE_VALUE = 'baseValue';
 
     /**
+     * CSS classes for card elements. A map of element => class string; keys: `card`, `value`, `indicator`, `title`, `negative`, `positive`, plus `upIcon`/`downIcon` (default `fa fa-caret-up`/`fa fa-caret-down`). The `negative`/`positive` classes are added to the indicator when the trend is down/up.
+     *
      * Default: array()
      *
-     * @see https://www.koolreport.com/forum/topics
+     * @see https://www.koolreport.com/docs/koolphp/card/
      */
     const CSS_CLASS = 'cssClass';
 
     /**
+     * Inline CSS styles for card elements. A map of element => CSS declaration string; keys: `card`, `value`, `indicator`, `title`, `negative`, `positive`. The `negative`/`positive` styles are appended to the indicator's style when the trend is down/up.
+     *
      * Default: array()
      *
-     * @see https://www.koolreport.com/forum/topics
+     * @see https://www.koolreport.com/docs/koolphp/card/
      */
     const CSS_STYLE = 'cssStyle';
 
     /**
+     * Number/string formatting for the value and the indicator. A map with `value` and `indicator` keys, each a format config (e.g. `["prefix" => "$"]`); the indicator defaults to `["decimals" => 2, "suffix" => "%"]`.
+     *
      * Default: array()
      *
-     * @see https://www.koolreport.com/forum/topics
+     * @see https://www.koolreport.com/docs/koolphp/card/
      */
     const FORMAT = 'format';
 
     /**
-     * @see https://www.koolreport.com/forum/topics
+     * Make the card clickable. A URL, or a JavaScript function string (starting with `function`) invoked on click.
+     *
+     * @see https://www.koolreport.com/docs/koolphp/card/
      */
     const HREF = 'href';
 
     /**
+     * How to compute the trend indicator. Accepts `"percent"` (percentage change vs `baseValue`), `"different"` (absolute difference), or a callable `function($value, $baseValue)`.
+     *
      * Default: percent
      *
-     * @see https://www.koolreport.com/forum/topics
+     * @see https://www.koolreport.com/docs/koolphp/card/
      */
     const INDICATOR = 'indicator';
 
     /**
+     * Tooltip title for the indicator. `{baseValue}` and `{value}` placeholders are replaced with the formatted values.
+     *
      * Default: Compared to previous {baseValue}
      *
-     * @see https://www.koolreport.com/forum/topics
+     * @see https://www.koolreport.com/docs/koolphp/card/
      */
     const INDICATOR_TITLE = 'indicatorTitle';
 
     /**
-     * @see https://www.koolreport.com/forum/topics
+     * The card's title. Accepts a plain string, or a callable `function($value)` returning the title (called with the card's value).
+     *
+     * @see https://www.koolreport.com/docs/koolphp/card/
      */
     const TITLE = 'title';
 
     /**
-     * @see https://www.koolreport.com/forum/topics
+     * The primary value displayed on the card. Accepts a scalar, or a DataStore/DataSource/Process object (its first row's first column is used).
+     *
+     * @see https://www.koolreport.com/docs/koolphp/card/
      */
     const VALUE = 'value';
 }

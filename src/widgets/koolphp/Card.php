@@ -56,15 +56,15 @@ use \koolreport\core\Widget;
  * generated-shape-start emit-shapes.php
  * | option | type | default | description |
  * |---|---|---|---|
- * | `baseValue` | mixed |  |  |
- * | `cssClass` | array | `array()` |  |
- * | `cssStyle` | array | `array()` |  |
- * | `format` | array | `array()` |  |
- * | `href` | mixed |  |  |
- * | `indicator` | string | `percent` |  |
- * | `indicatorTitle` | string | `Compared to previous {baseValue}` |  |
- * | `title` | mixed |  |  |
- * | `value` | mixed |  |  |
+ * | `baseValue` | mixed |  | The reference value for the trend indicator (the percentage change from it is shown). Accepts a scalar, or a DataStore/DataSource/Process object (first cell used), like `value`. |
+ * | `cssClass` | array | `array()` | CSS classes for card elements. A map of element => class string; keys: `card`, `value`, `indicator`, `title`, `negative`, `positive`, plus `upIcon`/`downIcon` (default `fa fa-caret-up`/`fa fa-caret-down`). The `negative`/`positive` classes are added to the indicator when the trend is down/up. |
+ * | `cssStyle` | array | `array()` | Inline CSS styles for card elements. A map of element => CSS declaration string; keys: `card`, `value`, `indicator`, `title`, `negative`, `positive`. The `negative`/`positive` styles are appended to the indicator's style when the trend is down/up. |
+ * | `format` | array | `array()` | Number/string formatting for the value and the indicator. A map with `value` and `indicator` keys, each a format config (e.g. `["prefix" => "$"]`); the indicator defaults to `["decimals" => 2, "suffix" => "%"]`. |
+ * | `href` | mixed |  | Make the card clickable. A URL, or a JavaScript function string (starting with `function`) invoked on click. |
+ * | `indicator` | string | `percent` | How to compute the trend indicator. Accepts `"percent"` (percentage change vs `baseValue`), `"different"` (absolute difference), or a callable `function($value, $baseValue)`. |
+ * | `indicatorTitle` | string | `Compared to previous {baseValue}` | Tooltip title for the indicator. `{baseValue}` and `{value}` placeholders are replaced with the formatted values. |
+ * | `title` | string |  | The card's title. Accepts a plain string, or a callable `function($value)` returning the title (called with the card's value). |
+ * | `value` | mixed |  | The primary value displayed on the card. Accepts a scalar, or a DataStore/DataSource/Process object (its first row's first column is used). |
  * generated-shape-end emit-shapes.php
  *
  * @method static mixed create(array{
@@ -75,7 +75,7 @@ use \koolreport\core\Widget;
  *     href?: mixed,
  *     indicator?: string,
  *     indicatorTitle?: string,
- *     title?: mixed,
+ *     title?: string,
  *     value?: mixed,
  * } $params, bool $return = false)
 

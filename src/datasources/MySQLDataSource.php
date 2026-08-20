@@ -445,7 +445,7 @@ class MySQLDataSource extends DataSource
             // $stmt->bind_param($typeStr, ...$params); //spread operator ... only available since PHP 5.6
             if ($bindParamResult === false) {
                 throw new \Exception(
-                    'bind_param() failed: ' . htmlspecialchars($stmt->error)
+                    'bind_param() failed: ' . htmlspecialchars($stmt->error, ENT_QUOTES | ENT_SUBSTITUTE)
                         . " || Sql query = $query"
                         . " || Params = $refArr"
                 );

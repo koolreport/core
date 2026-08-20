@@ -485,6 +485,13 @@ class Widget
                             } else if (gettype($row) == "array") {
                                 $rowType = "array";
                                 foreach ($row as $cValue) {
+                                    // A non-scalar cannot be an array key. On PHP 7.4 this
+                                    // emitted "Illegal offset type" and skipped the assignment;
+                                    // on PHP 8 it throws a TypeError. Skip explicitly so the
+                                    // behaviour is the same, and silent, on every version.
+                                    if (!is_scalar($cValue)) {
+                                        continue;
+                                    }
                                     $meta["columns"][$cValue] = array();
                                 }
                                 $keys_for_array = $row;

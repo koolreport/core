@@ -173,7 +173,7 @@ class CSVDataSource extends DataSource
                 $row = array_map(
                     function ($item) {
                         return ($this->charset=="utf8" && is_string($item))
-                            ?utf8_encode($item):$item;
+                            ?mb_convert_encoding($item, 'UTF-8', 'ISO-8859-1'):$item;
                     },
                     $row
                 );    

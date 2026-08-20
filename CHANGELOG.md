@@ -4,6 +4,7 @@
 1. `Utility::jsonEncode()` now treats a `js:` or `javascript:` prefix on a string value as a declaration that the value is JavaScript. The prefix is stripped and whatever follows is emitted as code, so arrow functions (`js:p => p*2`), async arrows and references to a function defined elsewhere (`js:window.helpers.fmt`) all work, not just `function (...) {...}`.
 2. Added the `Utility::mergeDatasets()` and `Utility::rowsToColumns()` data helpers, migrated from `apexcharts` so any package can use them. `\koolreport\apexcharts\Chart::mergeDatasets()` and `::rowsToColumns()` remain as deprecated aliases that forward to these, so existing code keeps working.
 3. Added helper function `Utility::stripJsPrefix()`, which returns a string with its `js:`/`javascript:` prefix removed, or null when it carries neither. Widget templates need it where a value is echoed straight into the page instead of going through `jsonEncode()`, such as client event handlers.
+4. Fixed "Illegal offset type" warnings on PHP 7.4 when a widget receives a nested/associative `dataSource` (for example a tree structure decoded from JSON). `Widget` guessed column meta from row values and could use a non-scalar as an array key; non-scalars are now skipped explicitly. PHP 8 was unaffected because the branch is unreachable there.
 
 ## Version 6.6.8
 1. Fix PDODataSource in PHP 8.4 when using existing specific PDO connection

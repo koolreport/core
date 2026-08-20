@@ -69,7 +69,9 @@ class APIDataSource extends DataSource
         }
         curl_setopt_array($curl, $newOptions);
         $result = curl_exec($curl);
-        curl_close($curl);
+        if (PHP_VERSION_ID < 80000) {
+            curl_close($curl);
+        }
         return $result;
     }
 

@@ -1,6 +1,7 @@
 # Change Log
 
-## Version 6.7.0
+## Version 6.7.1
+*Released as 6.7.1 rather than 6.7.0: the 6.7.0 tag was published briefly against the wrong commit and Packagist treats tags as immutable, so the corrected content could not be attached to that version. 6.7.0 was withdrawn and never generally available; this release carries its full content.*
 1. `Utility::jsonEncode()` now treats a `js:` or `javascript:` prefix on a string value as a declaration that the value is JavaScript. The prefix is stripped and whatever follows is emitted as code, so arrow functions (`js:p => p*2`), async arrows and references to a function defined elsewhere (`js:window.helpers.fmt`) all work, not just `function (...) {...}`.
 2. Added the `Utility::mergeDatasets()` and `Utility::rowsToColumns()` data helpers, migrated from `apexcharts` so any package can use them. `\koolreport\apexcharts\Chart::mergeDatasets()` and `::rowsToColumns()` remain as deprecated aliases that forward to these, so existing code keeps working.
 3. Added helper function `Utility::stripJsPrefix()`, which returns a string with its `js:`/`javascript:` prefix removed, or null when it carries neither. Widget templates need it where a value is echoed straight into the page instead of going through `jsonEncode()`, such as client event handlers.

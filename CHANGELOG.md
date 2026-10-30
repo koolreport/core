@@ -1,5 +1,9 @@
 # Change Log
 
+## Version 6.8.0-dev
+1. A widget's `dataSource` (or `dataStore`) may now name one of the report's data stores: `"dataSource" => "sales"` means `$this->dataStore("sales")`. Before, a string failed with `count(): Argument #1 ($value) must be of type Countable|array`. A string that names no data store and no callable throws an `InvalidArgumentException` that says what to pass instead. A store name is checked before `is_callable()`, so a store named like a PHP function (`"max"`) is still the store. Added `KoolReport::hasDataStore($name)`, which, unlike `dataStore()`, never creates one.
+2. `Table`: when `showFooter` is not set, the footer row is now shown if any column sets `footer` or `footerText`. Before, those settings were silently ignored unless `showFooter` was also set. An explicit `"showFooter" => false` still hides it.
+
 ## Version 6.7.1
 *Released as 6.7.1 rather than 6.7.0: the 6.7.0 tag was published briefly against the wrong commit and Packagist treats tags as immutable, so the corrected content could not be attached to that version. 6.7.0 was withdrawn and never generally available; this release carries its full content.*
 1. `Utility::jsonEncode()` now treats a `js:` or `javascript:` prefix on a string value as a declaration that the value is JavaScript. The prefix is stripped and whatever follows is emitted as code, so arrow functions (`js:p => p*2`), async arrows and references to a function defined elsewhere (`js:window.helpers.fmt`) all work, not just `function (...) {...}`.

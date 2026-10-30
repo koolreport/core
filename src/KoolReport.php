@@ -271,10 +271,23 @@ class KoolReport
     }
 
     /**
+     * Whether the report has a data store with this name. Unlike dataStore(), this
+     * never creates one.
+     *
+     * @param string $name The name of data store
+     *
+     * @return bool
+     */
+    public function hasDataStore($name)
+    {
+        return is_string($name) && isset($this->dataStores[$name]);
+    }
+
+    /**
      * Get the data store with a name, if not found, create a new one
      *
      * @param string $name The name of data store
-     * 
+     *
      * @return DataStore The datastore object
      */
     public function dataStore($name)

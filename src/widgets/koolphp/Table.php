@@ -43,7 +43,7 @@ use \koolreport\core\Widget;
  * | `removeDuplicate` | array | `array()` | List of column names or orders that you want to remove duplicate |
  * | `responsive` | bool | `false` | Wrap the table in a horizontally-scrollable container. |
  * | `rowspan` | array |  | An alias of `removeDuplicate` |
- * | `showFooter` | mixed |  | Show a footer row with aggregated column values. `"top"` renders the footer above the body; any other truthy value (e.g. `true`, `"bottom"`) renders it below. |
+ * | `showFooter` | mixed |  | Show a footer row with aggregated column values. `"top"` renders the footer above the body; any other truthy value (e.g. `true`, `"bottom"`) renders it below. When unset, the footer is shown if any column sets `footer` or `footerText`; `false` hides it. |
  * | `showHeader` | bool | `true` | Render the `<thead>` (the `headers` group rows and the column-label row). Set `false` to suppress the header entirely. |
  * | `sorting` | array | `array()` | Sort the table by column. An associative map of column name => `"asc"`/`"desc"`, or column name => comparator callable. |
  * generated-shape-end emit-shapes.php
@@ -182,6 +182,19 @@ class Table extends Widget implements TableOptions
         $this->excludedColumns = Utility::get($this->params, "excludedColumns", array());
 
         $this->showFooter = Utility::get($this->params, "showFooter");
+        if ($this->showFooter === null) {
+            // A column "footer"/"footerText" with showFooter left unset used to render no
+            // footer at all, silently. Unset now means "show it when a column asks for one";
+            // an explicit false still hides it.
+            foreach (Utility::get($this->params, "columns", array()) as $cSetting) {
+                if (is_array($cSetting)
+                    && (isset($cSetting["footer"]) || isset($cSetting["footerText"]))
+                ) {
+                    $this->showFooter = true;
+                    break;
+                }
+            }
+        }
         $this->showHeader = Utility::get($this->params, "showHeader", true);
 
         $this->paging = Utility::get($this->params, "paging");

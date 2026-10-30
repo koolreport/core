@@ -429,14 +429,29 @@ class Widget
      * This function takes $dataSource in all forms and return data source in form of standard
      * DataStore
      * 
-     * @param mixed $dataSource Mixed source include array,collection, DataStore, DataSource, Process
+     * @param mixed $dataSource Mixed source include array,collection, DataStore, DataSource, Process,
+     *                          or the name of one of the report's data stores
      * @param array $args       Any args will be sent to function used to initiate datasource
-     * 
+     *
      * @return DataStore A DataStore containing data.
      */
     protected function standardizeDataSource($dataSource, $args)
     {
         $finalDataSource = null;
+        if (is_string($dataSource)) {
+            // "dataSource" => "sales" is read as $this->dataStore("sales"). Checked before
+            // is_callable() so a store named like a PHP function ("max") is still the store.
+            if ($this->report instanceof \koolreport\KoolReport
+                && $this->report->hasDataStore($dataSource)
+            ) {
+                $dataSource = $this->report->dataStore($dataSource);
+            } else if (!is_callable($dataSource)) {
+                throw new \InvalidArgumentException(
+                    "dataSource \"$dataSource\" is not a data store of this report. "
+                    . "Pass \$this->dataStore(\"$dataSource\") after piping data into it in setup()."
+                );
+            }
+        }
         if ($dataSource !== null) {
             if (is_callable($dataSource)) {
                 // If datasource is a function then call it and pass all the available

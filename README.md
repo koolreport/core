@@ -219,6 +219,15 @@ You may download the source code [sale_report.zip](https://www.koolreport.com/do
 
 .. and [all examples](https://www.koolreport.com/examples/).
 
+# Using KoolReport with AI coding assistants
+
+KoolReport publishes a reference written for AI assistants such as Claude, Cursor and Copilot:
+[llms.txt](https://www.koolreport.com/llms.txt) is a short index and
+[llms-full.txt](https://www.koolreport.com/llms-full.txt) is the complete reference, with exact
+class names, data source settings, package recipes and common mistakes. Add `llms-full.txt` to
+your assistant's context (or point it at the URL) before asking it to write a report. In our
+tests it raised the share of AI-written reports that ran correctly on the first try.
+
 # Licenses
 The KoolReport is licensed under MIT License.
 

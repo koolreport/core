@@ -100,6 +100,32 @@ class MySQLDataSource extends DataSource
         $port = Util::get($this->params, "port", 3306);
         $charset = Util::get($this->params, "charset", null);
 
+        // A PDO-style "connectionString" (mysql:host=...;dbname=...) was ignored here, which
+        // connected with no database and failed later with "No database selected". Its
+        // parts now fill in whichever of host/port/dbname/charset were not given.
+        $dsn = Util::get($this->params, "connectionString");
+        if (is_string($dsn) && stripos($dsn, "mysql:") === 0) {
+            $dsnParts = array();
+            foreach (explode(";", substr($dsn, 6)) as $pair) {
+                $kv = explode("=", $pair, 2);
+                if (count($kv) === 2) {
+                    $dsnParts[strtolower(trim($kv[0]))] = trim($kv[1]);
+                }
+            }
+            if ($host === "" && isset($dsnParts["host"])) {
+                $host = $dsnParts["host"];
+            }
+            if ($dbname === "" && isset($dsnParts["dbname"])) {
+                $dbname = $dsnParts["dbname"];
+            }
+            if (!isset($this->params["port"]) && isset($dsnParts["port"])) {
+                $port = (int)$dsnParts["port"];
+            }
+            if ($charset === null && isset($dsnParts["charset"])) {
+                $charset = $dsnParts["charset"];
+            }
+        }
+
         $key = md5($host . $username . $password . $dbname);
         if (is_object($connection) && get_class($connection) === \mysqli::class) {
             // echo "use existed connection<br>";

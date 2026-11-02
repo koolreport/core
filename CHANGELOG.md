@@ -1,5 +1,8 @@
 # Change Log
 
+## Version 6.8.1-dev
+1. `MySQLDataSource` now reads `host`, `port`, `dbname` and `charset` from a PDO-style `connectionString` (`mysql:host=...;dbname=...`) when those keys are not given. Before, the string was ignored, so the connection had no database and the first query failed with "No database selected". Explicit keys still take precedence.
+
 ## Version 6.8.0
 1. A widget's `dataSource` (or `dataStore`) may now name one of the report's data stores: `"dataSource" => "sales"` means `$this->dataStore("sales")`. Before, a string failed with `count(): Argument #1 ($value) must be of type Countable|array`. A string that names no data store and no callable throws an `InvalidArgumentException` that says what to pass instead. A store name is checked before `is_callable()`, so a store named like a PHP function (`"max"`) is still the store. Added `KoolReport::hasDataStore($name)`, which, unlike `dataStore()`, never creates one.
 2. `Table`: when `showFooter` is not set, the footer row is now shown if any column sets `footer` or `footerText`. Before, those settings were silently ignored unless `showFooter` was also set. An explicit `"showFooter" => false` still hides it.
